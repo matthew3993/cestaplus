@@ -2,6 +2,7 @@ package bc.cestaplus;
 
 import java.util.Locale;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -10,16 +11,24 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
+public class MainActivity
+        extends ActionBarActivity
+        implements ActionBar.TabListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -35,6 +44,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+
+    String [] rubriky = {"Téma mesiaca", "Rozhovor", "Za hranicami", "Kazatenica život", "Anima Mea"};
+
+    static ArrayAdapter<String> adapter;
+    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +88,16 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
-    }
 
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, rubriky);
+
+        MainActivity.context = getBaseContext();
+
+    } // end ActivityMain onCreate method
+
+    public static Context getContext() {
+        return MainActivity.context;
+    }
 
     // vytvorenie menu
     @Override
@@ -85,7 +107,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         return true;
     }
 
-    //listener na kliknutie na itemy v action bar-e
+    //handler na kliknutie na itemy v action bar-e
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -116,7 +138,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
-
 // ---------------- adapter, ktory vytvara obsahy jednotlivych tab-ov -------------------------------------------------------------
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -131,8 +152,16 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            // Return a coresponding fragment for each tab
+            switch (position) {
+                case 0:
+                    return PrehladFragment.newInstance(position + 1);
+                case 1:
+                    return RubrikyFragment.newInstance(position + 1);
+                case 2:
+                    return BaterkaFragment.newInstance(position + 1); /*android.support.v4.app.fra*/
+            }
+            return PrehladFragment.newInstance(position + 1);
         }
 
         @Override
@@ -156,11 +185,12 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
     }
 
-// ---------------- fragment -----------------------------------------------------------------------
+// ---------------- fragment Prehľad ------------------------------------------------------------------------------------
     /**
-     * A placeholder fragment containing a simple view.
+     * fragment Prehľad
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PrehladFragment
+            extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -168,26 +198,134 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         /**
-         * Returns a new instance of this fragment for the given section
-         * number.
+         * Returns a new instance of this fragment for the given section number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static PrehladFragment newInstance(int sectionNumber) {
+            PrehladFragment fragment = new PrehladFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public PlaceholderFragment() {
+        public PrehladFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_prehlad, container, false);
+
+            // pridanie tabHost do rootView
+            TabHost tabHost = (TabHost) rootView.findViewById(R.id.tabHost);
+            tabHost.setup();
+
+            TabHost.TabSpec spec1 = tabHost.newTabSpec("tab1");
+            spec1.setContent(R.id.tab1);
+            spec1.setIndicator("Všetko");
+            tabHost.addTab(spec1);
+
+            TabHost.TabSpec spec2 = tabHost.newTabSpec("tab2");
+            spec2.setContent(R.id.tab2);
+            spec2.setIndicator("Najčítanejšie");
+            tabHost.addTab(spec2);
+
+            //rootView.add
             return rootView;
         }
-    }
+    } // end class PrehladFragment
 
-}
+
+    // ---------------- fragment Rubriky -----------------------------------------------------------------------
+    /**
+     * fragment Rubriky
+     */
+
+    public static class RubrikyFragment
+            extends Fragment
+            implements AdapterView.OnItemClickListener{
+        /**
+         * The fragment argument representing the section number for this fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        /**
+         * Returns a new instance of this fragment for the given section number.
+         */
+        public static RubrikyFragment newInstance(int sectionNumber) {
+            RubrikyFragment fragment = new RubrikyFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        public RubrikyFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_rubriky, container, false);
+
+            //String [] rubriky = new String[5];
+            ListView listViewRubriky = (ListView) rootView.findViewById(R.id.listViewRubriky);
+            listViewRubriky.setAdapter(MainActivity.adapter);
+
+            listViewRubriky.setOnItemClickListener(this);
+
+            return rootView;
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            TextView txtV = (TextView) view;
+            Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na rubriku " + txtV.getText(), Toast.LENGTH_LONG).show();
+        }
+
+        /*
+        // Create a message handling object as an anonymous class.
+        public static AdapterView.OnItemClickListener listViewRubrikyClickedHandler = new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView parent, View v, int position, long id) {
+
+            }
+        };*/
+    }// end class RubrikyFragment
+
+
+    // ---------------- fragment BaterkaFragment -----------------------------------------------------------------------
+    /**
+     * fragment BaterkaFragment
+     */
+    public static class BaterkaFragment
+            extends Fragment {
+        /**
+         * The fragment argument representing the section number for this fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        /**
+         * Returns a new instance of this fragment for the given section number.
+         */
+        public static BaterkaFragment newInstance(int sectionNumber) {
+            BaterkaFragment fragment = new BaterkaFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        public BaterkaFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_baterka, container, false);
+            return rootView;
+        }
+    }// end class BaterkaFragment
+
+
+
+} // end MainActivity
