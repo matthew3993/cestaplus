@@ -1,5 +1,8 @@
 package bc.cestaplus;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import android.content.Context;
@@ -12,7 +15,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,13 +22,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 
 public class MainActivity
@@ -199,10 +198,10 @@ public class MainActivity
         extends Fragment
         implements AdapterView.OnItemClickListener{
 
-        static ArrayAdapter<String> adapterVsetko;
+        static ArrayAdapter<ClanokObj2> adapterVsetko;
         static ArrayAdapter<String> adapterNajcitanejsie;
 
-        String [] vsetko = {"Vsetko 1", "Vsetko 2", "Vsetko 3", "Vsetko 4", "Vsetko 5"};
+        List<ClanokObj2> clanky;
         String [] najcitanejsie = {"najcitanejsie 1", "najcitanejsie 2", "najcitanejsie 3", "najcitanejsie 4", "najcitanejsie 5"};
 
         private static final String ARG_SECTION_NUMBER = "section_number"; //The fragment argument representing the section number for this fragment.
@@ -230,6 +229,34 @@ public class MainActivity
             TabHost tabHost = (TabHost) rootView.findViewById(R.id.tabHost);
             tabHost.setup();
 
+            clanky = new ArrayList<ClanokObj2>();
+
+    // vytvorenie testovacich clankoch
+            clanky.add(new ClanokObj2("PRESTÁVKA: Chlapček Sam",
+                                     "http://www.cestaplus.sk/cestaplus/clanok/prestavka-chlapcek-sam",
+                                     "Kto je toto roztomilé chlapčiatko? Volá sa Sam, je zo štátu Georgia, USA a má veľmi zaujímavý príbeh.",
+                                     new Date(2015, 2, 28, 2, 7, 20),
+                                     R.drawable.sam, "Petra Babulíková"));
+
+            clanky.add(new ClanokObj2("Misionár, ktorý bude s nimi žiť všetko. Aj blchy, aj vši",
+                    "http://www.cestaplus.sk/kazatelnicazivot/nazov/misionar-ktory-bude-s-nimi-zit-vsetko",
+                    "Kto chce pracovať s bezdomovcami, mal by s nimi aj žiť. Mal by to byť človek, ktorý nie je ženatý alebo ak je to žena, tak nie je vydatá a môže s nimi",
+                    new Date(2015, 2, 28, 1, 54, 57),
+                    R.drawable.kazatelnica1, "Farár Maroš Kuffa"));
+
+            clanky.add(new ClanokObj2("Budem ťa milovať, len keď...",
+                    "http://www.cestaplus.sk/baterka/datum/28-02-2015",
+                    ".. ak budeme milovať, len keď.... tak nemilujeme... sme amatéri a nepochopili sme vôbec čo je to láska. Lebo ak čakáme, tak sme akurát tak dobrí",
+                    new Date(2015, 2, 28, 0, 00, 00),
+                    R.drawable.baterka28_02_2015, "Félix Mária OFM"));
+
+
+
+
+
+
+
+
     // pridanie jednotlivych tabs do tabHost-u
         // tab1
             TabHost.TabSpec spec1 = tabHost.newTabSpec("tab1");
@@ -238,7 +265,8 @@ public class MainActivity
             tabHost.addTab(spec1);
 
             //listViewVsetko
-            adapterVsetko = new ArrayAdapter<String>(MainActivity.context, R.layout.clanok_list_item, R.id.textView, vsetko);
+            //adapterVsetko = new ArrayAdapter<String>(MainActivity.context, R.layout.clanok_list_item, R.id.item_tvDescription, vsetko);
+            adapterVsetko = new ClanokAdapter(MainActivity.context, R.layout.clanok_list_item, clanky, getLayoutInflater(savedInstanceState));
             ListView listViewVsetko = (ListView) rootView.findViewById(R.id.lvVsetko);
             listViewVsetko.setAdapter(adapterVsetko);
             listViewVsetko.setOnItemClickListener(this);
@@ -278,7 +306,7 @@ public class MainActivity
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            TextView txtV = (TextView) view.findViewById(R.id.textView);
+            TextView txtV = (TextView) view.findViewById(R.id.item_tvDescription);
             Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na " + txtV.getText(), Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(MainActivity.context, ClanokActivity.class);
