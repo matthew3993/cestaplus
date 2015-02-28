@@ -3,6 +3,7 @@ package bc.cestaplus;
 import java.util.Locale;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -27,8 +30,8 @@ import org.w3c.dom.Text;
 
 
 public class MainActivity
-        extends ActionBarActivity
-        implements ActionBar.TabListener {
+    extends ActionBarActivity
+    implements ActionBar.TabListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -45,9 +48,6 @@ public class MainActivity
      */
     ViewPager mViewPager;
 
-    String [] rubriky = {"Téma mesiaca", "Rozhovor", "Za hranicami", "Kazatenica život", "Anima Mea"};
-
-    static ArrayAdapter<String> adapter;
     private static Context context;
 
     @Override
@@ -89,15 +89,15 @@ public class MainActivity
                             .setTabListener(this));
         }
 
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, rubriky);
-
         MainActivity.context = getBaseContext();
 
     } // end ActivityMain onCreate method
 
+    /*
     public static Context getContext() {
         return MainActivity.context;
     }
+    */
 
     // vytvorenie menu
     @Override
@@ -115,12 +115,18 @@ public class MainActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                Toast.makeText(this, "Aktualizujem...", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.action_settings:
+                //star
+                //composeMessage();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -190,12 +196,16 @@ public class MainActivity
      * fragment Prehľad
      */
     public static class PrehladFragment
-            extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+        extends Fragment
+        implements AdapterView.OnItemClickListener{
+
+        static ArrayAdapter<String> adapterVsetko;
+        static ArrayAdapter<String> adapterNajcitanejsie;
+
+        String [] vsetko = {"Vsetko 1", "Vsetko 2", "Vsetko 3", "Vsetko 4", "Vsetko 5"};
+        String [] najcitanejsie = {"najcitanejsie 1", "najcitanejsie 2", "najcitanejsie 3", "najcitanejsie 4", "najcitanejsie 5"};
+
+        private static final String ARG_SECTION_NUMBER = "section_number"; //The fragment argument representing the section number for this fragment.
 
         /**
          * Returns a new instance of this fragment for the given section number.
@@ -220,30 +230,80 @@ public class MainActivity
             TabHost tabHost = (TabHost) rootView.findViewById(R.id.tabHost);
             tabHost.setup();
 
+    // pridanie jednotlivych tabs do tabHost-u
+        // tab1
             TabHost.TabSpec spec1 = tabHost.newTabSpec("tab1");
             spec1.setContent(R.id.tab1);
             spec1.setIndicator("Všetko");
             tabHost.addTab(spec1);
 
+            //listViewVsetko
+            adapterVsetko = new ArrayAdapter<String>(MainActivity.context, R.layout.clanok_list_item, R.id.textView, vsetko);
+            ListView listViewVsetko = (ListView) rootView.findViewById(R.id.lvVsetko);
+            listViewVsetko.setAdapter(adapterVsetko);
+            listViewVsetko.setOnItemClickListener(this);
+                //Log.d("Vytvaranie", "Vytvoril sa listViewVsetko"); //kontrolny zapis do logu
+
+
+        // tab2
             TabHost.TabSpec spec2 = tabHost.newTabSpec("tab2");
             spec2.setContent(R.id.tab2);
-            spec2.setIndicator("Najčítanejšie");
+            spec2.setIndicator("Naj" +
+                    "čítanejšie");
             tabHost.addTab(spec2);
 
-            //rootView.add
+            //listViewNajcitanejsie
+            adapterNajcitanejsie = new ArrayAdapter<String>(MainActivity.context, android.R.layout.simple_list_item_1, najcitanejsie);
+            ListView listViewNajcitanejsie = (ListView) rootView.findViewById(R.id.lvNajcitanejsie);
+            listViewNajcitanejsie.setAdapter(adapterNajcitanejsie);
+            listViewNajcitanejsie.setOnItemClickListener(this);
+
+        // tab 3
+            /*
+            TabHost.TabSpec spec3 = tabHost.newTabSpec("tab3");
+            spec3.setContent(R.id.tab2);
+            spec3.setIndicator("Rozhovor");
+            tabHost.addTab(spec3);
+
+        //tab 4
+            TabHost.TabSpec spec4 = tabHost.newTabSpec("tab4");
+            spec4.setContent(R.id.tab4);
+            spec4.setIndicator("Názor");
+            tabHost.addTab(spec4);*/
+
+
             return rootView;
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            TextView txtV = (TextView) view.findViewById(R.id.textView);
+            Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na " + txtV.getText(), Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(MainActivity.context, ClanokActivity.class);
+            /*
+            EditText editText = (EditText) findViewById(R.id.edit_message);
+            String message = editText.getText().toString();
+            intent.putExtra(EXTRA_MESSAGE, message);*/
+            startActivity(intent);
         }
     } // end class PrehladFragment
 
 
-    // ---------------- fragment Rubriky -----------------------------------------------------------------------
+// ---------------- fragment Rubriky -----------------------------------------------------------------------------------------------------
     /**
      * fragment Rubriky
      */
 
     public static class RubrikyFragment
-            extends Fragment
-            implements AdapterView.OnItemClickListener{
+        extends Fragment
+        implements AdapterView.OnItemClickListener{
+
+        String [] rubriky = {"Téma mesiaca", "Rozhovor", "Za hranicami", "Kazatenica život", "Anima Mea"};
+
+        static ArrayAdapter<String> adapterRubriky;
+
         /**
          * The fragment argument representing the section number for this fragment.
          */
@@ -268,9 +328,10 @@ public class MainActivity
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_rubriky, container, false);
 
-            //String [] rubriky = new String[5];
+            adapterRubriky = new ArrayAdapter<String>(MainActivity.context, android.R.layout.simple_list_item_1, rubriky);
+
             ListView listViewRubriky = (ListView) rootView.findViewById(R.id.listViewRubriky);
-            listViewRubriky.setAdapter(MainActivity.adapter);
+            listViewRubriky.setAdapter(adapterRubriky);
 
             listViewRubriky.setOnItemClickListener(this);
 
@@ -283,17 +344,10 @@ public class MainActivity
             Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na rubriku " + txtV.getText(), Toast.LENGTH_LONG).show();
         }
 
-        /*
-        // Create a message handling object as an anonymous class.
-        public static AdapterView.OnItemClickListener listViewRubrikyClickedHandler = new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView parent, View v, int position, long id) {
-
-            }
-        };*/
     }// end class RubrikyFragment
 
 
-    // ---------------- fragment BaterkaFragment -----------------------------------------------------------------------
+// ---------------- fragment BaterkaFragment ----------------------------------------------------------------------------------------------
     /**
      * fragment BaterkaFragment
      */

@@ -7,10 +7,11 @@
     <string name="title_section2">Rubriky</string>
     <string name="title_section3">Baterka</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Nastavenia</string>
     <string name="action_refresh">Aktualizovať</string>
 
     <string name="hello_blank_fragment">Tu bude baterka</string>
+    <string name="title_activity_clanok">ClanokActivity</string>
+    <string name="hello_world">Tu sa zobrazí vybraný článok</string>
 
 </resources>
