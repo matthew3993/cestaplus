@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="bc.cestaplus" >
 
     <application
@@ -8,7 +7,6 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
@@ -22,6 +20,15 @@
         <activity
             android:name=".ClanokActivity"
             android:label="@string/title_activity_clanok"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="bc.cestaplus.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".RubrikaAktivity"
+            android:label="@string/title_activity_rubrika_aktivity"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

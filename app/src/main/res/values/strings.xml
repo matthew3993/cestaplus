@@ -2,16 +2,14 @@
 <resources>
 
     <string name="app_name">cesta+</string>
-
     <string name="title_section1">Prehľad</string>
     <string name="title_section2">Rubriky</string>
     <string name="title_section3">Baterka</string>
-
     <string name="action_settings">Nastavenia</string>
     <string name="action_refresh">Aktualizovať</string>
-
-    <string name="hello_blank_fragment">Tu bude baterka</string>
+    <string name="hello_blank_fragment">Tu sa zobrazí baterka na akutálny deň</string>
     <string name="title_activity_clanok">ClanokActivity</string>
     <string name="hello_world">Tu sa zobrazí vybraný článok</string>
+    <string name="title_activity_rubrika_aktivity">RubrikaAktivity</string>
 
 </resources>

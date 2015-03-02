@@ -15,10 +15,10 @@ import java.util.List;
  * Created by Matej on 28.2.2015.
  */
 public class ClanokAdapter
-    extends ArrayAdapter<ClanokObj2>{
+    extends ArrayAdapter<ClanokObj>{
 
     public LayoutInflater inflater;
-    public ArrayList<ClanokObj2> clanky;
+    public ArrayList<ClanokObj> clanky;
 
     /**
      * Konstruktor
@@ -47,7 +47,7 @@ public class ClanokAdapter
         }
 
         // Najdime clanok, s ktorym budeme pracovat
-        ClanokObj2 clanok = clanky.get(position);
+        ClanokObj clanok = clanky.get(position);
 
     //naplnenie View
         //obrazok

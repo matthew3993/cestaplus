@@ -1,7 +1,6 @@
 package bc.cestaplus;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,6 +47,7 @@ public class MainActivity
     ViewPager mViewPager;
 
     private static Context context;
+    public final static String EXTRA_RUBRIKA = "bc.cesta.RUBRIKA_CLANKU";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,11 +198,11 @@ public class MainActivity
         extends Fragment
         implements AdapterView.OnItemClickListener{
 
-        static ArrayAdapter<ClanokObj2> adapterVsetko;
-        static ArrayAdapter<String> adapterNajcitanejsie;
+        static ArrayAdapter<ClanokObj> adapterVsetko;
+        static ArrayAdapter<ClanokObj> adapterNajcitanejsie;
 
-        List<ClanokObj2> clanky;
-        String [] najcitanejsie = {"najcitanejsie 1", "najcitanejsie 2", "najcitanejsie 3", "najcitanejsie 4", "najcitanejsie 5"};
+        List<ClanokObj> vsetko;
+        List<ClanokObj> najcitanejsie;
 
         private static final String ARG_SECTION_NUMBER = "section_number"; //The fragment argument representing the section number for this fragment.
 
@@ -229,26 +229,39 @@ public class MainActivity
             TabHost tabHost = (TabHost) rootView.findViewById(R.id.tabHost);
             tabHost.setup();
 
-            clanky = new ArrayList<ClanokObj2>();
+            vsetko = new ArrayList<ClanokObj>();
 
-    // vytvorenie testovacich clankoch
-            clanky.add(new ClanokObj2("PRESTÁVKA: Chlapček Sam",
-                                     "http://www.cestaplus.sk/cestaplus/clanok/prestavka-chlapcek-sam",
-                                     "Kto je toto roztomilé chlapčiatko? Volá sa Sam, je zo štátu Georgia, USA a má veľmi zaujímavý príbeh.",
-                                     new Date(2015, 2, 28, 2, 7, 20),
-                                     R.drawable.sam, "Petra Babulíková"));
 
-            clanky.add(new ClanokObj2("Misionár, ktorý bude s nimi žiť všetko. Aj blchy, aj vši",
-                    "http://www.cestaplus.sk/kazatelnicazivot/nazov/misionar-ktory-bude-s-nimi-zit-vsetko",
+    // vytvorenie testovacich clankoch - vsetko
+            vsetko.add(new ClanokObj("PRESTÁVKA: Chlapček Sam",
+                    "Kto je toto roztomilé chlapčiatko? Volá sa Sam, je zo štátu Georgia, USA a má veľmi zaujímavý príbeh.",
+                    R.drawable.sam,
+                    "Článok"));
+
+            vsetko.add(new ClanokObj("Misionár, ktorý bude s nimi žiť všetko. Aj blchy, aj vši",
                     "Kto chce pracovať s bezdomovcami, mal by s nimi aj žiť. Mal by to byť človek, ktorý nie je ženatý alebo ak je to žena, tak nie je vydatá a môže s nimi",
-                    new Date(2015, 2, 28, 1, 54, 57),
-                    R.drawable.kazatelnica1, "Farár Maroš Kuffa"));
+                    R.drawable.kazatelnica1,
+                    "Kazateľnica život"));
 
-            clanky.add(new ClanokObj2("Budem ťa milovať, len keď...",
-                    "http://www.cestaplus.sk/baterka/datum/28-02-2015",
+            vsetko.add(new ClanokObj("Budem ťa milovať, len keď...",
                     ".. ak budeme milovať, len keď.... tak nemilujeme... sme amatéri a nepochopili sme vôbec čo je to láska. Lebo ak čakáme, tak sme akurát tak dobrí",
-                    new Date(2015, 2, 28, 0, 00, 00),
-                    R.drawable.baterka28_02_2015, "Félix Mária OFM"));
+                    R.drawable.baterka28_02_2015,
+                    "Baterka"));
+
+
+
+            najcitanejsie = new ArrayList<ClanokObj>();
+
+    // vytvorenie testovacich clankoch - najcitanejsie
+            najcitanejsie.add(new ClanokObj("Čo by som odkázal mladým mimo Cirkvi? Odpustite nám!",
+                    "Stavali sme dom a večer som utekal rýchlo na svätú omšu. Len v šuštákoch a teniskách som zastal pri potoku, aby som sa očistil. Zrazu pozerám, ...",
+                    R.drawable.kazatelnica1,
+                    "Kazateľnica život"));
+
+            najcitanejsie.add(new ClanokObj("Rady o manželstve, ktoré som potreboval počuť skôr",
+                    "Nie som expert na vzťahy. To, že som si prešiel rozvodom, mi pomohlo vidieť veci inak, ako by som ich robil dnes. Až po 16 rokoch s mojou ženou, ktorú som stratil rozvodom, som prišiel na rady, ktoré píšem.",
+                    R.drawable.porozvode,
+                    "Článok"));
 
 
 
@@ -266,7 +279,7 @@ public class MainActivity
 
             //listViewVsetko
             //adapterVsetko = new ArrayAdapter<String>(MainActivity.context, R.layout.clanok_list_item, R.id.item_tvDescription, vsetko);
-            adapterVsetko = new ClanokAdapter(MainActivity.context, R.layout.clanok_list_item, clanky, getLayoutInflater(savedInstanceState));
+            adapterVsetko = new ClanokAdapter(MainActivity.context, R.layout.clanok_list_item, vsetko, getLayoutInflater(savedInstanceState));
             ListView listViewVsetko = (ListView) rootView.findViewById(R.id.lvVsetko);
             listViewVsetko.setAdapter(adapterVsetko);
             listViewVsetko.setOnItemClickListener(this);
@@ -281,7 +294,7 @@ public class MainActivity
             tabHost.addTab(spec2);
 
             //listViewNajcitanejsie
-            adapterNajcitanejsie = new ArrayAdapter<String>(MainActivity.context, android.R.layout.simple_list_item_1, najcitanejsie);
+            adapterNajcitanejsie = new ClanokAdapter(MainActivity.context, R.layout.clanok_list_item, najcitanejsie, getLayoutInflater(savedInstanceState));
             ListView listViewNajcitanejsie = (ListView) rootView.findViewById(R.id.lvNajcitanejsie);
             listViewNajcitanejsie.setAdapter(adapterNajcitanejsie);
             listViewNajcitanejsie.setOnItemClickListener(this);
@@ -306,14 +319,14 @@ public class MainActivity
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            TextView txtV = (TextView) view.findViewById(R.id.item_tvDescription);
-            Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na " + txtV.getText(), Toast.LENGTH_SHORT).show();
+            ClanokObj clanok = (ClanokObj) parent.getItemAtPosition(position);
+
+            //TextView txtV = (TextView) view.findViewById(R.id.item_tvDescription);
+            //Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na " + txtV.getText(), Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(MainActivity.context, ClanokActivity.class);
-            /*
-            EditText editText = (EditText) findViewById(R.id.edit_message);
-            String message = editText.getText().toString();
-            intent.putExtra(EXTRA_MESSAGE, message);*/
+            intent.putExtra(EXTRA_RUBRIKA, clanok.getRubrika());
+
             startActivity(intent);
         }
     } // end class PrehladFragment
@@ -369,7 +382,13 @@ public class MainActivity
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             TextView txtV = (TextView) view;
-            Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na rubriku " + txtV.getText(), Toast.LENGTH_LONG).show();
+            //Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na rubriku " + txtV.getText(), Toast.LENGTH_LONG).show();
+
+        // potrebne nastavenia na spustenie novej aktivity Rubrika + preposlanie informacie ktora rubrika
+            Intent intent = new Intent(MainActivity.context, RubrikaAktivity.class);
+            intent.putExtra(EXTRA_RUBRIKA, txtV.getText());
+
+            startActivity(intent);
         }
 
     }// end class RubrikyFragment

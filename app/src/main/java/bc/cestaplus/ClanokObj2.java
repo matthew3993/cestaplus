@@ -65,7 +65,7 @@ public class ClanokObj2 {
     }
 
     /**
-     * bezparametricky konstruktor - vytvara prazdne clanky
+     * bezparametricky konstruktor - vytvara prazdne vsetko
      */
     public ClanokObj2() {
 
