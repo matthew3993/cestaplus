@@ -1,4 +1,4 @@
-package bc.cestaplus;
+package bc.cestaplus.activities;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -6,25 +6,31 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import bc.cestaplus.R;
 
-public class RubrikaAktivity extends ActionBarActivity {
+
+public class ClanokActivity
+    extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rubrika);
+        setContentView(R.layout.activity_clanok);
 
         Intent intent = getIntent();
         String rubrika = intent.getStringExtra(MainActivity.EXTRA_RUBRIKA);
 
         getSupportActionBar().setTitle(rubrika); //nastavenie label-u konkretnej aktivity
+        //Toast.makeText(this, rubrika, Toast.LENGTH_SHORT).show(); // testovaci vypis
+
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true); ak by nesla navigacia UP, resp. sa nezobrazila šípka
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_rubrika_aktivity, menu);
+        getMenuInflater().inflate(R.menu.menu_clanok, menu);
         return true;
     }
 

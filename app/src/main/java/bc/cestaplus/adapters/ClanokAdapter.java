@@ -1,4 +1,4 @@
-package bc.cestaplus;
+package bc.cestaplus.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import bc.cestaplus.ClanokObj;
+import bc.cestaplus.R;
 
 /**
  * Created by Matej on 28.2.2015.

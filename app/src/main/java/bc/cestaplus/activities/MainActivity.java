@@ -1,4 +1,4 @@
-package bc.cestaplus;
+package bc.cestaplus.activities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,11 @@ import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import bc.cestaplus.adapters.ClanokAdapter;
+import bc.cestaplus.ClanokObj;
+import bc.cestaplus.R;
+import bc.cestaplus.fragments.FragmentPrehlad2;
 
 
 public class MainActivity
@@ -89,14 +95,16 @@ public class MainActivity
         }
 
         MainActivity.context = getBaseContext();
+        getCurrentFocus();
+
 
     } // end ActivityMain onCreate method
 
-    /*
-    public static Context getContext() {
+    // moja metoda, vracia Context mainActivity
+    public static Context getAPPContext() {
+        //return MainActivity.getApplicationContext();
         return MainActivity.context;
     }
-    */
 
     // vytvorenie menu
     @Override
@@ -143,12 +151,32 @@ public class MainActivity
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
-// ---------------- adapter, ktory vytvara obsahy jednotlivych tab-ov -------------------------------------------------------------
+    /*
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i("LIFECYCLE", "MainActivity.onPause() was called");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i("LIFECYCLE", "MainActivity.onResume() was called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i("LIFECYCLE", "MainActivity.onStop() was called");
+    }
+    */
+
+    // ---------------- adapter, ktory vytvara obsahy jednotlivych tab-ov -------------------------------------------------------------
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {  // zmenene na FragmentSTATEpagerAdapter
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -160,7 +188,8 @@ public class MainActivity
             // Return a coresponding fragment for each tab
             switch (position) {
                 case 0:
-                    return PrehladFragment.newInstance(position + 1);
+                    //return PrehladFragment.newInstance(position + 1);
+                    return FragmentPrehlad2.newInstance("", "");
                 case 1:
                     return RubrikyFragment.newInstance(position + 1);
                 case 2:
@@ -220,6 +249,14 @@ public class MainActivity
         public PrehladFragment() {
         }
 
+        /*
+        public void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putInt("tabState", R.layout.fi getSelectedTab());
+            findViewById()
+        }
+        */
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -228,6 +265,8 @@ public class MainActivity
             // pridanie tabHost do rootView
             TabHost tabHost = (TabHost) rootView.findViewById(R.id.tabHost);
             tabHost.setup();
+
+            tabHost.getCurrentTab();
 
             vsetko = new ArrayList<ClanokObj>();
 
@@ -315,6 +354,10 @@ public class MainActivity
 
             return rootView;
         }
+        /*
+        public void metodicka(View view){
+            findViewById(R.id.tabHost);
+        }*/
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
