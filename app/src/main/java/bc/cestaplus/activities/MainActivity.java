@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -15,6 +16,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,23 +39,17 @@ public class MainActivity
     extends ActionBarActivity
     implements ActionBar.TabListener {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
+    public static final String EXTRA_RUBRIKA = "bc.cesta.RUBRIKA_CLANKU";
+    public static final String API_KEY = "";        //API key
 
     private static Context context;
-    public final static String EXTRA_RUBRIKA = "bc.cesta.RUBRIKA_CLANKU";
+
+    SectionsPagerAdapter mSectionsPagerAdapter;
+
+    ViewPager mViewPager;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,11 +159,48 @@ public class MainActivity
         super.onResume();
         Log.i("LIFECYCLE", "MainActivity.onResume() was called");
     }
+    */
 
     @Override
-    protected void onStop() {
+     protected void onStop() { // ulozenie aktualne vybratej tab do SharedPreferences pri prechode MainActivity do background
         super.onStop();
-        Log.i("LIFECYCLE", "MainActivity.onStop() was called");
+        //Log.i("LIFECYCLE", "MainActivity.onStop() was called");
+
+        // Store values between instances here
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();  // Put the values from the UI
+
+        int position = getSupportActionBar().getSelectedTab().getPosition(); // da sa pouzit aj ina metoda??
+
+        editor.putInt("position", position);
+
+        editor.commit();         // Commit to storage, very important!
+    }
+
+    @Override
+    protected void onStart() { // nacitanie posledne vybratej tab do SharedPreferences pri prechode MainActivity do foreground
+        super.onStart();
+        //Log.i("LIFECYCLE", "MainActivity.onStart() was called");
+
+        // Get the between instance stored values
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+
+        int position = preferences.getInt("position", 0);
+
+        getSupportActionBar().setSelectedNavigationItem(position); //ako odstranit warning ??
+    }
+
+    /*
+    @Override
+    protected void onSaveInstanceState(Bundle outBundle){
+        super.onSaveInstanceState(outBundle);
+        Log.i("LIFECYCLE", "MainActivity.onSaveInstanceState() was called");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInsBundle){
+        super.onRestoreInstanceState(savedInsBundle);
+        Log.i("LIFECYCLE", "MainActivity.onRestoreInstanceState() was called");
     }
     */
 
@@ -270,7 +303,7 @@ public class MainActivity
 
             vsetko = new ArrayList<ClanokObj>();
 
-
+/*
     // vytvorenie testovacich clankoch - vsetko
             vsetko.add(new ClanokObj("PRESTÁVKA: Chlapček Sam",
                     "Kto je toto roztomilé chlapčiatko? Volá sa Sam, je zo štátu Georgia, USA a má veľmi zaujímavý príbeh.",
@@ -301,7 +334,7 @@ public class MainActivity
                     "Nie som expert na vzťahy. To, že som si prešiel rozvodom, mi pomohlo vidieť veci inak, ako by som ich robil dnes. Až po 16 rokoch s mojou ženou, ktorú som stratil rozvodom, som prišiel na rady, ktoré píšem.",
                     R.drawable.porozvode,
                     "Článok"));
-
+*/
 
 
 

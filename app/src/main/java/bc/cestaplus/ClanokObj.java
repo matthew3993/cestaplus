@@ -8,14 +8,16 @@ import java.util.Date;
 public class ClanokObj {
 
     // veci do itemListu
-    private String title;       // nadpis v itemListe
+    private String title;       // nadpis v listView
     private String description; // popis zobrazeny v listView
-    private int ImageID;        // obrazok - nejakym sposobom           // akym?? - zatiaľ imageID
+    //private int ImageID;        // obrazok - nejakym sposobom           // akym?? - zatiaľ imageID
+    private String imageUrl;
 
     private Date pubDate;       // datum a cas vydania                  // kvoli notifikáciam a aktualizacii
     private String rubrika;        // typ / druh clanku, rubrika           // kvoli notifikaciam len na vybranu rubriku a nadpisu v ClanokActivity
 
     private int id;             // id clanku                            // kvoli nacitaniu textu konkretneho clanku // ci pouzijem link??
+    private boolean locked;     // ci ide o zamknuty clanok alebo nie
     //private String link;        // odkaz na dany clanok na webe
 
     // private String text;        // vnutro clanku
@@ -24,26 +26,19 @@ public class ClanokObj {
     /**
      *  PLNY KONSTRUKTOR
      */
-    public ClanokObj(String title, String description, int imageID, Date pubDate, String rubrika, int id) {
-        this.title = title;
-        this.description = description;
-        ImageID = imageID;
-        this.pubDate = pubDate;
-        this.rubrika = rubrika;
-        this.id = id;
-    }
+
 
     /**
      * NA TESTOVANIE
      * @param title
      * @param description
-     * @param imageID
+     * @param imageUrl
      * @param rubrika
      */
-    public ClanokObj(String title, String description, int imageID, String rubrika) {
+    public ClanokObj(String title, String description, String imageUrl, String rubrika) {
         this.title = title;
         this.description = description;
-        ImageID = imageID;
+        this.imageUrl = imageUrl;
         this.rubrika = rubrika;
     }
 
@@ -92,11 +87,23 @@ public class ClanokObj {
 // ===================== Ostatne metody ==========================================================================================================
 
 
-    public int getImageID() {
-        return ImageID;
-    }
+
 
     public String getRubrika() {
         return rubrika;
+    }
+
+
+    @Override
+    public String toString() {
+        return "ClanokObj{" +
+                "title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", ImageUrl=" + imageUrl +
+                ", pubDate=" + pubDate +
+                ", rubrika='" + rubrika + '\'' +
+                ", id=" + id +
+                ", locked=" + locked +
+                '}';
     }
 } //end class ClanokObj

@@ -55,7 +55,7 @@ public class ClanokAdapter
     //naplnenie View
         //obrazok
         ImageView imageView = (ImageView) itemView.findViewById(R.id.item_ivObr);
-        imageView.setImageResource(clanok.getImageID());
+        //imageView.setImageResource(clanok.getImageID());
 
         //nadpis
         TextView txtvTitle = (TextView) itemView.findViewById(R.id.item_tvTitle);

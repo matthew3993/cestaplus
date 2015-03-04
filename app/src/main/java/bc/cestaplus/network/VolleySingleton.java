@@ -50,7 +50,7 @@ public class VolleySingleton {
         return mRequestQueue;
     }
 
-    public ImageLoader getmImageLoader(){
+    public ImageLoader getImageLoader(){
         return mImageLoader;
     }
 } // end of VolleySingleton class
