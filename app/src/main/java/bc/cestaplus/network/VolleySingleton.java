@@ -19,10 +19,10 @@ public class VolleySingleton {
 
     private VolleySingleton(){
         mRequestQueue = Volley.newRequestQueue(MainActivity.getAPPContext());
-        mImageLoader = new ImageLoader(mRequestQueue, new ImageLoader.ImageCache() { //anonimna trieda ImageLoader
+        mImageLoader = new ImageLoader(mRequestQueue, new ImageLoader.ImageCache() { //anonymna trieda ImageLoader
 
             private LruCache<String, Bitmap> cache = new LruCache<>((int)Runtime.getRuntime().maxMemory()/1024/8);
-            //runtime.maxMemory - komplet vsetko, co kedy mozeme mat v bajtoch
+            // runtime.maxMemory - komplet vsetko, co kedy mozeme mat v bajtoch
             // deleno 1024 = kBajty, dalej deleno 8 - 1/8 vsetkeho, co mozeme mat
             // musime pretypovat z long na int
 

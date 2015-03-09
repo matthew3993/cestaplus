@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -16,7 +15,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +23,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +39,7 @@ public class MainActivity
     public static final String EXTRA_RUBRIKA = "bc.cesta.RUBRIKA_CLANKU";
     public static final String API_KEY = "";        //API key
 
-    private static Context context;
+    public static Context context;
 
     SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -161,13 +158,21 @@ public class MainActivity
     }
     */
 
+    /**
+     * ulozenie do SharedPreferences - ostava ulozene aj po uplnom vypnuti aplikacie, teda aj po volani
+     * metody onDestroy();
+     * nacitanie zo SharedPreferences by malo byt v onCreate s kontrolou
+     * if (savedInstanceState == null) {
+     *     //nacitanie dat
+     * }
+
     @Override
      protected void onStop() { // ulozenie aktualne vybratej tab do SharedPreferences pri prechode MainActivity do background
         super.onStop();
         //Log.i("LIFECYCLE", "MainActivity.onStop() was called");
 
         // Store values between instances here
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE); // MODE_PRIVATE - iba tato aplikacia ma pristup k tymto datam
         SharedPreferences.Editor editor = preferences.edit();  // Put the values from the UI
 
         int position = getSupportActionBar().getSelectedTab().getPosition(); // da sa pouzit aj ina metoda??
@@ -183,24 +188,31 @@ public class MainActivity
         //Log.i("LIFECYCLE", "MainActivity.onStart() was called");
 
         // Get the between instance stored values
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE); // vytvorenie reader-a
 
         int position = preferences.getInt("position", 0);
 
         getSupportActionBar().setSelectedNavigationItem(position); //ako odstranit warning ??
     }
+    */
 
     /*
     @Override
-    protected void onSaveInstanceState(Bundle outBundle){
-        super.onSaveInstanceState(outBundle);
-        Log.i("LIFECYCLE", "MainActivity.onSaveInstanceState() was called");
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        //Log.i("LIFECYCLE", "MainActivity.onSaveInstanceState() was called");
+
+        int position = getSupportActionBar().getSelectedTab().getPosition(); // da sa pouzit aj ina metoda??
+
+        outState.putInt("selectedTab", position);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInsBundle){
-        super.onRestoreInstanceState(savedInsBundle);
-        Log.i("LIFECYCLE", "MainActivity.onRestoreInstanceState() was called");
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        //Log.i("LIFECYCLE", "MainActivity.onRestoreInstanceState() was called");
+
+        getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt("selectedTab")); //ako odstranit warning ??
     }
     */
 
@@ -227,6 +239,7 @@ public class MainActivity
                     return RubrikyFragment.newInstance(position + 1);
                 case 2:
                     return BaterkaFragment.newInstance(position + 1); /*android.support.v4.app.fra*/
+                    //return PrehladFragment.newInstance(position + 1);
             }
             return PrehladFragment.newInstance(position + 1);
         }
@@ -261,10 +274,10 @@ public class MainActivity
         implements AdapterView.OnItemClickListener{
 
         static ArrayAdapter<ClanokObj> adapterVsetko;
-        static ArrayAdapter<ClanokObj> adapterNajcitanejsie;
+        //static ArrayAdapter<ClanokObj> adapterNajcitanejsie;
 
         List<ClanokObj> vsetko;
-        List<ClanokObj> najcitanejsie;
+        //List<ClanokObj> najcitanejsie;
 
         private static final String ARG_SECTION_NUMBER = "section_number"; //The fragment argument representing the section number for this fragment.
 
@@ -295,15 +308,16 @@ public class MainActivity
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_prehlad, container, false);
 
+        /*
             // pridanie tabHost do rootView
             TabHost tabHost = (TabHost) rootView.findViewById(R.id.tabHost);
             tabHost.setup();
 
             tabHost.getCurrentTab();
-
+        */
             vsetko = new ArrayList<ClanokObj>();
 
-/*
+
     // vytvorenie testovacich clankoch - vsetko
             vsetko.add(new ClanokObj("PRESTÁVKA: Chlapček Sam",
                     "Kto je toto roztomilé chlapčiatko? Volá sa Sam, je zo štátu Georgia, USA a má veľmi zaujímavý príbeh.",
@@ -321,7 +335,7 @@ public class MainActivity
                     "Baterka"));
 
 
-
+    /*
             najcitanejsie = new ArrayList<ClanokObj>();
 
     // vytvorenie testovacich clankoch - najcitanejsie
@@ -334,20 +348,20 @@ public class MainActivity
                     "Nie som expert na vzťahy. To, že som si prešiel rozvodom, mi pomohlo vidieť veci inak, ako by som ich robil dnes. Až po 16 rokoch s mojou ženou, ktorú som stratil rozvodom, som prišiel na rady, ktoré píšem.",
                     R.drawable.porozvode,
                     "Článok"));
-*/
+
+    */
 
 
 
 
 
-
-
+    /*
     // pridanie jednotlivych tabs do tabHost-u
         // tab1
             TabHost.TabSpec spec1 = tabHost.newTabSpec("tab1");
             spec1.setContent(R.id.tab1);
             spec1.setIndicator("Všetko");
-            tabHost.addTab(spec1);
+            tabHost.addTab(spec1);*/
 
             //listViewVsetko
             //adapterVsetko = new ArrayAdapter<String>(MainActivity.context, R.layout.clanok_list_item, R.id.item_tvDescription, vsetko);
@@ -357,7 +371,7 @@ public class MainActivity
             listViewVsetko.setOnItemClickListener(this);
                 //Log.d("Vytvaranie", "Vytvoril sa listViewVsetko"); //kontrolny zapis do logu
 
-
+    /*
         // tab2
             TabHost.TabSpec spec2 = tabHost.newTabSpec("tab2");
             spec2.setContent(R.id.tab2);
@@ -370,6 +384,7 @@ public class MainActivity
             ListView listViewNajcitanejsie = (ListView) rootView.findViewById(R.id.lvNajcitanejsie);
             listViewNajcitanejsie.setAdapter(adapterNajcitanejsie);
             listViewNajcitanejsie.setOnItemClickListener(this);
+    */
 
         // tab 3
             /*
@@ -387,10 +402,6 @@ public class MainActivity
 
             return rootView;
         }
-        /*
-        public void metodicka(View view){
-            findViewById(R.id.tabHost);
-        }*/
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -404,6 +415,7 @@ public class MainActivity
             intent.putExtra(EXTRA_RUBRIKA, clanok.getRubrika());
 
             startActivity(intent);
+
         }
     } // end class PrehladFragment
 

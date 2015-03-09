@@ -1,22 +1,29 @@
 package bc.cestaplus;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.widget.Toast;
+
 import java.util.Date;
+
+import bc.cestaplus.activities.MainActivity;
 
 /**
  * Created by Matej on 28.2.2015.
  */
-public class ClanokObj {
+public class ClanokObj
+    implements Parcelable{
 
     // veci do itemListu
     private String title;       // nadpis v listView
     private String description; // popis zobrazeny v listView
-    //private int ImageID;        // obrazok - nejakym sposobom           // akym?? - zatiaľ imageID
+    private int ImageID;
     private String imageUrl;
 
     private Date pubDate;       // datum a cas vydania                  // kvoli notifikáciam a aktualizacii
     private String rubrika;        // typ / druh clanku, rubrika           // kvoli notifikaciam len na vybranu rubriku a nadpisu v ClanokActivity
 
-    private int id;             // id clanku                            // kvoli nacitaniu textu konkretneho clanku // ci pouzijem link??
+    private long id;             // id clanku                            // kvoli nacitaniu textu konkretneho clanku // ci pouzijem link??
     private boolean locked;     // ci ide o zamknuty clanok alebo nie
     //private String link;        // odkaz na dany clanok na webe
 
@@ -42,6 +49,31 @@ public class ClanokObj {
         this.rubrika = rubrika;
     }
 
+    public ClanokObj(String title, String description, int imageID, String rubrika) {
+        this.title = title;
+        this.description = description;
+        ImageID = imageID;
+        this.rubrika = rubrika;
+    }
+
+    public ClanokObj(Parcel input){
+        //pozor na poradie!!!
+        title = input.readString();
+        description = input.readString();
+        imageUrl = input.readString();
+
+        pubDate = new Date(input.readLong()); //prevod casu v milisekundach (long) na datum
+        rubrika = input.readString();
+
+        id = input.readLong();
+        if (input.readInt() == 0){
+            locked = false;
+        } else {
+            locked = true;
+        }
+
+    }
+
     /**
      * bezparametricky konstruktor - vytvara prazdne vsetko
      */
@@ -59,11 +91,15 @@ public class ClanokObj {
         return description;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     public Date getPubDate() {
         return pubDate;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -106,4 +142,42 @@ public class ClanokObj {
                 ", locked=" + locked +
                 '}';
     }
+
+
+    public int getImageID() {
+        return ImageID;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        //pozor na poradie!!!
+        dest.writeString(title);
+        dest.writeString(description);
+        dest.writeString(imageUrl);
+        dest.writeLong(pubDate.getTime()); //prevod datumu na cas v milisekundach (long)
+        dest.writeString(rubrika);
+        dest.writeLong(id);
+        if (locked){            // neexistuje dest.writeBoolean metoda
+            dest.writeInt(1);
+        } else {
+            dest.writeInt(0);
+        }
+    }
+
+    public static final Parcelable.Creator<ClanokObj> CREATOR
+            = new Parcelable.Creator<ClanokObj>() {
+        public ClanokObj createFromParcel(Parcel in) {
+            Toast.makeText(MainActivity.context, "create from parcel :clanok", Toast.LENGTH_LONG).show();
+            return new ClanokObj(in);
+        }
+
+        public ClanokObj[] newArray(int size) {
+            return new ClanokObj[size];
+        }
+    };
 } //end class ClanokObj

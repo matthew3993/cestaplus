@@ -11,5 +11,10 @@
     <string name="title_activity_clanok">ClanokActivity</string>
     <string name="hello_world">Tu sa zobrazí vybraný článok</string>
     <string name="title_activity_rubrika_aktivity">RubrikaAktivity</string>
+    <string name="no_connection_error">Chyba pripojenia na server</string>
+    <string name="authentification_error">Chyba autentifikácie!</string>
+    <string name="server_error">Chyba servera</string>
+    <string name="network_error">Chyba siete</string>
+    <string name="parse_error">Chyba parsovania</string>
 
 </resources>
