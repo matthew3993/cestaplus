@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -15,6 +16,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +38,8 @@ public class MainActivity
     extends ActionBarActivity
     implements ActionBar.TabListener {
 
+    private FragmentPrehlad2 fPrehlad;
+
     public static final String EXTRA_RUBRIKA = "bc.cesta.RUBRIKA_CLANKU";
     public static final String API_KEY = "";        //API key
 
@@ -46,11 +50,11 @@ public class MainActivity
     ViewPager mViewPager;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MainActivity.context = getApplicationContext(); //getBaseContext();
+        Log.i("LIFECYCLE", "MainActivity.onCreate() was called");
         setContentView(R.layout.activity_main);
 
         // Set up the action bar.
@@ -87,16 +91,36 @@ public class MainActivity
                             .setTabListener(this));
         }
 
-        MainActivity.context = getBaseContext();
         getCurrentFocus();
 
+    //pokus nacitania z bundle
+        if (savedInstanceState != null) {
+            getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt("selectedTab", 1));
+        }
+    /*
+    //vytvorenie fragmentov
+        if (savedInstanceState != null) {
+            //Restore the fragment's instance
+            fPrehlad = (FragmentPrehlad2) getSupportFragmentManager().getFragment(savedInstanceState, "prehlad");
+        } else {
+            //vytvorenie novej instancie fragmentu
+            fPrehlad = FragmentPrehlad2.newInstance();
+        }*/
 
     } // end ActivityMain onCreate method
+
 
     // moja metoda, vracia Context mainActivity
     public static Context getAPPContext() {
         //return MainActivity.getApplicationContext();
+        /*if (context == null){
+            context == get;
+        }*/
         return MainActivity.context;
+    }
+
+    public Context getMyContext(){
+        return getApplicationContext();
     }
 
     // vytvorenie menu
@@ -144,7 +168,7 @@ public class MainActivity
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
-    /*
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -156,7 +180,7 @@ public class MainActivity
         super.onResume();
         Log.i("LIFECYCLE", "MainActivity.onResume() was called");
     }
-    */
+
 
     /**
      * ulozenie do SharedPreferences - ostava ulozene aj po uplnom vypnuti aplikacie, teda aj po volani
@@ -165,63 +189,75 @@ public class MainActivity
      * if (savedInstanceState == null) {
      *     //nacitanie dat
      * }
+     * */
 
     @Override
      protected void onStop() { // ulozenie aktualne vybratej tab do SharedPreferences pri prechode MainActivity do background
         super.onStop();
-        //Log.i("LIFECYCLE", "MainActivity.onStop() was called");
+        Log.i("LIFECYCLE", "MainActivity.onStop() was called");
 
         // Store values between instances here
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE); // MODE_PRIVATE - iba tato aplikacia ma pristup k tymto datam
-        SharedPreferences.Editor editor = preferences.edit();  // Put the values from the UI
+        //SharedPreferences preferences = getPreferences(MODE_PRIVATE); // MODE_PRIVATE - iba tato aplikacia ma pristup k tymto datam
+        //SharedPreferences.Editor editor = preferences.edit();  // Put the values from the UI
 
-        int position = getSupportActionBar().getSelectedTab().getPosition(); // da sa pouzit aj ina metoda??
+        //int position = getSupportActionBar().getSelectedTab().getPosition(); // da sa pouzit aj ina metoda??
 
-        editor.putInt("position", position);
+        //editor.putInt("position", position);
 
-        editor.commit();         // Commit to storage, very important!
+        //editor.commit();         // Commit to storage, very important!
     }
 
     @Override
     protected void onStart() { // nacitanie posledne vybratej tab do SharedPreferences pri prechode MainActivity do foreground
         super.onStart();
-        //Log.i("LIFECYCLE", "MainActivity.onStart() was called");
+        Log.i("LIFECYCLE", "MainActivity.onStart() was called");
 
         // Get the between instance stored values
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE); // vytvorenie reader-a
+        //SharedPreferences preferences = getPreferences(MODE_PRIVATE); // vytvorenie reader-a
 
-        int position = preferences.getInt("position", 0);
+        //int position = preferences.getInt("position", 0);
 
-        getSupportActionBar().setSelectedNavigationItem(position); //ako odstranit warning ??
+        //getSupportActionBar().setSelectedNavigationItem(position); //ako odstranit warning ??
     }
-    */
 
-    /*
+
+
     @Override
     protected void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
-        //Log.i("LIFECYCLE", "MainActivity.onSaveInstanceState() was called");
+        Log.i("LIFECYCLE", "MainActivity.onSaveInstanceState() was called");
 
-        int position = getSupportActionBar().getSelectedTab().getPosition(); // da sa pouzit aj ina metoda??
+        //int position = getSupportActionBar().getSelectedTab().getPosition(); // da sa pouzit aj ina metoda??
 
-        outState.putInt("selectedTab", position);
+        //outState.putInt("selectedTab", position);
+
+        //getSupportFragmentManager().putFragment(outState, "prehlad", fPrehlad);
     }
+
+
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState){
         super.onRestoreInstanceState(savedInstanceState);
-        //Log.i("LIFECYCLE", "MainActivity.onRestoreInstanceState() was called");
+        Log.i("LIFECYCLE", "MainActivity.onRestoreInstanceState() was called");
 
-        getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt("selectedTab")); //ako odstranit warning ??
+        //getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt("selectedTab")); //ako odstranit warning ??
     }
-    */
+
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        Log.i("LIFECYCLE", "MainActivity.onDestroy() was called");
+    }
 
     // ---------------- adapter, ktory vytvara obsahy jednotlivych tab-ov -------------------------------------------------------------
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {  // zmenene na FragmentSTATEpagerAdapter
+    public class SectionsPagerAdapter
+        extends FragmentStatePagerAdapter {  // zmenene na FragmentSTATEpagerAdapter
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -234,7 +270,8 @@ public class MainActivity
             switch (position) {
                 case 0:
                     //return PrehladFragment.newInstance(position + 1);
-                    return FragmentPrehlad2.newInstance("", "");
+                    return FragmentPrehlad2.newInstance();
+                    //return fPrehlad;
                 case 1:
                     return RubrikyFragment.newInstance(position + 1);
                 case 2:

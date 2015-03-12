@@ -29,33 +29,36 @@ public class ClanokObj
 
     // private String text;        // vnutro clanku
 
-
-    /**
-     *  PLNY KONSTRUKTOR
-     */
-
-
     /**
      * NA TESTOVANIE
      * @param title
      * @param description
-     * @param imageUrl
      * @param rubrika
      */
-    public ClanokObj(String title, String description, String imageUrl, String rubrika) {
-        this.title = title;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.rubrika = rubrika;
-    }
-
     public ClanokObj(String title, String description, int imageID, String rubrika) {
         this.title = title;
         this.description = description;
-        ImageID = imageID;
+        this.ImageID = imageID;
         this.rubrika = rubrika;
     }
 
+    /**
+     *  PLNY KONSTRUKTOR
+     */
+    public ClanokObj(String title, String description, String imageUrl, Date pubDate, String rubrika, long id, boolean locked) {
+        this.title = title;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.pubDate = pubDate;
+        this.rubrika = rubrika;
+        this.id = id;
+        this.locked = locked;
+    }
+
+    /**
+     * Konstruktor na obnovu z parcelable
+     * @param input
+     */
     public ClanokObj(Parcel input){
         //pozor na poradie!!!
         title = input.readString();
@@ -99,9 +102,18 @@ public class ClanokObj
         return pubDate;
     }
 
+    public String getRubrika() {
+        return rubrika;
+    }
+
     public long getId() {
         return id;
     }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
 
     // ===================== SETTERY ==========================================================================================================
     public void setTitle(String title) {
@@ -122,12 +134,6 @@ public class ClanokObj
 
 // ===================== Ostatne metody ==========================================================================================================
 
-
-
-
-    public String getRubrika() {
-        return rubrika;
-    }
 
 
     @Override
@@ -171,8 +177,9 @@ public class ClanokObj
 
     public static final Parcelable.Creator<ClanokObj> CREATOR
             = new Parcelable.Creator<ClanokObj>() {
+
         public ClanokObj createFromParcel(Parcel in) {
-            Toast.makeText(MainActivity.context, "create from parcel :clanok", Toast.LENGTH_LONG).show();
+            //Toast.makeText(MainActivity.context, "create from parcel :clanok", Toast.LENGTH_LONG).show();
             return new ClanokObj(in);
         }
 

@@ -2,6 +2,7 @@ package bc.cestaplus.fragments;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment; // musi byt .v4.app.Fragment a nie len .Fragment
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,24 +50,17 @@ import static bc.cestaplus.extras.IKeys.IPrehlad.*;
 
 public class FragmentPrehlad2 extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
     public static final String URL_CESTA_PLUS_VSETKO = "";
     private static final String ULOZENE_VSETKO = "ulozeny_vsetko";
     //public static final String URL_CESTA_PLUS_VSETKO = "";                //doplnit
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
 //networking
     private VolleySingleton volleySingleton;
     private RequestQueue requestQueue;
 
 // data
-    private ArrayList<ClanokObj> zoznamVsetko= new ArrayList<>(); // konkretne pomenovanie vo FragmentePrehlad
-    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private ArrayList<ClanokObj> zoznamVsetko; // konkretne pomenovanie vo FragmentePrehlad
+    private DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
 // recyclerView
     private RecyclerView recyclerViewVsetko; // konkretne pomenovanie vo FragmentePrehlad
@@ -80,17 +74,12 @@ public class FragmentPrehlad2 extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment FragmentPrehlad2.
      */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentPrehlad2 newInstance(String param1, String param2) {
+    public static FragmentPrehlad2 newInstance() {
         FragmentPrehlad2 fragment = new FragmentPrehlad2();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        //Bundle args = new Bundle();
+        //fragment.setArguments(args);
         return fragment;
     }
 
@@ -100,17 +89,16 @@ public class FragmentPrehlad2 extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        super.onCreate(savedInstanceState); // Always call the superclass first
+
+        //if (getArguments() != null) {
+        //}
 
         volleySingleton = VolleySingleton.getInstance();
         requestQueue = volleySingleton.getRequestQueue();
+        zoznamVsetko = new ArrayList<>();
 
         Log.i("LIFECYCLE", "Prehlad 2.onCreate() was called");
-        //sendJsonRequest();
 
     } // end onCreate
 
@@ -127,17 +115,33 @@ public class FragmentPrehlad2 extends Fragment {
         recyclerViewVsetko.setLayoutManager(new LinearLayoutManager(getActivity()) );
 
         crvaVsetko = new ClanokRecyclerViewAdapter(getActivity());
-        recyclerViewVsetko.setAdapter(crvaVsetko);
 
+        // tu to bolo
         if (savedInstanceState != null){ //ak nie je null = nastala zmena stavu, napr. rotacia obrazovky
+            //obnovenie ulozeneho stavu
             zoznamVsetko = savedInstanceState.getParcelableArrayList(ULOZENE_VSETKO);
             crvaVsetko.setClanky(zoznamVsetko);
 
         } else {
+            //nove nacitanie
             sendJsonRequest();
         }
+
+        recyclerViewVsetko.setAdapter(crvaVsetko);
+
         return view;
     } // end onCreateView
+
+    /*
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        Log.i("LIFECYCLE", "Prehlad 2.onActivityCreated() was called");
+
+        //tu to bolo
+    }
+    */
 
     public static String getRequestUrl(int limit){
         return URL_CESTA_PLUS_VSETKO+"?apikey="+ MainActivity.API_KEY+"&limit="+limit;
@@ -210,14 +214,14 @@ public class FragmentPrehlad2 extends Fragment {
                         imageUrl = "NA";
                     }
 
-                /*
+
                 //spracovanie datumu        //otazka co robit ak nie je?!?! dat sem try - catch ??
                     if(aktualnyClanok.has(KEY_PUB_DATE) && !aktualnyClanok.isNull(KEY_PUB_DATE)){
                         pubDate = aktualnyClanok.getString(KEY_PUB_DATE);
                     } else {
-                        pubDate = "NA"
+                        pubDate = "NA";
                     }
-                */
+
 
                 //spracovanie rubriky
                     if (aktualnyClanok.has(KEY_RUBRIKA) && !aktualnyClanok.isNull(KEY_RUBRIKA)) {
@@ -242,14 +246,19 @@ public class FragmentPrehlad2 extends Fragment {
 
                 //kontrola, ci bude clanok pridany do zoznamu
                     if (/*id != -1 && */ !title.equals("NA")) {
-                        pomClanky.add(new ClanokObj(title, description, imageUrl, rubrika)); // pridanie do docasneho zoznamu clankov
-                        //zoznamVsetko.add(new ClanokObj(title, description, imageUrl, dateFormat.parse(pubDate), rubrika));
+                        if (pubDate.equals("NA")) {
+                            try {
+                                pomClanky.add(new ClanokObj(title, description, imageUrl, dateFormat.parse("01.01.2000"), rubrika, id, locked)); // pridanie do docasneho zoznamu clankov
+                                //zoznamVsetko.add(new ClanokObj(title, description, imageUrl, dateFormat.parse(pubDate), rubrika));
+                            } catch (ParseException pEx){
+                                Toast.makeText(getActivity(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        }
                     }
-                }
+                } // end for
 
             } catch (JSONException jsonEx){
-
-            //} catch (ParseException pEx){ //pri prevode datumu
+                Toast.makeText(getActivity(), "CHYBA JSON PARSOVANIA" + jsonEx.getMessage(), Toast.LENGTH_LONG).show();
 
             } //end catch
 
@@ -279,12 +288,16 @@ public class FragmentPrehlad2 extends Fragment {
         }
     }
 
+
     @Override
     public void onSaveInstanceState(Bundle outState){
-        super.onSaveInstanceState(outState);
         Log.i("LIFECYCLE", "Prehlad 2.onSaveInstanceState() was called");
 
+        // Save the current state of zoznamVsetko
         outState.putParcelableArrayList(ULOZENE_VSETKO, zoznamVsetko);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(outState);
     }
 
     /*

@@ -62,7 +62,7 @@ public class ClanokRecyclerViewAdapter
     public ClanokViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
 
         View view = inflater.inflate(R.layout.clanok_list_item, viewGroup, false);
-        Log.d("Lifecycle", "onCreateHolder called");
+        //Log.d("Lifecycle", "onCreateHolder called");
         ClanokViewHolder holder = new ClanokViewHolder(view);
 
         return holder;
@@ -72,13 +72,20 @@ public class ClanokRecyclerViewAdapter
     public void onBindViewHolder(final ClanokViewHolder viewHolder, int i) {
         ClanokObj aktClanok = clanky.get(i);
 
-        Log.d("Lifecycle", "onBindHolder called" + i);
+        //Log.d("Lifecycle", "onBindHolder called" + i);
 
         viewHolder.title.setText(aktClanok.getTitle());
         viewHolder.description.setText(aktClanok.getDescription());
 
         String imageUrl = aktClanok.getImageUrl();
         loadImage(imageUrl, viewHolder);
+
+        if (aktClanok.isLocked()){
+            viewHolder.lockImage.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.lockImage.setVisibility(View.GONE);
+        }
+
         /*
         viewHolder.image.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,12 +134,15 @@ public class ClanokRecyclerViewAdapter
         TextView title;
         TextView description;
         ImageView image;
+        ImageView lockImage;
 
         public ClanokViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.item_tvTitle);
             description = (TextView) itemView.findViewById(R.id.item_tvDescription);
             image = (ImageView) itemView.findViewById(R.id.item_ivObr);
+            lockImage = (ImageView) itemView.findViewById(R.id.item_ivLock);
+
             itemView.setOnClickListener(this);
         }
 

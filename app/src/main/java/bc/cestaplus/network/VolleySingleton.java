@@ -1,5 +1,8 @@
 package bc.cestaplus.network;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
@@ -8,6 +11,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
 import bc.cestaplus.activities.MainActivity;
+import bc.cestaplus.utilities.CustomApplication;
 
 /**
  * Created by Matej on 3.3.2015.
@@ -18,7 +22,7 @@ public class VolleySingleton {
     private RequestQueue mRequestQueue;
 
     private VolleySingleton(){
-        mRequestQueue = Volley.newRequestQueue(MainActivity.getAPPContext());
+        mRequestQueue = Volley.newRequestQueue(CustomApplication.getCustomAppContext()/*MainActivity.getAPPContext()*/);
         mImageLoader = new ImageLoader(mRequestQueue, new ImageLoader.ImageCache() { //anonymna trieda ImageLoader
 
             private LruCache<String, Bitmap> cache = new LruCache<>((int)Runtime.getRuntime().maxMemory()/1024/8);
@@ -42,7 +46,6 @@ public class VolleySingleton {
         if (sInstance == null){
             sInstance = new VolleySingleton();
         }
-
         return sInstance;
     }
 

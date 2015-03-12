@@ -122,6 +122,7 @@ public class ClanokObj2 {
         return ImageID;
     }
 
+
     // ===================== SETTERY ==========================================================================================================
     public void setTitle(String title) {
         this.title = title;
