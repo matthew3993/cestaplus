@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:background="#ffffff"
+    >
 
     <ImageView
         android:id="@+id/item_ivObr"
@@ -12,45 +14,62 @@
         android:layout_height="80dp"
         android:src="@drawable/kazatelnica1"
         android:layout_gravity="center_horizontal|top"
-        android:maxHeight="80dp"
+
         android:maxWidth="120dp"
+        android:maxHeight="80dp"
+
         android:paddingLeft="5dp"
         android:paddingTop="5dp"
         android:paddingRight="5dp"
-        android:paddingBottom="5dp" />
-
-    <TextView
-        android:id="@+id/item_tvDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_alignBottom="@+id/item_ivObr"
-        android:layout_toRightOf="@+id/item_ivObr"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="false"
-        android:text="tu bude popis"
-        android:layout_below="@+id/item_tvTitle"
-        android:textSize="12sp"
-        android:minLines="1"
-        android:paddingBottom="5dp" />
+        android:paddingBottom="5dp"
+    />
 
     <TextView
         android:id="@+id/item_tvTitle"
+        style="@style/item_Title"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+
         android:layout_weight="0.86"
+
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/item_ivObr"
-        android:layout_alignRight="@+id/item_tvDescription"
-        android:layout_alignEnd="@+id/item_tvDescription"
+
         android:text="Tu bude nadpis"
-        android:textSize="14sp"
+
         android:maxLines="2"
         android:minLines="1"
-        android:paddingTop="5dp" />
+        android:paddingTop="5dp"
+        />
+
+    <TextView
+        android:id="@+id/item_tvDescription"
+        style="@style/item_short_text"
+        android:text="tu bude popis"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/item_tvTitle"
+        android:layout_toRightOf="@+id/item_ivObr"
+
+        android:layout_alignLeft="@+id/item_tvTitle"
+        android:layout_alignRight="@+id/item_tvTitle"
+
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentRight="true"
+
+        android:minLines="1"
+        android:maxLines="3"
+        android:paddingBottom="5dp"
+ />
+    <!-- android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="false"
+
+        android:layout_alignParentStart="false"-->
+
 
     <ImageView
         android:id="@+id/item_ivLock"

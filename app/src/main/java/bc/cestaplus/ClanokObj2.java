@@ -163,4 +163,4 @@ public class ClanokObj2 {
 // ===================== Ostatne metody ==========================================================================================================
 
 
-} //end class ClanokObj
+} //end class ArticleObj

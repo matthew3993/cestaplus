@@ -1,43 +1,35 @@
 package bc.cestaplus.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.support.v4.app.Fragment;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-import bc.cestaplus.ClanokObj;
+import bc.cestaplus.ArticleObj;
 import bc.cestaplus.R;
-import bc.cestaplus.activities.ClanokActivity;
-import bc.cestaplus.activities.MainActivity;
-import bc.cestaplus.network.VolleySingleton;
+import bc.cestaplus.network.VolleySingletonOld;
 
 /**
  * Created by Matej on 4.3.2015.
  */
 public class ClanokRecyclerViewAdapter
-    extends RecyclerView.Adapter<ClanokRecyclerViewAdapter.ClanokViewHolder> {
+    extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public static final String EXTRA_RUBRIKA = "bc.cesta.RUBRIKA_CLANKU";
+    private static final int TYPE_FOOTER = 100; //preco prave sto!? :) - len tak
 
     private LayoutInflater inflater;
-    private ArrayList<ClanokObj> clanky  = new ArrayList<>(); // vseobecne pomenovanie v adaptery
+    private ArrayList<ArticleObj> clanky  = new ArrayList<>(); // vseobecne pomenovanie v adaptery
 
-    private VolleySingleton volleySingleton;
+    private VolleySingletonOld volleySingleton;
     private ImageLoader imageLoader;
 
     /**
@@ -47,7 +39,7 @@ public class ClanokRecyclerViewAdapter
     public ClanokRecyclerViewAdapter(Context context/*, List data*/){
         inflater = LayoutInflater.from(context);
         /*this.clanky = (ArrayList) data;*/
-        volleySingleton = VolleySingleton.getInstance();
+        volleySingleton = VolleySingletonOld.getInstance();
         imageLoader = volleySingleton.getImageLoader();
     }
 
@@ -55,36 +47,64 @@ public class ClanokRecyclerViewAdapter
      * Tu sa len "nafukne" zopar layout-ov item-om (podla toho, kolko sa ich zmesti na obrazovku)
      * a tie sa naplnaju v onBindViewHolder metode = netreba nafukovat 100 itemov, iba zopar
      * @param viewGroup
-     * @param i
+     * @param viewType
      * @return
      */
     @Override
-    public ClanokViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        RecyclerView.ViewHolder holder;
 
-        View view = inflater.inflate(R.layout.clanok_list_item, viewGroup, false);
+        switch (viewType) {
+            case 0: {
+                View view = inflater.inflate(R.layout.clanok_list_item, viewGroup, false);
+                holder = new ArticleViewHolder(view);
+                break;  // !!!!
+            }
+
+            case TYPE_FOOTER: {
+                View view = inflater.inflate(R.layout.button_load_more, viewGroup, false);
+                holder = new FooterViewHolder(view);
+                break; // !!!!
+            }
+
+            default:{
+                View view = inflater.inflate(R.layout.clanok_list_item, viewGroup, false);
+                holder = new ArticleViewHolder(view);
+                break;  // !!!!
+            }
+        }
         //Log.d("Lifecycle", "onCreateHolder called");
-        ClanokViewHolder holder = new ClanokViewHolder(view);
 
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(final ClanokViewHolder viewHolder, int i) {
-        ClanokObj aktClanok = clanky.get(i);
+    public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int i) {
 
-        //Log.d("Lifecycle", "onBindHolder called" + i);
+        if (viewHolder instanceof FooterViewHolder){
+            FooterViewHolder holder = (FooterViewHolder) viewHolder;
+            holder.btnLoadMore.setText("Load more");
 
-        viewHolder.title.setText(aktClanok.getTitle());
-        viewHolder.description.setText(aktClanok.getDescription());
-
-        String imageUrl = aktClanok.getImageUrl();
-        loadImage(imageUrl, viewHolder);
-
-        if (aktClanok.isLocked()){
-            viewHolder.lockImage.setVisibility(View.VISIBLE);
         } else {
-            viewHolder.lockImage.setVisibility(View.GONE);
+            ArticleViewHolder holder = (ArticleViewHolder) viewHolder;
+            ArticleObj actArticle = clanky.get(i);
+
+            holder.title.setText(actArticle.getTitle());
+            holder.description.setText(actArticle.getShort_text());
+
+            String imageUrl = actArticle.getImageUrl();
+            loadImage(imageUrl, holder);
+
+        // ak je clanok zamknuty treba zobrazit zamok
+            if (actArticle.isLocked()) {
+                holder.lockImage.setVisibility(View.VISIBLE);
+            } else {
+                holder.lockImage.setVisibility(View.GONE);
+            }
+
         }
+
+    }// end onBindViewHolder
 
         /*
         viewHolder.image.setOnClickListener(new View.OnClickListener() {
@@ -94,9 +114,18 @@ public class ClanokRecyclerViewAdapter
             }
         });
         */
-    }
 
-    private void loadImage(String imageUrl, final ClanokViewHolder viewHolder){
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == clanky.size()){
+            return TYPE_FOOTER;
+        } else {
+            return 0;
+        }
+    } //end getItemViewType
+
+    private void loadImage(String imageUrl, final ArticleViewHolder viewHolder){
 
         if (!imageUrl.equals("NA")){
             imageLoader.get(imageUrl, new ImageLoader.ImageListener() {
@@ -111,14 +140,14 @@ public class ClanokRecyclerViewAdapter
                 }
             });
         }
-    }
+    }// end loadImage
 
     @Override
     public int getItemCount() {
-        return clanky.size(); // dolezite !!!
+        return clanky.size()+1; // dolezite !!! // +1 kvoli footeru
     }
 
-    public void setClanky(ArrayList<ClanokObj> clanky){
+    public void setClanky(ArrayList<ArticleObj> clanky){
         this.clanky = clanky;
         notifyItemRangeChanged(0, clanky.size()); //upornenie adaptera na zmenu rozsahu (poctu) clankov
     }
@@ -127,42 +156,65 @@ public class ClanokRecyclerViewAdapter
     /**
      * ViewHolder sa vytvori raz a drz jednotlive Views z item_View, takze ich potom netreba hladat
      */
-    class ClanokViewHolder
+    class ArticleViewHolder
         extends RecyclerView.ViewHolder
-        implements View.OnClickListener{
+        //implements View.OnClickListener
+        {
 
         TextView title;
         TextView description;
         ImageView image;
         ImageView lockImage;
 
-        public ClanokViewHolder(View itemView) {
-            super(itemView);
-            title = (TextView) itemView.findViewById(R.id.item_tvTitle);
-            description = (TextView) itemView.findViewById(R.id.item_tvDescription);
-            image = (ImageView) itemView.findViewById(R.id.item_ivObr);
-            lockImage = (ImageView) itemView.findViewById(R.id.item_ivLock);
+            public ArticleViewHolder(View itemView) {
+                super(itemView);
 
-            itemView.setOnClickListener(this);
-        }
+                title = (TextView) itemView.findViewById(R.id.item_tvTitle);
+                description = (TextView) itemView.findViewById(R.id.item_tvDescription);
+                image = (ImageView) itemView.findViewById(R.id.item_ivObr);
+                lockImage = (ImageView) itemView.findViewById(R.id.item_ivLock);
 
+                //itemView.setOnClickListener(this);
+            } //end konstructor ArticleViewHolder(View itemView)
+
+        } // end ArticleViewHolder
+
+        /*
         @Override
         public void onClick(View v) {
-            //Toast.makeText(MainActivity.getAPPContext(), "Klikli ste na " + getPosition(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(CustomApplication.getCustomAppContext(), "Klikli ste na " + getPosition(), Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(MainActivity.context, ClanokActivity.class);
-            intent.putExtra(EXTRA_RUBRIKA, clanky.get(getPosition()).getRubrika());
+            if (itemView instanceof Button){
+                Toast.makeText(CustomApplication.getCustomAppContext(), "Load more", Toast.LENGTH_SHORT).show();
 
-            //ActivityCompat.startActivity(ClanokActivity, intent, null);
-            v.getContext().startActivity(intent);
+            } else {
+                Intent intent = new Intent(MainActivity.context, ClanokActivity.class);
+                intent.putExtra(EXTRA_RUBRIKA, clanky.get( getPosition() ) .getSection());
 
+                //ActivityCompat.startActivity(ClanokActivity, intent, null);
+                v.getContext().startActivity(intent);
+            }
         }
-    }
+        */
 
+    /**
+     * Footer ViewHolder
+     */
+    class FooterViewHolder
+        extends RecyclerView.ViewHolder
+        {
 
+        Button btnLoadMore;
 
+        public FooterViewHolder(View view) {
+            super(view);
+            btnLoadMore = (Button) itemView.findViewById(R.id.btnLoadMore);
+        }
 
-
+            public Button getBtnLoadMore() {
+                return btnLoadMore;
+            }
+        } // end FooterViewHolder
 
 
 }//end ClanokRecyclerViewAdapter

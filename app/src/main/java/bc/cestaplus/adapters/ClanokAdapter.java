@@ -11,17 +11,17 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import bc.cestaplus.ClanokObj;
+import bc.cestaplus.ArticleObj;
 import bc.cestaplus.R;
 
 /**
  * Created by Matej on 28.2.2015.
  */
 public class ClanokAdapter
-    extends ArrayAdapter<ClanokObj>{
+    extends ArrayAdapter<ArticleObj>{
 
     public LayoutInflater inflater;
-    public ArrayList<ClanokObj> clanky;
+    public ArrayList<ArticleObj> clanky;
 
     /**
      * Konstruktor
@@ -50,7 +50,7 @@ public class ClanokAdapter
         }
 
         // Najdime clanok, s ktorym budeme pracovat
-        ClanokObj clanok = clanky.get(position);
+        ArticleObj clanok = clanky.get(position);
 
     //naplnenie View
         //obrazok
@@ -63,7 +63,7 @@ public class ClanokAdapter
 
         //popis
         TextView txtvDescription = (TextView) itemView.findViewById(R.id.item_tvDescription);
-        txtvDescription.setText(clanok.getDescription());
+        txtvDescription.setText(clanok.getShort_text());
 
         return itemView;
         //return super.getView(position, convertView, parent);

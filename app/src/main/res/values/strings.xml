@@ -3,8 +3,9 @@
 
     <string name="app_name">cesta+</string>
     <string name="title_section1">Prehľad</string>
-    <string name="title_section2">Rubriky</string>
-    <string name="title_section3">Baterka</string>
+    <string name="title_section2">Téma mesiaca</string>
+    <string name="title_section3">Rubriky</string>
+    <string name="title_section4">Baterka</string>
     <string name="action_settings">Nastavenia</string>
     <string name="action_refresh">Aktualizovať</string>
     <string name="hello_blank_fragment">Tu sa zobrazí baterka na aktuálny deň</string>

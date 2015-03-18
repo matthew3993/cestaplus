@@ -1,12 +1,11 @@
 package bc.cestaplus.activities;
 
-import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
+import bc.cestaplus.ArticleObj;
 import bc.cestaplus.R;
 
 
@@ -18,10 +17,9 @@ public class ClanokActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clanok);
 
-        Intent intent = getIntent();
-        String rubrika = intent.getStringExtra(MainActivity.EXTRA_RUBRIKA);
+        ArticleObj article = getIntent().getParcelableExtra("clanok");
 
-        getSupportActionBar().setTitle(rubrika); //nastavenie label-u konkretnej aktivity
+        getSupportActionBar().setTitle(article.getSection()); //nastavenie label-u konkretnej aktivity
         //Toast.makeText(this, rubrika, Toast.LENGTH_SHORT).show(); // testovaci vypis
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true); ak by nesla navigacia UP, resp. sa nezobrazila šípka

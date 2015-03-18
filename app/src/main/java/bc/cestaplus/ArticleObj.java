@@ -2,26 +2,23 @@ package bc.cestaplus;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.widget.Toast;
 
 import java.util.Date;
-
-import bc.cestaplus.activities.MainActivity;
 
 /**
  * Created by Matej on 28.2.2015.
  */
-public class ClanokObj
+public class ArticleObj
     implements Parcelable{
 
     // veci do itemListu
     private String title;       // nadpis v listView
-    private String description; // popis zobrazeny v listView
+    private String short_text; // popis zobrazeny v listView
     private int ImageID;
     private String imageUrl;
 
     private Date pubDate;       // datum a cas vydania                  // kvoli notifikáciam a aktualizacii
-    private String rubrika;        // typ / druh clanku, rubrika           // kvoli notifikaciam len na vybranu rubriku a nadpisu v ClanokActivity
+    private String section;        // typ / druh clanku, section           // kvoli notifikaciam len na vybranu rubriku a nadpisu v ClanokActivity
 
     private long id;             // id clanku                            // kvoli nacitaniu textu konkretneho clanku // ci pouzijem link??
     private boolean locked;     // ci ide o zamknuty clanok alebo nie
@@ -32,25 +29,25 @@ public class ClanokObj
     /**
      * NA TESTOVANIE
      * @param title
-     * @param description
-     * @param rubrika
+     * @param short_text
+     * @param section
      */
-    public ClanokObj(String title, String description, int imageID, String rubrika) {
+    public ArticleObj(String title, String short_text, int imageID, String section) {
         this.title = title;
-        this.description = description;
+        this.short_text = short_text;
         this.ImageID = imageID;
-        this.rubrika = rubrika;
+        this.section = section;
     }
 
     /**
      *  PLNY KONSTRUKTOR
      */
-    public ClanokObj(String title, String description, String imageUrl, Date pubDate, String rubrika, long id, boolean locked) {
+    public ArticleObj(String title, String short_text, String imageUrl, Date pubDate, String section, long id, boolean locked) {
         this.title = title;
-        this.description = description;
+        this.short_text = short_text;
         this.imageUrl = imageUrl;
         this.pubDate = pubDate;
-        this.rubrika = rubrika;
+        this.section = section;
         this.id = id;
         this.locked = locked;
     }
@@ -59,14 +56,14 @@ public class ClanokObj
      * Konstruktor na obnovu z parcelable
      * @param input
      */
-    public ClanokObj(Parcel input){
+    public ArticleObj(Parcel input){
         //pozor na poradie!!!
         title = input.readString();
-        description = input.readString();
+        short_text = input.readString();
         imageUrl = input.readString();
 
         pubDate = new Date(input.readLong()); //prevod casu v milisekundach (long) na datum
-        rubrika = input.readString();
+        section = input.readString();
 
         id = input.readLong();
         if (input.readInt() == 0){
@@ -80,7 +77,7 @@ public class ClanokObj
     /**
      * bezparametricky konstruktor - vytvara prazdne vsetko
      */
-    public ClanokObj() {
+    public ArticleObj() {
 
     }
 
@@ -90,8 +87,8 @@ public class ClanokObj
         return title;
     }
 
-    public String getDescription() {
-        return description;
+    public String getShort_text() {
+        return short_text;
     }
 
     public String getImageUrl() {
@@ -102,8 +99,8 @@ public class ClanokObj
         return pubDate;
     }
 
-    public String getRubrika() {
-        return rubrika;
+    public String getSection() {
+        return section;
     }
 
     public long getId() {
@@ -120,8 +117,8 @@ public class ClanokObj
         this.title = title;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setShort_text(String short_text) {
+        this.short_text = short_text;
     }
 
     public void setPubDate(Date pubDate) {
@@ -138,12 +135,12 @@ public class ClanokObj
 
     @Override
     public String toString() {
-        return "ClanokObj{" +
+        return "ArticleObj{" +
                 "title='" + title + '\'' +
-                ", description='" + description + '\'' +
+                ", short_text='" + short_text + '\'' +
                 ", ImageUrl=" + imageUrl +
                 ", pubDate=" + pubDate +
-                ", rubrika='" + rubrika + '\'' +
+                ", section='" + section + '\'' +
                 ", id=" + id +
                 ", locked=" + locked +
                 '}';
@@ -163,10 +160,10 @@ public class ClanokObj
     public void writeToParcel(Parcel dest, int flags) {
         //pozor na poradie!!!
         dest.writeString(title);
-        dest.writeString(description);
+        dest.writeString(short_text);
         dest.writeString(imageUrl);
         dest.writeLong(pubDate.getTime()); //prevod datumu na cas v milisekundach (long)
-        dest.writeString(rubrika);
+        dest.writeString(section);
         dest.writeLong(id);
         if (locked){            // neexistuje dest.writeBoolean metoda
             dest.writeInt(1);
@@ -175,16 +172,16 @@ public class ClanokObj
         }
     }
 
-    public static final Parcelable.Creator<ClanokObj> CREATOR
-            = new Parcelable.Creator<ClanokObj>() {
+    public static final Parcelable.Creator<ArticleObj> CREATOR
+            = new Parcelable.Creator<ArticleObj>() {
 
-        public ClanokObj createFromParcel(Parcel in) {
+        public ArticleObj createFromParcel(Parcel in) {
             //Toast.makeText(MainActivity.context, "create from parcel :clanok", Toast.LENGTH_LONG).show();
-            return new ClanokObj(in);
+            return new ArticleObj(in);
         }
 
-        public ClanokObj[] newArray(int size) {
-            return new ClanokObj[size];
+        public ArticleObj[] newArray(int size) {
+            return new ArticleObj[size];
         }
     };
-} //end class ClanokObj
+} //end class ArticleObj

@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -28,17 +27,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import bc.cestaplus.ArticleObj;
 import bc.cestaplus.adapters.ClanokAdapter;
-import bc.cestaplus.ClanokObj;
 import bc.cestaplus.R;
-import bc.cestaplus.fragments.FragmentPrehlad2;
+import bc.cestaplus.fragments.TemaFragment;
+import bc.cestaplus.fragments.VsetkoFragment;
 
 
 public class MainActivity
     extends ActionBarActivity
     implements ActionBar.TabListener {
 
-    private FragmentPrehlad2 fPrehlad;
+    //private FragmentPrehlad2 fPrehlad;
 
     public static final String EXTRA_RUBRIKA = "bc.cesta.RUBRIKA_CLANKU";
     public static final String API_KEY = "";        //API key
@@ -270,12 +270,15 @@ public class MainActivity
             switch (position) {
                 case 0:
                     //return PrehladFragment.newInstance(position + 1);
-                    return FragmentPrehlad2.newInstance();
-                    //return fPrehlad;
+                    return VsetkoFragment.newInstance();
+                    //return FragmentPrehlad2.newInstance();
                 case 1:
-                    return RubrikyFragment.newInstance(position + 1);
+                    return TemaFragment.newInstance();
                 case 2:
+                    return RubrikyFragment.newInstance(position + 1);
+                case 3:
                     return BaterkaFragment.newInstance(position + 1); /*android.support.v4.app.fra*/
+                    //return FragmentBaterka.newInstance();
                     //return PrehladFragment.newInstance(position + 1);
             }
             return PrehladFragment.newInstance(position + 1);
@@ -283,8 +286,8 @@ public class MainActivity
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 4 total pages.
+            return 4;
         }
 
         @Override
@@ -297,6 +300,8 @@ public class MainActivity
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
                     return getString(R.string.title_section3).toUpperCase(l);
+                case 3:
+                    return getString(R.string.title_section4).toUpperCase(l);
             }
             return null;
         }
@@ -310,11 +315,11 @@ public class MainActivity
         extends Fragment
         implements AdapterView.OnItemClickListener{
 
-        static ArrayAdapter<ClanokObj> adapterVsetko;
-        //static ArrayAdapter<ClanokObj> adapterNajcitanejsie;
+        static ArrayAdapter<ArticleObj> adapterVsetko;
+        //static ArrayAdapter<ArticleObj> adapterNajcitanejsie;
 
-        List<ClanokObj> vsetko;
-        //List<ClanokObj> najcitanejsie;
+        List<ArticleObj> vsetko;
+        //List<ArticleObj> najcitanejsie;
 
         private static final String ARG_SECTION_NUMBER = "section_number"; //The fragment argument representing the section number for this fragment.
 
@@ -352,36 +357,36 @@ public class MainActivity
 
             tabHost.getCurrentTab();
         */
-            vsetko = new ArrayList<ClanokObj>();
+            vsetko = new ArrayList<ArticleObj>();
 
 
     // vytvorenie testovacich clankoch - vsetko
-            vsetko.add(new ClanokObj("PRESTÁVKA: Chlapček Sam",
+            vsetko.add(new ArticleObj("PRESTÁVKA: Chlapček Sam",
                     "Kto je toto roztomilé chlapčiatko? Volá sa Sam, je zo štátu Georgia, USA a má veľmi zaujímavý príbeh.",
                     R.drawable.sam,
                     "Článok"));
 
-            vsetko.add(new ClanokObj("Misionár, ktorý bude s nimi žiť všetko. Aj blchy, aj vši",
+            vsetko.add(new ArticleObj("Misionár, ktorý bude s nimi žiť všetko. Aj blchy, aj vši",
                     "Kto chce pracovať s bezdomovcami, mal by s nimi aj žiť. Mal by to byť človek, ktorý nie je ženatý alebo ak je to žena, tak nie je vydatá a môže s nimi",
                     R.drawable.kazatelnica1,
                     "Kazateľnica život"));
 
-            vsetko.add(new ClanokObj("Budem ťa milovať, len keď...",
+            vsetko.add(new ArticleObj("Budem ťa milovať, len keď...",
                     ".. ak budeme milovať, len keď.... tak nemilujeme... sme amatéri a nepochopili sme vôbec čo je to láska. Lebo ak čakáme, tak sme akurát tak dobrí",
                     R.drawable.baterka28_02_2015,
                     "Baterka"));
 
 
     /*
-            najcitanejsie = new ArrayList<ClanokObj>();
+            najcitanejsie = new ArrayList<ArticleObj>();
 
     // vytvorenie testovacich clankoch - najcitanejsie
-            najcitanejsie.add(new ClanokObj("Čo by som odkázal mladým mimo Cirkvi? Odpustite nám!",
+            najcitanejsie.add(new ArticleObj("Čo by som odkázal mladým mimo Cirkvi? Odpustite nám!",
                     "Stavali sme dom a večer som utekal rýchlo na svätú omšu. Len v šuštákoch a teniskách som zastal pri potoku, aby som sa očistil. Zrazu pozerám, ...",
                     R.drawable.kazatelnica1,
                     "Kazateľnica život"));
 
-            najcitanejsie.add(new ClanokObj("Rady o manželstve, ktoré som potreboval počuť skôr",
+            najcitanejsie.add(new ArticleObj("Rady o manželstve, ktoré som potreboval počuť skôr",
                     "Nie som expert na vzťahy. To, že som si prešiel rozvodom, mi pomohlo vidieť veci inak, ako by som ich robil dnes. Až po 16 rokoch s mojou ženou, ktorú som stratil rozvodom, som prišiel na rady, ktoré píšem.",
                     R.drawable.porozvode,
                     "Článok"));
@@ -443,13 +448,13 @@ public class MainActivity
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            ClanokObj clanok = (ClanokObj) parent.getItemAtPosition(position);
+            ArticleObj clanok = (ArticleObj) parent.getItemAtPosition(position);
 
             //TextView txtV = (TextView) view.findViewById(R.id.item_tvDescription);
             //Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na " + txtV.getText(), Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(MainActivity.context, ClanokActivity.class);
-            intent.putExtra(EXTRA_RUBRIKA, clanok.getRubrika());
+            intent.putExtra(EXTRA_RUBRIKA, clanok.getSection());
 
             startActivity(intent);
 
