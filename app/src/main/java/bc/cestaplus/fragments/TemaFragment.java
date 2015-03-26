@@ -17,13 +17,15 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import bc.cestaplus.ArticleObj;
 import bc.cestaplus.R;
-import bc.cestaplus.activities.ClanokActivity;
+import bc.cestaplus.activities.ArticleActivity;
+import bc.cestaplus.activities.MainActivity;
 import bc.cestaplus.adapters.ClanokRecyclerViewAdapter;
 import bc.cestaplus.listeners.RecyclerItemClickListener;
 import bc.cestaplus.network.VolleySingleton;
@@ -103,13 +105,41 @@ public class TemaFragment extends Fragment {
                             public void onItemClick(View view, int position) {
 
                                 if (position == zoznamTema.size()){
-                                    Toast.makeText(getActivity().getApplicationContext(), "Load more in TEMAFragment", Toast.LENGTH_SHORT).show();
+                                    pocSrt++;                                           // !!! zvysenie poctu nacitanych stran !!!
+                                    //nacitanie dalsej stranky
+                                    Response.Listener<JSONArray> responseLis = new Response.Listener<JSONArray>() {
+                                        @Override
+                                        public void onResponse(JSONArray response) {
+                                            //Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
+                                            tvVolleyError.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
+                                        //page-ovanie
+                                            if (pocSrt == 1) {  // ak ide o prvu stranku, zoznam je prepisany
+                                                zoznamTema = volleySingleton.parseJsonArrayResponse(response);
+                                            } else {            // ak ide o stranky nasledujuce, nove clanky su pridane k existujucemu zoznamu
+                                                zoznamTema.addAll(volleySingleton.parseJsonArrayResponse(response));
+                                            }
+                                            crvaTema.setClanky(zoznamTema);
+                                        }
+
+                                    };
+
+                                    Response.ErrorListener errorLis = new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            //Toast.makeText(getActivity(), "ERROR " + error.toString(), Toast.LENGTH_LONG).show();
+                                            volleySingleton.handleVolleyError(error, tvVolleyError);
+                                    } //end of onErrorResponse
+                                    };
+
+                                    volleySingleton.sendGetClankyArrayRequestGET("tema", 20, pocSrt, responseLis, errorLis);
+                                    Toast.makeText(getActivity().getApplicationContext(), "Load more in TEMAFragment" + pocSrt, Toast.LENGTH_SHORT).show();
 
                                 } else {
-                                    Intent intent = new Intent(getActivity().getApplicationContext(), ClanokActivity.class);
+                                    //Intent intent = new Intent(getActivity().getApplicationContext(), ArticleActivity_OtherWay.class);
+                                    Intent intent = new Intent(MainActivity.context, ArticleActivity.class);
                                     intent.putExtra("clanok", zoznamTema.get(position));
 
-                                    //ActivityCompat.startActivity(ClanokActivity, intent, null);
+                                    //ActivityCompat.startActivity(ArticleActivity_OtherWay, intent, null);
                                     //view.getContext().startActivity(intent);
                                     startActivity(intent);
                                 }
@@ -126,26 +156,26 @@ public class TemaFragment extends Fragment {
 
         } else {
             //nove nacitanie
-            Response.Listener<JSONObject> responseList = new Response.Listener<JSONObject>() {
+            Response.Listener<JSONArray> responseLis = new Response.Listener<JSONArray>() {
                 @Override
-                public void onResponse(JSONObject response) {
+                public void onResponse(JSONArray response) {
                     //Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
                     tvVolleyError.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
-                    zoznamTema = volleySingleton.parseJsonResponse(response);
+                    zoznamTema = volleySingleton.parseJsonArrayResponse(response);
                     crvaTema.setClanky(zoznamTema);
                 }
 
             };
 
-            Response.ErrorListener errorList = new Response.ErrorListener() {
+            Response.ErrorListener errorLis = new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     //Toast.makeText(getActivity(), "ERROR " + error.toString(), Toast.LENGTH_LONG).show();
                     volleySingleton.handleVolleyError(error, tvVolleyError);
-                } //end of onErrorResponse
+            } //end of onErrorResponse
             };
 
-            volleySingleton.sendGetClankyRequestGET("all", 20, 1, responseList, errorList);
+            volleySingleton.sendGetClankyArrayRequestGET("tema", 20, 1, responseLis, errorLis);
             //sendGetClankyArrayRequestGET("all", 20, 1);
         }
 

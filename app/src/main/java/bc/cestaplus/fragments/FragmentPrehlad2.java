@@ -39,7 +39,7 @@ import bc.cestaplus.R;
 import bc.cestaplus.activities.MainActivity;
 import bc.cestaplus.adapters.ClanokRecyclerViewAdapter;
 import bc.cestaplus.network.VolleySingleton;
-import bc.cestaplus.network.requests.JsonArrayCustomRequest;
+import bc.cestaplus.network.requests.JsonArrayCustomUtf8Request;
 import bc.cestaplus.utilities.CustomApplication;
 
 //staticke importy
@@ -174,7 +174,7 @@ public class FragmentPrehlad2 extends Fragment {
         params.put("stranka", Integer.toString(1));
 
         // vytvorenie requestu
-        JsonArrayCustomRequest request = new JsonArrayCustomRequest(
+        JsonArrayCustomUtf8Request request = new JsonArrayCustomUtf8Request(
                 Request.Method.POST,
                 url,
                 params,
@@ -219,7 +219,7 @@ public class FragmentPrehlad2 extends Fragment {
             String imageUrl;// = "NA";
             String pubDate;
             String rubrika;
-            long id = 0;
+            String ID;
             boolean locked;
 
             try {
@@ -265,9 +265,9 @@ public class FragmentPrehlad2 extends Fragment {
 
                     //spracovanie id
                     if (aktualnyClanok.has(KEY_ID) && !aktualnyClanok.isNull(KEY_ID)){
-                        id = aktualnyClanok.getLong(KEY_ID);
+                        ID = aktualnyClanok.getString(KEY_ID);
                     } else {
-                        id = -1; // akoze chyba
+                        ID = "NA"; // akoze chyba
                     }
 
                     //spracovanie locked
@@ -281,7 +281,7 @@ public class FragmentPrehlad2 extends Fragment {
                     if (/*id != -1 && */ !title.equals("NA")) {
                         if (pubDate.equals("NA")) {
                             try {
-                                pomClanky.add(new ArticleObj(title, description, imageUrl, dateFormat.parse("01.01.2000"), rubrika, id, locked)); // pridanie do docasneho zoznamu clankov
+                                pomClanky.add(new ArticleObj(title, description, imageUrl, dateFormat.parse("01.01.2000"), rubrika, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, description, imageUrl, dateFormat.parse(pubDate), rubrika));
                             } catch (ParseException pEx){
                                 Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
@@ -341,7 +341,7 @@ public class FragmentPrehlad2 extends Fragment {
                     public void onResponse(JSONObject response) {
                         //Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
                         tvVolleyError.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
-                        zoznamVsetko = parseJsonResponse(response);
+                        zoznamVsetko = parseJsonObjectResponse(response);
                         crvaVsetko.setClanky(zoznamVsetko);
 
                     }
@@ -358,7 +358,7 @@ public class FragmentPrehlad2 extends Fragment {
         //Toast.makeText(getActivity(), "Sending request...", Toast.LENGTH_SHORT).show();
     }
 
-    private ArrayList<ArticleObj> parseJsonResponse(JSONObject response) {
+    private ArrayList<ArticleObj> parseJsonObjectResponse(JSONObject response) {
         ArrayList<ArticleObj> pomClanky = new ArrayList<>();
 
         if (response != null && response.length() > 0){
@@ -449,7 +449,7 @@ public class FragmentPrehlad2 extends Fragment {
 
         Toast.makeText(getActivity().getApplicationContext(), "Načítaných " + pomClanky.size() + " článkov.", Toast.LENGTH_LONG).show();
         return pomClanky;
-    }//end parseJsonResponse
+    }//end parseJsonObjectResponse
 
     private void handleVolleyError(VolleyError error){
         tvVolleyError.setVisibility(View.VISIBLE);

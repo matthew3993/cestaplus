@@ -27,7 +27,18 @@
         </activity>
 
         <activity
-            android:name=".activities.ClanokActivity"
+            android:name=".activities.ArticleActivity_OtherWay"
+            android:configChanges="keyboard|keyboardHidden|screenSize|orientation"
+            android:label="@string/title_activity_clanok"
+            android:parentActivityName=".activities.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".activities.ArticleActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_clanok"
             android:parentActivityName=".activities.MainActivity" >
             <meta-data
@@ -43,6 +54,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
+
+
     </application>
 
 </manifest>

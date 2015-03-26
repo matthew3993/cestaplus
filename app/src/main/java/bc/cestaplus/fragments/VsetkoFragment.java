@@ -35,12 +35,12 @@ import java.util.ArrayList;
 
 import bc.cestaplus.ArticleObj;
 import bc.cestaplus.R;
-import bc.cestaplus.activities.ClanokActivity;
+import bc.cestaplus.activities.ArticleActivity;
 import bc.cestaplus.activities.MainActivity;
 import bc.cestaplus.adapters.ClanokRecyclerViewAdapter;
 import bc.cestaplus.listeners.RecyclerItemClickListener;
 import bc.cestaplus.network.VolleySingleton;
-import bc.cestaplus.network.requests.JsonArrayCustomRequest;
+import bc.cestaplus.network.requests.JsonArrayCustomUtf8Request;
 import bc.cestaplus.utilities.CustomApplication;
 
 //staticke importy
@@ -131,15 +131,16 @@ public class VsetkoFragment
                             public void onItemClick(View view, int position) {
 
                                 if (position == zoznamVsetko.size()){
-                                    pocSrt++;
+                                    pocSrt++;                                           // !!! zvysenie poctu nacitanych stran !!!
                                     sendGetClankyArrayRequestGET("all", 20, pocSrt);
                                     Toast.makeText(getActivity().getApplicationContext(), "Load more in VsetkoFragment, page " + pocSrt, Toast.LENGTH_SHORT).show();
 
                                 } else {
-                                    Intent intent = new Intent(MainActivity.context, ClanokActivity.class);
+                                    //Intent intent = new Intent(MainActivity.context, ArticleActivity_OtherWay.class);
+                                    Intent intent = new Intent(MainActivity.context, ArticleActivity.class);
                                     intent.putExtra("clanok", zoznamVsetko.get(position));
 
-                                    //ActivityCompat.startActivity(ClanokActivity, intent, null);
+                                    //ActivityCompat.startActivity(ArticleActivity_OtherWay, intent, null);
                                     //view.getContext().startActivity(intent);
                                     startActivity(intent);
                                 }
@@ -160,7 +161,7 @@ public class VsetkoFragment
             //nove nacitanie
             //sendJsonRequest();
             //sendGetClankyRequestPOST("vsetko", 20, 1);
-            //sendGetClankyRequestGET("all", 20, 1);
+            //sendGetClankyObjectRequestGET("all", 20, 1);
             sendGetClankyArrayRequestGET("all", 20, 1);
         }
 
@@ -187,7 +188,7 @@ public class VsetkoFragment
 
 // ======================================== NETWORKING =====================================================================================
 
-    /*private void sendGetClankyRequestGET(String section, int limit, int page){
+    /*private void sendGetClankyObjectRequestGET(String section, int limit, int page){
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
@@ -200,7 +201,7 @@ public class VsetkoFragment
                     public void onResponse(JSONObject response) {
                         //Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
                         tvVolleyError.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
-                        zoznamVsetko = parseJsonResponse(response);
+                        zoznamVsetko = parseJsonObjectResponse(response);
                         crvaVsetko.setClanky(zoznamVsetko);
                     }
 
@@ -216,16 +217,16 @@ public class VsetkoFragment
         requestQueue.add(request);
         //volleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
         //Toast.makeText(getActivity(), "Sending request...", Toast.LENGTH_SHORT).show();
-    } //end sendGetClankyRequestGET
+    } //end sendGetClankyObjectRequestGET
     */
 
     private void sendGetClankyArrayRequestGET(String section, int limit, int page){
 
-        JsonArrayCustomRequest request = new JsonArrayCustomRequest(
+        JsonArrayCustomUtf8Request request = new JsonArrayCustomUtf8Request(
                 Request.Method.GET,
-                //getRequestUrl(section, limit, page),
+                getRequestUrl(section, limit, page),
                 //"http://vaii.fri.uniza.sk/~mahut8/bc/vsetkoTest5.json",
-                "http://vaii.fri.uniza.sk/~mahut8/bc/jsonTest.php",
+                //"http://vaii.fri.uniza.sk/~mahut8/bc/jsonTest.php",
                 null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -253,7 +254,7 @@ public class VsetkoFragment
         requestQueue.add(request);
         //volleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
         //Toast.makeText(getActivity(), "Sending request...", Toast.LENGTH_SHORT).show();
-    } //end sendGetClankyRequestGET
+    } //end sendGetClankyObjectRequestGET
 
 
     /**
@@ -281,7 +282,7 @@ public class VsetkoFragment
             String imageUrl;// = "NA";
             String pubDate;
             String section;
-            long id = 0;
+            String ID;
             boolean locked;
 
             try {
@@ -327,9 +328,9 @@ public class VsetkoFragment
 
                     //spracovanie id
                     if (actArticle.has(KEY_ID) && !actArticle.isNull(KEY_ID)){
-                        id = actArticle.getLong(KEY_ID);
+                        ID = actArticle.getString(KEY_ID);
                     } else {
-                        id = -1; // akoze chyba
+                        ID = "NA"; // akoze chyba
                     }
 
                     //spracovanie locked
@@ -343,14 +344,14 @@ public class VsetkoFragment
                     if (/*id != -1 && */ !title.equals("NA")) {
                         if (!pubDate.equals("NA")) {
                             try { //clanok ma v poriadku nadpis aj datum zverejnenia
-                                tempArticles.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section, id, locked)); // pridanie do docasneho zoznamu clankov
+                                tempArticles.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
                             } catch (ParseException pEx){
                                 Toast.makeText(getActivity(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         } else { // tu je rieseny pripad, ze clanok nema v poriadku datum zverejnenia
                             try {
-                                tempArticles.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse("2000-01-01 00:00:00"), section, id, locked)); // pridanie do docasneho zoznamu clankov
+                                tempArticles.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse("2000-01-01 00:00:00"), section, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
                             } catch (ParseException pEx){
                                 Toast.makeText(getActivity(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
@@ -368,7 +369,7 @@ public class VsetkoFragment
 
         Toast.makeText(getActivity().getApplicationContext(), "Načítaných " + tempArticles.size() + " článkov.", Toast.LENGTH_LONG).show();
         return tempArticles;
-    }//end parseJsonResponse
+    }//end parseJsonObjectResponse
 
 
     private ArrayList<ArticleObj> parseJsonArrayResponse(JSONArray response) {
@@ -382,7 +383,7 @@ public class VsetkoFragment
             String img;// = "NA";
             String pubDate;
             String section;
-            long id = 0;
+            String ID;
             boolean locked;
 
             try {
@@ -428,9 +429,9 @@ public class VsetkoFragment
 
                     //spracovanie id
                     if (actArticle.has(KEY_ID) && !actArticle.isNull(KEY_ID)){
-                        id = actArticle.getLong(KEY_ID);
+                        ID = actArticle.getString(KEY_ID);
                     } else {
-                        id = -1; // akoze chyba
+                        ID = "NA"; // akoze chyba
                     }
 
                     //spracovanie locked
@@ -444,14 +445,14 @@ public class VsetkoFragment
                     if (/*id != -1 && */ !title.equals("NA")) {
                         if (!pubDate.equals("NA")) {
                             try { //clanok ma v poriadku nadpis aj datum zverejnenia
-                                tempArticles.add(new ArticleObj(title, short_text, img, dateFormat.parse(pubDate), section, id, locked)); // pridanie do docasneho zoznamu clankov
+                                tempArticles.add(new ArticleObj(title, short_text, img, dateFormat.parse(pubDate), section, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
                             } catch (ParseException pEx){
                                 Toast.makeText(getActivity(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         } else { // tu je rieseny pripad, ze clanok nema v poriadku datum zverejnenia
                             try {
-                                tempArticles.add(new ArticleObj(title, short_text, img, dateFormat.parse("2000-01-01 00:00:00"), section, id, locked)); // pridanie do docasneho zoznamu clankov
+                                tempArticles.add(new ArticleObj(title, short_text, img, dateFormat.parse("2000-01-01 00:00:00"), section, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
                             } catch (ParseException pEx){
                                 Toast.makeText(getActivity(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
@@ -498,11 +499,11 @@ public class VsetkoFragment
             Toast.makeText(CustomApplication.getCustomAppContext(), "Load more", Toast.LENGTH_SHORT).show();
 
         } else {
-            Intent intent = new Intent(MainActivity.context, ClanokActivity.class);
+            Intent intent = new Intent(MainActivity.context, ArticleActivity_OtherWay.class);
             intent.putExtra(EXTRA_RUBRIKA, zoznamVsetko.get( crvaVsetko.getItemId() ));
             intent.putExtra(EXTRA_RUBRIKA, clanky.get(getPosition()).getSection());
             v.get
-            //ActivityCompat.startActivity(ClanokActivity, intent, null);
+            //ActivityCompat.startActivity(ArticleActivity_OtherWay, intent, null);
             v.getContext().startActivity(intent);
         }
     }*/

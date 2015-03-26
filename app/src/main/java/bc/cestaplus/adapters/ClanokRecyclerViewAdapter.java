@@ -188,10 +188,10 @@ public class ClanokRecyclerViewAdapter
                 Toast.makeText(CustomApplication.getCustomAppContext(), "Load more", Toast.LENGTH_SHORT).show();
 
             } else {
-                Intent intent = new Intent(MainActivity.context, ClanokActivity.class);
+                Intent intent = new Intent(MainActivity.context, ArticleActivity_OtherWay.class);
                 intent.putExtra(EXTRA_RUBRIKA, clanky.get( getPosition() ) .getSection());
 
-                //ActivityCompat.startActivity(ClanokActivity, intent, null);
+                //ActivityCompat.startActivity(ArticleActivity_OtherWay, intent, null);
                 v.getContext().startActivity(intent);
             }
         }

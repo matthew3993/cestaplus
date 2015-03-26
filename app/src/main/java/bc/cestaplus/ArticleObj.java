@@ -18,9 +18,9 @@ public class ArticleObj
     private String imageUrl;
 
     private Date pubDate;       // datum a cas vydania                  // kvoli notifikáciam a aktualizacii
-    private String section;        // typ / druh clanku, section           // kvoli notifikaciam len na vybranu rubriku a nadpisu v ClanokActivity
+    private String section;        // typ / druh clanku, section           // kvoli notifikaciam len na vybranu rubriku a nadpisu v ArticleActivity_OtherWay
 
-    private long id;             // id clanku                            // kvoli nacitaniu textu konkretneho clanku // ci pouzijem link??
+    private String ID;             // id clanku                            // kvoli nacitaniu textu konkretneho clanku // ci pouzijem link??
     private boolean locked;     // ci ide o zamknuty clanok alebo nie
     //private String link;        // odkaz na dany clanok na webe
 
@@ -42,13 +42,13 @@ public class ArticleObj
     /**
      *  PLNY KONSTRUKTOR
      */
-    public ArticleObj(String title, String short_text, String imageUrl, Date pubDate, String section, long id, boolean locked) {
+    public ArticleObj(String title, String short_text, String imageUrl, Date pubDate, String section, String ID, boolean locked) {
         this.title = title;
         this.short_text = short_text;
         this.imageUrl = imageUrl;
         this.pubDate = pubDate;
         this.section = section;
-        this.id = id;
+        this.ID = ID;
         this.locked = locked;
     }
 
@@ -65,7 +65,8 @@ public class ArticleObj
         pubDate = new Date(input.readLong()); //prevod casu v milisekundach (long) na datum
         section = input.readString();
 
-        id = input.readLong();
+        ID = input.readString();
+
         if (input.readInt() == 0){
             locked = false;
         } else {
@@ -103,8 +104,8 @@ public class ArticleObj
         return section;
     }
 
-    public long getId() {
-        return id;
+    public String getID() {
+        return ID;
     }
 
     public boolean isLocked() {
@@ -125,8 +126,8 @@ public class ArticleObj
         this.pubDate = pubDate;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(String ID) {
+        this.ID = ID;
     }
 
 // ===================== Ostatne metody ==========================================================================================================
@@ -141,7 +142,7 @@ public class ArticleObj
                 ", ImageUrl=" + imageUrl +
                 ", pubDate=" + pubDate +
                 ", section='" + section + '\'' +
-                ", id=" + id +
+                ", id=" + ID +
                 ", locked=" + locked +
                 '}';
     }
@@ -164,7 +165,7 @@ public class ArticleObj
         dest.writeString(imageUrl);
         dest.writeLong(pubDate.getTime()); //prevod datumu na cas v milisekundach (long)
         dest.writeString(section);
-        dest.writeLong(id);
+        dest.writeString(ID);
         if (locked){            // neexistuje dest.writeBoolean metoda
             dest.writeInt(1);
         } else {

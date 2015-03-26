@@ -18,19 +18,19 @@ import java.util.Map;
 /**
  * Created by Matej on 14.3.2015.
  */
-public class JsonArrayCustomRequest
+public class JsonArrayCustomUtf8Request
     extends Request<JSONArray>{
 
     private Listener<JSONArray> listener;
     private Map<String, String> params;
 
-    public JsonArrayCustomRequest(String url, Map<String, String> params, Listener<JSONArray> responseListener, ErrorListener errorListener) {
+    public JsonArrayCustomUtf8Request(String url, Map<String, String> params, Listener<JSONArray> responseListener, ErrorListener errorListener) {
         super(Method.GET, url, errorListener);
         this.listener = responseListener;
         this.params = params;
     }
 
-    public JsonArrayCustomRequest(int method, String url, Map<String, String> params, Listener<JSONArray> reponseListener, ErrorListener errorListener) {
+    public JsonArrayCustomUtf8Request(int method, String url, Map<String, String> params, Listener<JSONArray> reponseListener, ErrorListener errorListener) {
         super(method, url, errorListener);
         this.listener = reponseListener;
         this.params = params;
@@ -44,11 +44,17 @@ public class JsonArrayCustomRequest
     @Override
     protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
         try {
-            String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+            //toto bolo povodne
+            //String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
 
+            // toto som dopisal ja
+            String jsonString = new String(response.data, "UTF-8");
+
+            //
             return Response.success(new JSONArray(jsonString), HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
+
         } catch (JSONException je) {
             return Response.error(new ParseError(je));
         }

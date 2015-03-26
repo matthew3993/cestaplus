@@ -46,6 +46,7 @@ public class JsonRequestCustom
             return Response.success(new JSONObject(jsonString), HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
+
         } catch (JSONException je) {
             return Response.error(new ParseError(je));
         }

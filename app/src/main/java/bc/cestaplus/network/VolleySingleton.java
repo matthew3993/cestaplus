@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import bc.cestaplus.ArticleObj;
 import bc.cestaplus.R;
+import bc.cestaplus.network.requests.JsonArrayCustomUtf8Request;
 import bc.cestaplus.utilities.CustomApplication;
 
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_CLANKY;
@@ -104,14 +105,33 @@ public class VolleySingleton {
         return mImageLoader;
     }
 
+
 // ======================================== VLASTNÉ METÓDY =====================================================================================
 
-    public void sendGetClankyRequestGET(String section, int limit, int page,
-                                         Response.Listener<JSONObject> responseList, Response.ErrorListener errList){
+    public void sendGetClankyArrayRequestGET(String section, int limit, int page,
+                                             Response.Listener<JSONArray> responseList, Response.ErrorListener errList){
+
+        JsonArrayCustomUtf8Request request = new JsonArrayCustomUtf8Request(
+                Request.Method.GET,
+                getRequestUrl(section, limit, page),
+                //"http://vaii.fri.uniza.sk/~mahut8/bc/vsetkoTest6.json",
+                null,
+                responseList,
+                errList);
+
+        mRequestQueue.add(request);
+        //volleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
+        //Toast.makeText(getActivity(), "Sending request...", Toast.LENGTH_SHORT).show();
+    } //end sendGetClankyObjectRequestGET
+
+
+    public void sendGetClankyObjectRequestGET(String section, int limit, int page,
+                                              Response.Listener<JSONObject> responseList, Response.ErrorListener errList){
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
-                "http://vaii.fri.uniza.sk/~mahut8/bc/vsetkoTest6.json",
+                getRequestUrl(section, limit, page),
+                //"http://vaii.fri.uniza.sk/~mahut8/bc/vsetkoTest6.json",
                 (JSONObject) null,
                 responseList,
                 errList);
@@ -119,7 +139,7 @@ public class VolleySingleton {
         mRequestQueue.add(request);
         //volleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
         //Toast.makeText(getActivity(), "Sending request...", Toast.LENGTH_SHORT).show();
-    } //end sendGetClankyRequestGET
+    } //end sendGetClankyObjectRequestGET
 
 
     private String getRequestUrl(String section, int limit, int page){
@@ -128,7 +148,109 @@ public class VolleySingleton {
     }
 
 
-    public ArrayList<ArticleObj> parseJsonResponse(JSONObject response) {
+    public ArrayList<ArticleObj> parseJsonArrayResponse(JSONArray response) {
+        ArrayList<ArticleObj> tempArticles = new ArrayList<>();
+
+        if (response != null && response.length() > 0){
+            //defaultne hodnoty
+            //urobit cez rozhranie Constants v Extras
+            String title;// = "NA";
+            String short_text;// = "NA";
+            String img;// = "NA";
+            String pubDate;
+            String section;
+            String ID;
+            boolean locked;
+
+            try {
+                //JSONArray jsonArrayVsetko = response.getJSONArray(KEY_CLANKY);
+
+                for(int i = 0; i < response.length(); i++){
+                    JSONObject actArticle = response.getJSONObject(i); //vrati clanok na aktualnej pozicii
+
+                    //kontrola title
+                    if (actArticle.has(KEY_TITLE) && !actArticle.isNull(KEY_TITLE)){
+                        title = actArticle.getString(KEY_TITLE);
+                    } else {
+                        title = "NA"; // ak JSON feed nie je v poriadku, nastavi sa tato hodnota
+                    }
+                    // kontrola short_text
+                    if (actArticle.has(KEY_SHORT_TEXT) && !actArticle.isNull(KEY_SHORT_TEXT)) {
+                        short_text = actArticle.getString(KEY_SHORT_TEXT);
+                    } else {
+                        short_text = "Popis nedostuný"; // ak JSON feed nie je v poriadku, nastavi sa tato hodnota
+                    }
+
+                    //spracovanie obrazka - ostrenie v pripade, ze orazok nie je dostupny
+                    img = null; //title image URL
+                    if(actArticle.has(KEY_IMAGE_URL) && !actArticle.isNull(KEY_IMAGE_URL)){
+                        img = actArticle.getString(KEY_IMAGE_URL);
+                    } else {
+                        img = "NA";
+                    }
+
+                    //spracovanie datumu        //otazka co robit ak nie je?!?! dat sem try - catch ??
+                    if(actArticle.has(KEY_PUB_DATE) && !actArticle.isNull(KEY_PUB_DATE)){
+                        pubDate = actArticle.getString(KEY_PUB_DATE);
+                    } else {
+                        pubDate = "NA";
+                    }
+
+                    //spracovanie rubriky
+                    if (actArticle.has(KEY_SECTION) && !actArticle.isNull(KEY_SECTION)) {
+                        section = actArticle.getString(KEY_SECTION);
+                    } else {
+                        section = "Nezaradené"; // Článok
+                    }
+
+                    //spracovanie ID
+                    if (actArticle.has(KEY_ID) && !actArticle.isNull(KEY_ID)){
+                        ID = actArticle.getString(KEY_ID);
+                    } else {
+                        ID = "NA"; // akoze chyba
+                    }
+
+                    //spracovanie locked
+                    if (actArticle.has(KEY_LOCKED) && !actArticle.isNull(KEY_LOCKED)) {
+                        locked = actArticle.getBoolean(KEY_LOCKED);
+                    } else {
+                        locked = false; // zatial !!!
+                    }
+
+                    //kontrola, ci bude clanok pridany do zoznamu
+                    if (/*id != -1 && */ !title.equals("NA")) {
+                        if (!pubDate.equals("NA")) {
+                            try { //clanok ma v poriadku nadpis aj datum zverejnenia
+                                tempArticles.add(new ArticleObj(title, short_text, img, dateFormat.parse(pubDate), section, ID, locked)); // pridanie do docasneho zoznamu clankov
+                                //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
+                            } catch (ParseException pEx){
+                                Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+
+                        } else { // tu je rieseny pripad, ze clanok nema v poriadku datum zverejnenia
+                            try {
+                                tempArticles.add(new ArticleObj(title, short_text, img, dateFormat.parse("2000-01-01 00:00:00"), section, ID, locked)); // pridanie do docasneho zoznamu clankov
+                                //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
+                            } catch (ParseException pEx){
+                                Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+                } // end for
+
+            } catch (JSONException jsonEx){
+                Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA JSON PARSOVANIA" + jsonEx.getMessage(), Toast.LENGTH_LONG).show();
+
+            } //end catch
+
+        } //end if response !=null ...
+
+        Toast.makeText(CustomApplication.getCustomAppContext(), "Načítaných " + tempArticles.size() + " článkov.", Toast.LENGTH_LONG).show();
+        return tempArticles;
+    } //end parseJsonArrayResponse
+
+
+    public ArrayList<ArticleObj> parseJsonObjectResponse(JSONObject response) {
         ArrayList<ArticleObj> tempArticles = new ArrayList<>();
 
         if (response != null && response.length() > 0){
@@ -139,7 +261,7 @@ public class VolleySingleton {
             String imageUrl;// = "NA";
             String pubDate;
             String section;
-            long id = 0;
+            String ID;
             boolean locked;
 
             try {
@@ -185,9 +307,9 @@ public class VolleySingleton {
 
                     //spracovanie id
                     if (actArticle.has(KEY_ID) && !actArticle.isNull(KEY_ID)){
-                        id = actArticle.getLong(KEY_ID);
+                        ID = actArticle.getString(KEY_ID);
                     } else {
-                        id = -1; // akoze chyba
+                        ID = "NA"; // akoze chyba
                     }
 
                     //spracovanie locked
@@ -201,14 +323,14 @@ public class VolleySingleton {
                     if (/*id != -1 && */ !title.equals("NA")) {
                         if (!pubDate.equals("NA")) {
                             try { //clanok ma v poriadku nadpis aj datum zverejnenia
-                                tempArticles.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section, id, locked)); // pridanie do docasneho zoznamu clankov
+                                tempArticles.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
                             } catch (ParseException pEx){
                                 Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         } else { // tu je rieseny pripad, ze clanok nema v poriadku datum zverejnenia
                             try {
-                                tempArticles.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse("2000-01-01 00:00:00"), section, id, locked)); // pridanie do docasneho zoznamu clankov
+                                tempArticles.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse("2000-01-01 00:00:00"), section, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
                             } catch (ParseException pEx){
                                 Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
@@ -226,7 +348,8 @@ public class VolleySingleton {
 
         Toast.makeText(CustomApplication.getCustomAppContext().getApplicationContext(), "Načítaných " + tempArticles.size() + " článkov.", Toast.LENGTH_LONG).show();
         return tempArticles;
-    }//end parseJsonResponse
+    }//end parseJsonObjectResponse
+
 
     public void handleVolleyError(VolleyError error, TextView tvVolleyError){
         tvVolleyError.setVisibility(View.VISIBLE);

@@ -21,14 +21,14 @@ import java.util.Map;
 
 import bc.cestaplus.R;
 import bc.cestaplus.network.VolleySingleton;
-import bc.cestaplus.network.requests.JsonArrayCustomRequest;
+import bc.cestaplus.network.requests.JsonArrayCustomUtf8Request;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FragmentBaterka#newInstance} factory method to
+ * Use the {@link postTestFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentBaterka extends Fragment {
+public class postTestFragment extends Fragment {
 
 //networking
     private VolleySingleton volleySingleton;
@@ -38,17 +38,17 @@ public class FragmentBaterka extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment FragmentBaterka.
+     * @return A new instance of fragment postTestFragment.
      */
-    public static FragmentBaterka newInstance() {
-        FragmentBaterka fragment = new FragmentBaterka();
+    public static postTestFragment newInstance() {
+        postTestFragment fragment = new postTestFragment();
         Bundle args = new Bundle();
 
         fragment.setArguments(args);
         return fragment;
     }
 
-    public FragmentBaterka() {
+    public postTestFragment() {
         // Required empty public constructor
     }
 
@@ -131,7 +131,7 @@ public class FragmentBaterka extends Fragment {
         );
         */
 
-        JsonArrayCustomRequest request = new JsonArrayCustomRequest(
+        JsonArrayCustomUtf8Request request = new JsonArrayCustomUtf8Request(
                 Request.Method.POST,
                 url,
                 params,

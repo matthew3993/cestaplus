@@ -32,6 +32,7 @@ import bc.cestaplus.adapters.ClanokAdapter;
 import bc.cestaplus.R;
 import bc.cestaplus.fragments.TemaFragment;
 import bc.cestaplus.fragments.VsetkoFragment;
+import bc.cestaplus.fragments.webViewTestFragment;
 
 
 public class MainActivity
@@ -277,8 +278,9 @@ public class MainActivity
                 case 2:
                     return RubrikyFragment.newInstance(position + 1);
                 case 3:
-                    return BaterkaFragment.newInstance(position + 1); /*android.support.v4.app.fra*/
-                    //return FragmentBaterka.newInstance();
+                    //return BaterkaFragment.newInstance(position + 1); /*android.support.v4.app.fra*/
+                    return webViewTestFragment.newInstance();
+                    //return postTestFragment.newInstance();
                     //return PrehladFragment.newInstance(position + 1);
             }
             return PrehladFragment.newInstance(position + 1);
@@ -453,7 +455,7 @@ public class MainActivity
             //TextView txtV = (TextView) view.findViewById(R.id.item_tvDescription);
             //Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na " + txtV.getText(), Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(MainActivity.context, ClanokActivity.class);
+            Intent intent = new Intent(MainActivity.context, ArticleActivity_OtherWay.class);
             intent.putExtra(EXTRA_RUBRIKA, clanok.getSection());
 
             startActivity(intent);

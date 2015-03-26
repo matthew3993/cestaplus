@@ -29,7 +29,7 @@ import java.util.Map;
 import bc.cestaplus.ArticleObj;
 import bc.cestaplus.R;
 import bc.cestaplus.adapters.ClanokRecyclerViewAdapter;
-import bc.cestaplus.network.requests.JsonArrayCustomRequest;
+import bc.cestaplus.network.requests.JsonArrayCustomUtf8Request;
 import bc.cestaplus.utilities.CustomApplication;
 
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_SHORT_TEXT;
@@ -71,7 +71,7 @@ public class NetworkManager {
         params.put("stranka", Integer.toString(1));
 
     // vytvorenie requestu
-        JsonArrayCustomRequest request = new JsonArrayCustomRequest(
+        JsonArrayCustomUtf8Request request = new JsonArrayCustomUtf8Request(
                 Request.Method.POST,
                 url,
                 params,
@@ -113,7 +113,7 @@ public class NetworkManager {
             String imageUrl;// = "NA";
             String pubDate;
             String rubrika;
-            long id = 0;
+            String ID;
             boolean locked;
 
             try {
@@ -159,9 +159,9 @@ public class NetworkManager {
 
                     //spracovanie id
                     if (aktualnyClanok.has(KEY_ID) && !aktualnyClanok.isNull(KEY_ID)){
-                        id = aktualnyClanok.getLong(KEY_ID);
+                        ID = aktualnyClanok.getString(KEY_ID);
                     } else {
-                        id = -1; // akoze chyba
+                        ID = "NA"; // akoze chyba
                     }
 
                     //spracovanie locked
@@ -175,7 +175,7 @@ public class NetworkManager {
                     if (/*id != -1 && */ !title.equals("NA")) {
                         if (pubDate.equals("NA")) {
                             try {
-                                pomClanky.add(new ArticleObj(title, description, imageUrl, dateFormat.parse("01.01.2000"), rubrika, id, locked)); // pridanie do docasneho zoznamu clankov
+                                pomClanky.add(new ArticleObj(title, description, imageUrl, dateFormat.parse("01.01.2000"), rubrika, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, description, imageUrl, dateFormat.parse(pubDate), rubrika));
                             } catch (ParseException pEx){
                                 Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();

@@ -13,7 +13,7 @@ public interface IKeys {
         public static final String KEY_PUB_DATE = "dateOfPublsihed";
         public static final String KEY_SECTION = "section";
         public static final String KEY_LOCKED = "locked";
-        public static final String KEY_ID = "id";
+        public static final String KEY_ID = "ID";
 
     }
 }
