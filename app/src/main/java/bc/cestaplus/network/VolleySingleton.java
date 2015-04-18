@@ -30,11 +30,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import bc.cestaplus.ArticleObj;
+import bc.cestaplus.objects.ArticleObj;
+import bc.cestaplus.objects.ArticleText;
 import bc.cestaplus.R;
 import bc.cestaplus.network.requests.JsonArrayCustomUtf8Request;
 import bc.cestaplus.utilities.CustomApplication;
 
+// importy IKeys
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_CLANKY;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_ID;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_IMAGE_URL;
@@ -43,6 +45,8 @@ import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_PUB_DATE;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_SECTION;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_SHORT_TEXT;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_TITLE;
+import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_AUTOR;
+import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_TEXT;
 
 /**
  * Created by Matej on 3.3.2015.
@@ -54,7 +58,9 @@ public class VolleySingleton {
     private ImageLoader mImageLoader;
     private static Context mCtx;
 
-    public static final String URL_CESTA_PLUS = "http://www.cestaplus.sk/_android/getAndroidData.php";
+    public static final String URL_CESTA_PLUS_ANDROID = "http://www.cestaplus.sk/_android/";
+    public static final String GET_ARTICLES = "getAndroidData.php";
+    public static final String GET_CONCRETE_ARTICLE = "getAndroidData_article.php";
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -106,6 +112,7 @@ public class VolleySingleton {
     }
 
 
+
 // ======================================== VLASTNÉ METÓDY =====================================================================================
 
     public void sendGetClankyArrayRequestGET(String section, int limit, int page,
@@ -143,8 +150,8 @@ public class VolleySingleton {
 
 
     private String getRequestUrl(String section, int limit, int page){
-        //return URL_CESTA_PLUS+"?apikey="+ MainActivity.API_KEY+"&limit="+limit;
-        return URL_CESTA_PLUS + "?section="+section + "&limit="+limit + "&page="+page;
+        //return URL_CESTA_PLUS_ANDROID+"?apikey="+ MainActivity.API_KEY+"&limit="+limit;
+        return URL_CESTA_PLUS_ANDROID + GET_ARTICLES  + "?section="+section + "&limit="+limit + "&page="+page;
     }
 
 
@@ -371,6 +378,83 @@ public class VolleySingleton {
         }
     }//end handleVolleyError
 
+// nacitavanie konkretneho clanku
+    public void sendGetArticleRequest(String id, boolean withPictures,
+                                      Response.Listener<JSONObject> responseLis, Response.ErrorListener errLis){
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                getArticleRequestUrl(id, withPictures),
+                (JSONObject) null,
+                responseLis,
+                errLis);
+
+        mRequestQueue.add(request);
+    }
+
+    private String getArticleRequestUrl(String id, boolean withPictures) {
+        int wp = 1;
+        if (!withPictures){
+            wp = 0;
+        }
+
+        return URL_CESTA_PLUS_ANDROID + GET_CONCRETE_ARTICLE + "?id="+id + "&withPictures="+wp;
+    }
+
+    public ArticleText parseArticleTextResponse(JSONObject response) {
+        ArticleText articleTextTemp = null;
+
+        if (response != null && response.length() > 2) {
+            //defaultne hodnoty
+            //urobit cez rozhranie Constants v Extras
+            String short_text;
+            String autor;
+            String text;
+
+            try {
+                // kontrola short_text
+                if (response.has(KEY_SHORT_TEXT) && !response.isNull(KEY_SHORT_TEXT)) {
+                    short_text = response.getString(KEY_SHORT_TEXT);
+                } else {
+                    short_text = "Chyba st"; // ak JSON feed nie je v poriadku, nastavi sa tato hodnota
+                }
+
+                //kontrola autora
+                if (response.has(KEY_AUTOR) && !response.isNull(KEY_AUTOR)) {
+                    autor = response.getString(KEY_AUTOR);
+                } else {
+                    autor = "Chyba aut"; // ak JSON feed nie je v poriadku, nastavi sa tato hodnota
+                }
+
+                //kontrola text
+                if (response.has(KEY_TEXT) && !response.isNull(KEY_TEXT)) {
+                    text = response.getString(KEY_TEXT);
+                } else {
+                    text = "<p>Chyba txt<p>"; // ak JSON feed nie je v poriadku, nastavi sa tato hodnota
+                }
+
+                articleTextTemp = new ArticleText(short_text, autor, text);
+
+            } catch (JSONException jsonEx) {
+                Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA JSON PARSOVANIA" + jsonEx.getMessage(), Toast.LENGTH_LONG).show();
+
+            } //end catch
+
+        } else {
+            Toast.makeText(CustomApplication.getCustomAppContext(), "Príliš krátka response", Toast.LENGTH_LONG).show();
+            //end if response !=null ...
+        }
+
+        if (articleTextTemp == null) { //osetrenie, aby sa nikdy nevratilo null
+            return new ArticleText("Chyba short_textu", "Chyba autora", "<p>Chyba textu<p>");
+        } else {
+            return articleTextTemp;
+        }
+    } //end parseArticleTextResponse
 
 
+    //TODO zakomponovat tuto metodu do kodu vyssie - preburat kod!!
+    private boolean contains(JSONObject jsonObject, String key){
+        return jsonObject != null && jsonObject.has(key) && !jsonObject.isNull(key) ? true : false;
+    }
 } // end of VolleySingleton class

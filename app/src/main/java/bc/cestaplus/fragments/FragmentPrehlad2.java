@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import bc.cestaplus.ArticleObj;
+import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 import bc.cestaplus.activities.MainActivity;
 import bc.cestaplus.adapters.ClanokRecyclerViewAdapter;
@@ -50,7 +50,7 @@ public class FragmentPrehlad2 extends Fragment {
 
     public static final String URL_CESTA_PLUS_VSETKO = "";
     private static final String ULOZENE_VSETKO = "ulozeny_vsetko";
-    //public static final String URL_CESTA_PLUS = "";                //doplnit
+    //public static final String URL_CESTA_PLUS_ANDROID = "";                //doplnit
 
 //networking
     private VolleySingleton volleySingleton;
@@ -187,7 +187,7 @@ public class FragmentPrehlad2 extends Fragment {
 
                         if (stranka == 1) { // v pripade ze ide o 1 stranku je cely zoznam prepisany
                             zoznamVsetko = parseJsonArrayResponse(response);
-                        } else { // v pripade dalsich stranok su clanky pridavane
+                        } else { // v pripade dalsich stranok su rubriky pridavane
                             zoznamVsetko.addAll(parseJsonArrayResponse(response));
                         }
 

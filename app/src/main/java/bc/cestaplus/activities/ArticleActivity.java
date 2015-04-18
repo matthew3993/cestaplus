@@ -4,10 +4,20 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import bc.cestaplus.ArticleObj;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONObject;
+
+import bc.cestaplus.objects.ArticleObj;
+import bc.cestaplus.objects.ArticleText;
 import bc.cestaplus.R;
+import bc.cestaplus.network.VolleySingleton;
 
 /**
  * Created by Matej on 19. 3. 2015.
@@ -15,14 +25,21 @@ import bc.cestaplus.R;
 public class ArticleActivity
     extends ActionBarActivity {
 
+    private ArticleObj article;
+    private ArticleText articleText;
     private WebView mWebView;
+
+    private TextView tvVolleyErrorArticle; // vypis chyb so sieťou
+    //networking
+    private VolleySingleton volleySingleton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
 
-        ArticleObj article = getIntent().getParcelableExtra("clanok");
+        volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //inicializácia volleySingleton - dôležité !!!
+        article = getIntent().getParcelableExtra("clanok");
 
         getSupportActionBar().setTitle(article.getSection()); //nastavenie label-u konkretnej aktivity
         //Toast.makeText(this, rubrika, Toast.LENGTH_SHORT).show(); // testovaci vypis
@@ -30,9 +47,16 @@ public class ArticleActivity
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true); ak by nesla navigacia UP, resp. sa nezobrazila šípka
 
         mWebView = (WebView) findViewById(R.id.webViewArticle);
+        tvVolleyErrorArticle = (TextView) findViewById(R.id.tvVolleyErrorArticle);
 
         mWebView.getSettings().setBuiltInZoomControls(true);
 
+            Toast.makeText(getApplicationContext(), "Načítavam článok...", Toast.LENGTH_LONG).show();
+
+        //vytvorí listenery a odošle request
+        loadArticle(); //naplní article text zobrazení do webView
+
+        /*
         // Load a page
         String dataHtlm = "<html>\n" +
                 "    <head>\n" +
@@ -132,6 +156,7 @@ public class ArticleActivity
         //mWebView.loadData(dataHtlm, "text/html", "utf-8"); // nefunguje utf-8 kodovanie
         //mWebView.loadDataWithBaseURL("http://www.cestaplus.sk", dataHtlm, "text/html", "utf-8", null);
         mWebView.loadDataWithBaseURL(null, dataHtlm, "text/html", "utf-8", null);
+        */
 
     } //end onCreate
 
@@ -156,4 +181,70 @@ public class ArticleActivity
 
         return super.onOptionsItemSelected(item);
     }
+
+// ======================================== VLASTNÉ METÓDY =====================================================================================
+    private void loadArticle() {
+        //nacitanie short text-u, autora a textu článku
+        Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
+                tvVolleyErrorArticle.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
+                articleText = volleySingleton.parseArticleTextResponse(response); //uloženie stiahnutého textu do atribútu articleText
+
+                //zobrazenie do webView
+                mWebView.loadDataWithBaseURL(null, createHtml(), "text/html", "utf-8", null);
+            }//end of onResponse
+
+        };
+
+        Response.ErrorListener errorLis = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), "ERROR " + error.toString(), Toast.LENGTH_LONG).show();
+                mWebView.setVisibility(View.GONE);
+                volleySingleton.handleVolleyError(error, tvVolleyErrorArticle);
+            } //end of onErrorResponse
+        };
+
+        //odoslanie requestu
+        volleySingleton.sendGetArticleRequest(article.getID(), true, responseLis, errorLis); //boolean = či aj z obrázkami
+        //volleySingleton.sendGetArticleRequest("clanok_550", true, responseLis, errorLis); //boolean = či aj z obrázkami
+    }
+
+    private String createHtml() {
+        //Document doc = Jsoup.parse(html);
+
+        //Elements iframes = doc.select("iframe");
+
+        String ret= "<html>\n" +
+                    "    <head>\n" +
+                    "        <link rel=\"stylesheet\" type=\"text/css\" href=\"file:///android_asset/articleStyle.css\"/>\n" +
+                    "    </head>\n" +
+                    "    \n" +
+                    "    <body>\n" +
+                    "        <div class=\"body1_left_pisuinde\" style=\" height: 100%;\">                    \n" +
+                    "            <h1>\n" +
+                                    article.getTitle() +
+                    "            </h1>\n" +
+                    "\n" +
+                    "            <div style=\"margin-bottom: 15px; color: #343434; font-weight: bold;\">\n" +
+                                    articleText.getShort_text() +
+                    "            </div>\n" +
+                    "\n" +
+                    "            <div>\n" +
+                    "                <img src='" + article.getImageUrl() + "'>\n" +
+                    "            </div>\n" +
+                    "\n" +
+                    "            <div id=\"text_clanok\">" +
+                                    articleText.getText() +
+                    "            </div>        \n" +
+                    "        </div>\n" +
+                    "    </body>\n" +
+                    "</html>"
+                    ;
+
+        return ret;
+    }
+
 }//end ArticleActivity

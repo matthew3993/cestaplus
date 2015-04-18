@@ -1,8 +1,9 @@
-package bc.cestaplus;
+package bc.cestaplus.objects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -171,7 +172,8 @@ public class ArticleObj
         } else {
             dest.writeInt(0);
         }
-    }
+
+    } // end writeToParcel
 
     public static final Parcelable.Creator<ArticleObj> CREATOR
             = new Parcelable.Creator<ArticleObj>() {

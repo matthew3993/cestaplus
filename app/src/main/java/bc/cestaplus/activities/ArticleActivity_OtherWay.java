@@ -11,7 +11,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.view.ViewGroup.LayoutParams;
 
-import bc.cestaplus.ArticleObj;
+import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 
 

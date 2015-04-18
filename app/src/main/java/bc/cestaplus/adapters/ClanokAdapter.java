@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import bc.cestaplus.ArticleObj;
+import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 
 /**

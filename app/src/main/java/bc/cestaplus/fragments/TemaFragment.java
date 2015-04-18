@@ -13,19 +13,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import bc.cestaplus.ArticleObj;
+import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 import bc.cestaplus.activities.ArticleActivity;
-import bc.cestaplus.activities.MainActivity;
 import bc.cestaplus.adapters.ClanokRecyclerViewAdapter;
 import bc.cestaplus.listeners.RecyclerItemClickListener;
 import bc.cestaplus.network.VolleySingleton;
@@ -41,7 +38,6 @@ public class TemaFragment extends Fragment {
 
 //networking
     private VolleySingleton volleySingleton;
-    private RequestQueue requestQueue;
 
 // data
     private ArrayList<ArticleObj> zoznamTema; // konkretne pomenovanie vo FragmenteVsetko
@@ -62,10 +58,6 @@ public class TemaFragment extends Fragment {
      */
     public static TemaFragment newInstance() {
         TemaFragment fragment = new TemaFragment();
-        Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -77,16 +69,12 @@ public class TemaFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            //mParam1 = getArguments().getString(ARG_PARAM1);
-        }
-
+    //inicializácia atribútov
         volleySingleton = VolleySingleton.getInstance(getActivity().getApplicationContext()); //prístup ku kontextu main aktivity
-        requestQueue = volleySingleton.getRequestQueue();
         zoznamTema = new ArrayList<>();
         pocSrt = 1;
 
-    }
+    } //end onCreate
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -98,13 +86,16 @@ public class TemaFragment extends Fragment {
         //inicializacia RecyclerView
         recyclerViewTema = (RecyclerView) view.findViewById(R.id.rvVsetko);
         recyclerViewTema.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+  // ======= RecyclerView Touch Listener ====================================================================
         recyclerViewTema.addOnItemTouchListener(
                 new RecyclerItemClickListener(getActivity().getApplicationContext(),
                         new RecyclerItemClickListener.OnItemClickListener() {
                             @Override
                             public void onItemClick(View view, int position) {
 
-                                if (position == zoznamTema.size()){
+                                if (position == zoznamTema.size()){ // ak bolo kliknute na button nacitaj viac
+
                                     pocSrt++;                                           // !!! zvysenie poctu nacitanych stran !!!
                                     //nacitanie dalsej stranky
                                     Response.Listener<JSONArray> responseLis = new Response.Listener<JSONArray>() {
@@ -115,7 +106,7 @@ public class TemaFragment extends Fragment {
                                         //page-ovanie
                                             if (pocSrt == 1) {  // ak ide o prvu stranku, zoznam je prepisany
                                                 zoznamTema = volleySingleton.parseJsonArrayResponse(response);
-                                            } else {            // ak ide o stranky nasledujuce, nove clanky su pridane k existujucemu zoznamu
+                                            } else {            // ak ide o stranky nasledujuce, nove rubriky su pridane k existujucemu zoznamu
                                                 zoznamTema.addAll(volleySingleton.parseJsonArrayResponse(response));
                                             }
                                             crvaTema.setClanky(zoznamTema);
@@ -134,9 +125,10 @@ public class TemaFragment extends Fragment {
                                     volleySingleton.sendGetClankyArrayRequestGET("tema", 20, pocSrt, responseLis, errorLis);
                                     Toast.makeText(getActivity().getApplicationContext(), "Load more in TEMAFragment" + pocSrt, Toast.LENGTH_SHORT).show();
 
+                                // ak bolo kliknute na clanok
                                 } else {
                                     //Intent intent = new Intent(getActivity().getApplicationContext(), ArticleActivity_OtherWay.class);
-                                    Intent intent = new Intent(MainActivity.context, ArticleActivity.class);
+                                    Intent intent = new Intent(getActivity().getApplicationContext(), ArticleActivity.class);
                                     intent.putExtra("clanok", zoznamTema.get(position));
 
                                     //ActivityCompat.startActivity(ArticleActivity_OtherWay, intent, null);
@@ -176,7 +168,6 @@ public class TemaFragment extends Fragment {
             };
 
             volleySingleton.sendGetClankyArrayRequestGET("tema", 20, 1, responseLis, errorLis);
-            //sendGetClankyArrayRequestGET("all", 20, 1);
         }
 
         recyclerViewTema.setAdapter(crvaTema);

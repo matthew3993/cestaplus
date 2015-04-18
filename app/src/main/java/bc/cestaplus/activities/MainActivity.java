@@ -1,11 +1,10 @@
 package bc.cestaplus.activities;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Handler;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -16,33 +15,29 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import bc.cestaplus.ArticleObj;
-import bc.cestaplus.adapters.ClanokAdapter;
+import bc.cestaplus.fragments.FragmentRubriky;
 import bc.cestaplus.R;
-import bc.cestaplus.fragments.TemaFragment;
 import bc.cestaplus.fragments.VsetkoFragment;
 import bc.cestaplus.fragments.webViewTestFragment;
+
+import me.tatarka.support.job.JobInfo;
+import me.tatarka.support.job.JobScheduler;
+import bc.cestaplus.services.MyService;
 
 
 public class MainActivity
     extends ActionBarActivity
     implements ActionBar.TabListener {
 
-    //private FragmentPrehlad2 fPrehlad;
-
-    public static final String EXTRA_RUBRIKA = "bc.cesta.RUBRIKA_CLANKU";
     public static final String API_KEY = "";        //API key
+
+    // job constants
+    private static final int UPDATE_JOB_ID = 50;   //ľubovoľne zvolená hodnota, ale stale tá istá pre update job
+    private static final int UPDATE_PERIOD_MIN = 60; // čas medzi automatickými aktualizáciami
 
     public static Context context;
 
@@ -50,10 +45,14 @@ public class MainActivity
 
     ViewPager mViewPager;
 
+    private JobScheduler mJobScheduler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //long currentTime = currentTimeMillis();
+
         MainActivity.context = getApplicationContext(); //getBaseContext();
         Log.i("LIFECYCLE", "MainActivity.onCreate() was called");
         setContentView(R.layout.activity_main);
@@ -95,18 +94,19 @@ public class MainActivity
         getCurrentFocus();
 
     //pokus nacitania z bundle
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null) { //ked nastala zmena stavu
             getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt("selectedTab", 1));
+
+        } else { //nove spustenie
+            //create a job
+            mJobScheduler = JobScheduler.getInstance(this);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    constructJob();
+                }
+            }, (UPDATE_PERIOD_MIN/2)*60*1000); //delay polovica z nastavenej update period
         }
-    /*
-    //vytvorenie fragmentov
-        if (savedInstanceState != null) {
-            //Restore the fragment's instance
-            fPrehlad = (FragmentPrehlad2) getSupportFragmentManager().getFragment(savedInstanceState, "prehlad");
-        } else {
-            //vytvorenie novej instancie fragmentu
-            fPrehlad = FragmentPrehlad2.newInstance();
-        }*/
 
     } // end ActivityMain onCreate method
 
@@ -118,10 +118,6 @@ public class MainActivity
             context == get;
         }*/
         return MainActivity.context;
-    }
-
-    public Context getMyContext(){
-        return getApplicationContext();
     }
 
     // vytvorenie menu
@@ -252,7 +248,18 @@ public class MainActivity
         Log.i("LIFECYCLE", "MainActivity.onDestroy() was called");
     }
 
-    // ---------------- adapter, ktory vytvara obsahy jednotlivych tab-ov -------------------------------------------------------------
+    private void constructJob(){
+        JobInfo.Builder builder = new JobInfo.Builder(UPDATE_JOB_ID, new ComponentName(this, MyService.class)); // Component name = meno služby, ktorú chceme spustiť
+
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        builder.setPersisted(true);
+        //builder.setPeriodic(10*60*1000); //kazde 10 min
+        builder.setPeriodic(UPDATE_PERIOD_MIN*60*1000);
+
+        mJobScheduler.schedule(builder.build());
+    }
+
+// ---------------- adapter, ktory vytvara obsahy jednotlivych tab-ov -------------------------------------------------------------
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -270,26 +277,21 @@ public class MainActivity
             // Return a coresponding fragment for each tab
             switch (position) {
                 case 0:
-                    //return PrehladFragment.newInstance(position + 1);
                     return VsetkoFragment.newInstance();
-                    //return FragmentPrehlad2.newInstance();
+                /*case 1:
+                    return TemaFragment.newInstance();*/
                 case 1:
-                    return TemaFragment.newInstance();
+                    return FragmentRubriky.newInstance();
                 case 2:
-                    return RubrikyFragment.newInstance(position + 1);
-                case 3:
-                    //return BaterkaFragment.newInstance(position + 1); /*android.support.v4.app.fra*/
                     return webViewTestFragment.newInstance();
-                    //return postTestFragment.newInstance();
-                    //return PrehladFragment.newInstance(position + 1);
             }
-            return PrehladFragment.newInstance(position + 1);
+            return VsetkoFragment.newInstance();
         }
 
         @Override
         public int getCount() {
-            // Show 4 total pages.
-            return 4;
+            // Show 3 total pages.
+            return 3;
         }
 
         @Override
@@ -298,267 +300,19 @@ public class MainActivity
             switch (position) {
                 case 0:
                     return getString(R.string.title_section1).toUpperCase(l);
+                /*case 1:
+                    return getString(R.string.title_section2).toUpperCase(l);*/
                 case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
                     return getString(R.string.title_section3).toUpperCase(l);
-                case 3:
+                case 2:
                     return getString(R.string.title_section4).toUpperCase(l);
             }
             return null;
         }
     }
 
-// ---------------- fragment Prehľad ------------------------------------------------------------------------------------
-    /**
-     * fragment Prehľad
-     */
-    public static class PrehladFragment
-        extends Fragment
-        implements AdapterView.OnItemClickListener{
-
-        static ArrayAdapter<ArticleObj> adapterVsetko;
-        //static ArrayAdapter<ArticleObj> adapterNajcitanejsie;
-
-        List<ArticleObj> vsetko;
-        //List<ArticleObj> najcitanejsie;
-
-        private static final String ARG_SECTION_NUMBER = "section_number"; //The fragment argument representing the section number for this fragment.
-
-        /**
-         * Returns a new instance of this fragment for the given section number.
-         */
-        public static PrehladFragment newInstance(int sectionNumber) {
-            PrehladFragment fragment = new PrehladFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PrehladFragment() {
-        }
-
-        /*
-        public void onSaveInstanceState(Bundle outState) {
-            super.onSaveInstanceState(outState);
-            outState.putInt("tabState", R.layout.fi getSelectedTab());
-            findViewById()
-        }
-        */
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_prehlad, container, false);
-
-        /*
-            // pridanie tabHost do rootView
-            TabHost tabHost = (TabHost) rootView.findViewById(R.id.tabHost);
-            tabHost.setup();
-
-            tabHost.getCurrentTab();
-        */
-            vsetko = new ArrayList<ArticleObj>();
-
-
-    // vytvorenie testovacich clankoch - vsetko
-            vsetko.add(new ArticleObj("PRESTÁVKA: Chlapček Sam",
-                    "Kto je toto roztomilé chlapčiatko? Volá sa Sam, je zo štátu Georgia, USA a má veľmi zaujímavý príbeh.",
-                    R.drawable.sam,
-                    "Článok"));
-
-            vsetko.add(new ArticleObj("Misionár, ktorý bude s nimi žiť všetko. Aj blchy, aj vši",
-                    "Kto chce pracovať s bezdomovcami, mal by s nimi aj žiť. Mal by to byť človek, ktorý nie je ženatý alebo ak je to žena, tak nie je vydatá a môže s nimi",
-                    R.drawable.kazatelnica1,
-                    "Kazateľnica život"));
-
-            vsetko.add(new ArticleObj("Budem ťa milovať, len keď...",
-                    ".. ak budeme milovať, len keď.... tak nemilujeme... sme amatéri a nepochopili sme vôbec čo je to láska. Lebo ak čakáme, tak sme akurát tak dobrí",
-                    R.drawable.baterka28_02_2015,
-                    "Baterka"));
-
-
-    /*
-            najcitanejsie = new ArrayList<ArticleObj>();
-
-    // vytvorenie testovacich clankoch - najcitanejsie
-            najcitanejsie.add(new ArticleObj("Čo by som odkázal mladým mimo Cirkvi? Odpustite nám!",
-                    "Stavali sme dom a večer som utekal rýchlo na svätú omšu. Len v šuštákoch a teniskách som zastal pri potoku, aby som sa očistil. Zrazu pozerám, ...",
-                    R.drawable.kazatelnica1,
-                    "Kazateľnica život"));
-
-            najcitanejsie.add(new ArticleObj("Rady o manželstve, ktoré som potreboval počuť skôr",
-                    "Nie som expert na vzťahy. To, že som si prešiel rozvodom, mi pomohlo vidieť veci inak, ako by som ich robil dnes. Až po 16 rokoch s mojou ženou, ktorú som stratil rozvodom, som prišiel na rady, ktoré píšem.",
-                    R.drawable.porozvode,
-                    "Článok"));
-
-    */
-
-
-
-
-
-    /*
-    // pridanie jednotlivych tabs do tabHost-u
-        // tab1
-            TabHost.TabSpec spec1 = tabHost.newTabSpec("tab1");
-            spec1.setContent(R.id.tab1);
-            spec1.setIndicator("Všetko");
-            tabHost.addTab(spec1);*/
-
-            //listViewVsetko
-            //adapterVsetko = new ArrayAdapter<String>(MainActivity.context, R.layout.clanok_list_item, R.id.item_tvDescription, vsetko);
-            adapterVsetko = new ClanokAdapter(MainActivity.context, R.layout.clanok_list_item, vsetko, getLayoutInflater(savedInstanceState));
-            ListView listViewVsetko = (ListView) rootView.findViewById(R.id.lvVsetko);
-            listViewVsetko.setAdapter(adapterVsetko);
-            listViewVsetko.setOnItemClickListener(this);
-                //Log.d("Vytvaranie", "Vytvoril sa listViewVsetko"); //kontrolny zapis do logu
-
-    /*
-        // tab2
-            TabHost.TabSpec spec2 = tabHost.newTabSpec("tab2");
-            spec2.setContent(R.id.tab2);
-            spec2.setIndicator("Naj" +
-                    "čítanejšie");
-            tabHost.addTab(spec2);
-
-            //listViewNajcitanejsie
-            adapterNajcitanejsie = new ClanokAdapter(MainActivity.context, R.layout.clanok_list_item, najcitanejsie, getLayoutInflater(savedInstanceState));
-            ListView listViewNajcitanejsie = (ListView) rootView.findViewById(R.id.lvNajcitanejsie);
-            listViewNajcitanejsie.setAdapter(adapterNajcitanejsie);
-            listViewNajcitanejsie.setOnItemClickListener(this);
-    */
-
-        // tab 3
-            /*
-            TabHost.TabSpec spec3 = tabHost.newTabSpec("tab3");
-            spec3.setContent(R.id.tab2);
-            spec3.setIndicator("Rozhovor");
-            tabHost.addTab(spec3);
-
-        //tab 4
-            TabHost.TabSpec spec4 = tabHost.newTabSpec("tab4");
-            spec4.setContent(R.id.tab4);
-            spec4.setIndicator("Názor");
-            tabHost.addTab(spec4);*/
-
-
-            return rootView;
-        }
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            ArticleObj clanok = (ArticleObj) parent.getItemAtPosition(position);
-
-            //TextView txtV = (TextView) view.findViewById(R.id.item_tvDescription);
-            //Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na " + txtV.getText(), Toast.LENGTH_SHORT).show();
-
-            Intent intent = new Intent(MainActivity.context, ArticleActivity_OtherWay.class);
-            intent.putExtra(EXTRA_RUBRIKA, clanok.getSection());
-
-            startActivity(intent);
-
-        }
-    } // end class PrehladFragment
-
 
 // ---------------- fragment Rubriky -----------------------------------------------------------------------------------------------------
-    /**
-     * fragment Rubriky
-     */
-
-    public static class RubrikyFragment
-        extends Fragment
-        implements AdapterView.OnItemClickListener{
-
-        String [] rubriky = {"Téma mesiaca", "Rozhovor", "Za hranicami", "Kazatenica život", "Anima Mea"};
-
-        static ArrayAdapter<String> adapterRubriky;
-
-        /**
-         * The fragment argument representing the section number for this fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section number.
-         */
-        public static RubrikyFragment newInstance(int sectionNumber) {
-            RubrikyFragment fragment = new RubrikyFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public RubrikyFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_rubriky, container, false);
-
-            adapterRubriky = new ArrayAdapter<String>(MainActivity.context, android.R.layout.simple_list_item_1, rubriky);
-
-            ListView listViewRubriky = (ListView) rootView.findViewById(R.id.listViewRubriky);
-            listViewRubriky.setAdapter(adapterRubriky);
-
-            listViewRubriky.setOnItemClickListener(this);
-
-            return rootView;
-        }
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            TextView txtV = (TextView) view;
-            //Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na rubriku " + txtV.getText(), Toast.LENGTH_LONG).show();
-
-        // potrebne nastavenia na spustenie novej aktivity Rubrika + preposlanie informacie ktora rubrika
-            Intent intent = new Intent(MainActivity.context, RubrikaAktivity.class);
-            intent.putExtra(EXTRA_RUBRIKA, txtV.getText());
-
-            startActivity(intent);
-        }
-
-    }// end class RubrikyFragment
-
-
-// ---------------- fragment BaterkaFragment ----------------------------------------------------------------------------------------------
-    /**
-     * fragment BaterkaFragment
-     */
-    public static class BaterkaFragment
-            extends Fragment {
-        /**
-         * The fragment argument representing the section number for this fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section number.
-         */
-        public static BaterkaFragment newInstance(int sectionNumber) {
-            BaterkaFragment fragment = new BaterkaFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public BaterkaFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_baterka, container, false);
-            return rootView;
-        }
-    }// end class BaterkaFragment
-
 
 
 } // end MainActivity

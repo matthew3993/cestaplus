@@ -6,6 +6,7 @@ package bc.cestaplus.extras;
 public interface IKeys {
     public interface IPrehlad {
 
+    //articleObj
         public static final String KEY_CLANKY = "cestaplus_allArticles";
         public static final String KEY_TITLE = "title";
         public static final String KEY_SHORT_TEXT = "short_text";
@@ -15,5 +16,8 @@ public interface IKeys {
         public static final String KEY_LOCKED = "locked";
         public static final String KEY_ID = "ID";
 
+    //articleText
+        public static final String KEY_AUTOR = "autor";
+        public static final String KEY_TEXT = "text";
     }
 }

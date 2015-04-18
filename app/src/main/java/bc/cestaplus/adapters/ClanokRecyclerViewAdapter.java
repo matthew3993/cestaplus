@@ -14,7 +14,7 @@ import com.android.volley.toolbox.ImageLoader;
 
 import java.util.ArrayList;
 
-import bc.cestaplus.ArticleObj;
+import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 import bc.cestaplus.network.VolleySingletonOld;
 
@@ -24,7 +24,7 @@ import bc.cestaplus.network.VolleySingletonOld;
 public class ClanokRecyclerViewAdapter
     extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int TYPE_FOOTER = 100; //preco prave sto!? :) - len tak
+    private static final int TYPE_FOOTER = 100; //ľubovoľná hodnota
 
     private LayoutInflater inflater;
     private ArrayList<ArticleObj> clanky  = new ArrayList<>(); // vseobecne pomenovanie v adaptery
@@ -38,7 +38,7 @@ public class ClanokRecyclerViewAdapter
      */
     public ClanokRecyclerViewAdapter(Context context/*, List data*/){
         inflater = LayoutInflater.from(context);
-        /*this.clanky = (ArrayList) data;*/
+        /*this.rubriky = (ArrayList) data;*/
         volleySingleton = VolleySingletonOld.getInstance();
         imageLoader = volleySingleton.getImageLoader();
     }
@@ -73,7 +73,6 @@ public class ClanokRecyclerViewAdapter
                 break;  // !!!!
             }
         }
-        //Log.d("Lifecycle", "onCreateHolder called");
 
         return holder;
     }
@@ -83,7 +82,7 @@ public class ClanokRecyclerViewAdapter
 
         if (viewHolder instanceof FooterViewHolder){
             FooterViewHolder holder = (FooterViewHolder) viewHolder;
-            holder.btnLoadMore.setText("Load more");
+            //holder.btnLoadMore.setText("Load more");
 
         } else {
             ArticleViewHolder holder = (ArticleViewHolder) viewHolder;
@@ -125,6 +124,11 @@ public class ClanokRecyclerViewAdapter
         }
     } //end getItemViewType
 
+    /**
+     * Load the image from url, using ImageLoader
+     * @param imageUrl
+     * @param viewHolder
+     */
     private void loadImage(String imageUrl, final ArticleViewHolder viewHolder){
 
         if (!imageUrl.equals("NA")){
@@ -136,7 +140,7 @@ public class ClanokRecyclerViewAdapter
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
+                    //do nothing
                 }
             });
         }
@@ -154,7 +158,7 @@ public class ClanokRecyclerViewAdapter
 
 
     /**
-     * ViewHolder sa vytvori raz a drz jednotlive Views z item_View, takze ich potom netreba hladat
+     * ViewHolder sa vytvori raz a drží jednotlive Views z item_view, takze ich potom netreba hladat
      */
     class ArticleViewHolder
         extends RecyclerView.ViewHolder
@@ -189,7 +193,7 @@ public class ClanokRecyclerViewAdapter
 
             } else {
                 Intent intent = new Intent(MainActivity.context, ArticleActivity_OtherWay.class);
-                intent.putExtra(EXTRA_RUBRIKA, clanky.get( getPosition() ) .getSection());
+                intent.putExtra(EXTRA_NAZOV_RUBRIKY, rubriky.get( getPosition() ) .getSection());
 
                 //ActivityCompat.startActivity(ArticleActivity_OtherWay, intent, null);
                 v.getContext().startActivity(intent);
