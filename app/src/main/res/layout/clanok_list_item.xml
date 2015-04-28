@@ -12,7 +12,6 @@
         android:id="@+id/item_ivObr"
         android:layout_width="120dp"
         android:layout_height="80dp"
-        android:src="@drawable/kazatelnica1"
         android:layout_gravity="center_horizontal|top"
 
         android:maxWidth="120dp"

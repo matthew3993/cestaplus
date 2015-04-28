@@ -14,7 +14,7 @@ import me.tatarka.support.job.JobService;
 /**
  * Created by Matej on 1. 4. 2015.
  */
-public class MyService
+public class UpdateService
     extends JobService
     implements ArticlesLoadedListener {
 
@@ -28,7 +28,7 @@ public class MyService
      */
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
-        Toast.makeText(CustomApplication.getCustomAppContext(), "onstartjob", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(CustomApplication.getCustomAppContext(), "onstartjob", Toast.LENGTH_SHORT).show();
 
         this.jobParameters = jobParameters;
 
@@ -45,5 +45,6 @@ public class MyService
     @Override
     public void onArticlesLoaded(ArrayList<ArticleObj> listArticles) {
         jobFinished(jobParameters, false);
-    }
-} //end class MyService
+    } //end onArticlesLoaded
+
+} //end class UpdateService

@@ -1,9 +1,13 @@
 package bc.cestaplus.activities;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBarActivity;
@@ -19,26 +23,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import bc.cestaplus.fragments.FragmentRubriky;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONObject;
+
+import bc.cestaplus.fragments.RubrikyFragment;
 import bc.cestaplus.R;
 import bc.cestaplus.fragments.VsetkoFragment;
-import bc.cestaplus.fragments.webViewTestFragment;
+import bc.cestaplus.network.VolleySingleton;
+import bc.cestaplus.test.webViewTestFragment;
 
+import bc.cestaplus.utilities.CustomApplication;
+import bc.cestaplus.utilities.SessionManager;
+import bc.cestaplus.utilities.Util;
 import me.tatarka.support.job.JobInfo;
 import me.tatarka.support.job.JobScheduler;
-import bc.cestaplus.services.MyService;
+import bc.cestaplus.services.UpdateService;
 
 
 public class MainActivity
     extends ActionBarActivity
     implements ActionBar.TabListener {
 
-    public static final String API_KEY = "";        //API key
-
-    // job constants
+ // job constants
     private static final int UPDATE_JOB_ID = 50;   //ľubovoľne zvolená hodnota, ale stale tá istá pre update job
     private static final int UPDATE_PERIOD_MIN = 60; // čas medzi automatickými aktualizáciami
 
+ // atributes
     public static Context context;
 
     SectionsPagerAdapter mSectionsPagerAdapter;
@@ -47,9 +59,36 @@ public class MainActivity
 
     private JobScheduler mJobScheduler;
 
+    private SessionManager session;
+
+    private VolleySingleton volleySingleton;
+
+    private ProgressDialog pDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        session = new SessionManager(getApplicationContext());
+        volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //inicializácia volleySingleton - dôležité !!!
+
+    //kontrola prihlásenia
+        if (!session.isLoggedIn()){ // ak už nie sme prihlásení
+
+            if (session.isRemembered()){ //ak je zapamätané meno a heslo
+                // Progress dialog
+                pDialog = new ProgressDialog(this);
+                pDialog.setCancelable(false);
+
+                loginTry(session.getEmail(), session.getPassword());
+
+            } else { ////ak NIE je zapamätané meno a heslo
+                // Launching the login activity
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }
 
         //long currentTime = currentTimeMillis();
 
@@ -105,7 +144,9 @@ public class MainActivity
                 public void run() {
                     constructJob();
                 }
-            }, (UPDATE_PERIOD_MIN/2)*60*1000); //delay polovica z nastavenej update period
+            },
+            //(UPDATE_PERIOD_MIN/2)*60*1000); //delay polovica z nastavenej update period
+            30*1000); //30 sek
         }
 
     } // end ActivityMain onCreate method
@@ -249,14 +290,76 @@ public class MainActivity
     }
 
     private void constructJob(){
-        JobInfo.Builder builder = new JobInfo.Builder(UPDATE_JOB_ID, new ComponentName(this, MyService.class)); // Component name = meno služby, ktorú chceme spustiť
+        //1 - vytvorenie Builder-a
+        JobInfo.Builder builder = new JobInfo.Builder(UPDATE_JOB_ID, new ComponentName(this, UpdateService.class)); // Component name = meno služby, ktorú chceme spustiť
 
-        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        //2 - nastavenie vlastností Jobu
+        builder.setPeriodic(UPDATE_PERIOD_MIN*60*1000); // v milisekundách
+        //builder.setPeriodic(60*1000); //1 min
         builder.setPersisted(true);
-        //builder.setPeriodic(10*60*1000); //kazde 10 min
-        builder.setPeriodic(UPDATE_PERIOD_MIN*60*1000);
+        //builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
 
+        //3 - naplánovanie Jobu
         mJobScheduler.schedule(builder.build());
+
+        //4 - (optional) info notification
+        Util.issueNotification("Job naplánovaný", 3); // naplánovanie id = 3
+    }
+
+    private void loginTry(final String email, final String password) {
+        // Tag used to cancel the request
+        //String tag_string_req = "req_login";
+
+        pDialog.setMessage("Logging in ...");
+        showDialog();
+
+        Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response){
+
+                int error_code = volleySingleton.parseErrorCode(response);
+
+                if (error_code == 0){
+                    String API_key = volleySingleton.parseAPI_key(response);
+
+                    session.prihlas(API_key);
+
+                    //inform the user
+                    hideDialog();
+                    Toast.makeText(CustomApplication.getCustomAppContext(), "Prihlásenie úspešné!", Toast.LENGTH_LONG).show();
+
+                } else {
+                    hideDialog();
+                    volleySingleton.handleLoginErrorCode(error_code);
+                }
+
+            }//end onResponse
+        };
+
+        Response.ErrorListener errorLis = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(),
+                        "CHYBA PRIHLASOVANIA " + error.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        };
+
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", password);
+
+        volleySingleton.sendLoginRequestPOST(params, responseLis, errorLis);
+    }
+
+    private void showDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hideDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
     }
 
 // ---------------- adapter, ktory vytvara obsahy jednotlivych tab-ov -------------------------------------------------------------
@@ -281,7 +384,7 @@ public class MainActivity
                 /*case 1:
                     return TemaFragment.newInstance();*/
                 case 1:
-                    return FragmentRubriky.newInstance();
+                    return RubrikyFragment.newInstance();
                 case 2:
                     return webViewTestFragment.newInstance();
             }
@@ -309,10 +412,6 @@ public class MainActivity
             }
             return null;
         }
-    }
-
-
-// ---------------- fragment Rubriky -----------------------------------------------------------------------------------------------------
-
+    }//end SectionPagerAdapter
 
 } // end MainActivity

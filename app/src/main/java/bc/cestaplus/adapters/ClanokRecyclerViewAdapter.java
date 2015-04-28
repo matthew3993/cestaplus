@@ -14,9 +14,10 @@ import com.android.volley.toolbox.ImageLoader;
 
 import java.util.ArrayList;
 
+import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
-import bc.cestaplus.network.VolleySingletonOld;
+import bc.cestaplus.utilities.CustomApplication;
 
 /**
  * Created by Matej on 4.3.2015.
@@ -29,7 +30,7 @@ public class ClanokRecyclerViewAdapter
     private LayoutInflater inflater;
     private ArrayList<ArticleObj> clanky  = new ArrayList<>(); // vseobecne pomenovanie v adaptery
 
-    private VolleySingletonOld volleySingleton;
+    private VolleySingleton volleySingleton;
     private ImageLoader imageLoader;
 
     /**
@@ -39,7 +40,7 @@ public class ClanokRecyclerViewAdapter
     public ClanokRecyclerViewAdapter(Context context/*, List data*/){
         inflater = LayoutInflater.from(context);
         /*this.rubriky = (ArrayList) data;*/
-        volleySingleton = VolleySingletonOld.getInstance();
+        volleySingleton = VolleySingleton.getInstance(CustomApplication.getCustomAppContext());
         imageLoader = volleySingleton.getImageLoader();
     }
 

@@ -1,4 +1,4 @@
-package bc.cestaplus.fragments;
+package bc.cestaplus.test;
 
 
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 import bc.cestaplus.R;
 import bc.cestaplus.network.VolleySingleton;
-import bc.cestaplus.network.requests.JsonArrayCustomUtf8Request;
+import bc.cestaplus.network.custom_requests.JsonArrayCustomUtf8Request;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,37 +72,12 @@ public class postTestFragment extends Fragment {
         //textView.setText(R.string.hello_blank_fragment);
 
         //sendStringRequest();
-        sendTestJSONRequest();
+        sendTestJSONRequestPOST();
 
         return view;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private void sendTestJSONRequest() {
+    private void sendTestJSONRequestPOST() {
         String url = "http://vaii.fri.uniza.sk/~mahut8/bc/jsonTest.php";
 
         Map<String, String> params = new HashMap<String, String>();

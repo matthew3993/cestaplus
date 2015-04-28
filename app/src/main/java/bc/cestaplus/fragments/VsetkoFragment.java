@@ -171,7 +171,7 @@ public class VsetkoFragment
             zoznamVsetko = savedInstanceState.getParcelableArrayList(ULOZENE_VSETKO);
             pocSrt = savedInstanceState.getInt("pocSrt", 1);
 
-
+            //ošetrenie prípadu, keď po rýchlom otočení po spustení ostal zoznam prázdny
             if (zoznamVsetko.isEmpty()){ //ak je zoznam clankov prazdny,
                 //start the update task - will trigger onArticlesLoaded
                 Toast.makeText(getActivity(), "executing update task from VSETKOfragment ORIENTATION CHANGES", Toast.LENGTH_LONG).show();

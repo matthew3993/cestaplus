@@ -29,15 +29,20 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import bc.cestaplus.network.custom_requests.JsonObjectCustomUtf8Request;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.objects.ArticleText;
 import bc.cestaplus.R;
-import bc.cestaplus.network.requests.JsonArrayCustomUtf8Request;
+import bc.cestaplus.network.custom_requests.JsonArrayCustomUtf8Request;
 import bc.cestaplus.utilities.CustomApplication;
 
 // importy IKeys
+import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_APY_KEY;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_CLANKY;
+import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_ERROR_CODE;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_ID;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_IMAGE_URL;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_LOCKED;
@@ -47,6 +52,7 @@ import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_SHORT_TEXT;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_TITLE;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_AUTOR;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_TEXT;
+import static com.android.volley.Request.*;
 
 /**
  * Created by Matej on 3.3.2015.
@@ -60,7 +66,7 @@ public class VolleySingleton {
 
     public static final String URL_CESTA_PLUS_ANDROID = "http://www.cestaplus.sk/_android/";
     public static final String GET_ARTICLES = "getAndroidData.php";
-    public static final String GET_CONCRETE_ARTICLE = "getAndroidData_article.php";
+    public static final String GET_CONCRETE_ARTICLE = "getAndroidDataArticle.php";
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -119,7 +125,7 @@ public class VolleySingleton {
                                              Response.Listener<JSONArray> responseList, Response.ErrorListener errList){
 
         JsonArrayCustomUtf8Request request = new JsonArrayCustomUtf8Request(
-                Request.Method.GET,
+                Method.GET,
                 getRequestUrl(section, limit, page),
                 //"http://vaii.fri.uniza.sk/~mahut8/bc/vsetkoTest6.json",
                 null,
@@ -136,7 +142,7 @@ public class VolleySingleton {
                                               Response.Listener<JSONObject> responseList, Response.ErrorListener errList){
 
         JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.GET,
+                Method.GET,
                 getRequestUrl(section, limit, page),
                 //"http://vaii.fri.uniza.sk/~mahut8/bc/vsetkoTest6.json",
                 (JSONObject) null,
@@ -383,7 +389,7 @@ public class VolleySingleton {
                                       Response.Listener<JSONObject> responseLis, Response.ErrorListener errLis){
 
         JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.GET,
+                Method.GET,
                 getArticleRequestUrl(id, withPictures),
                 (JSONObject) null,
                 responseLis,
@@ -452,9 +458,99 @@ public class VolleySingleton {
         }
     } //end parseArticleTextResponse
 
+//login
+    public void sendLoginRequestPOST(final Map<String, String> parametre,
+                                     Response.Listener<JSONObject> responseList,
+                                     Response.ErrorListener errList){
+
+    // create a login request
+        /*JsonObjectRequest request = new JsonObjectRequest(
+                Method.POST,
+                "http://vaii.fri.uniza.sk/~mahut8/bc/loginTest/login.php",
+                responseList,
+                errList) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = parametre;
+                return params;
+            }
+
+        };*/
+        JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
+                Method.POST,
+                "http://vaii.fri.uniza.sk/~mahut8/bc/loginTest/login.php",
+                parametre,
+                responseList,
+                errList
+        );
+
+        Toast.makeText(CustomApplication.getCustomAppContext(), "Sending TEST LOGIN request ...", Toast.LENGTH_SHORT).show();
+        mRequestQueue.add(request);
+    } //end sendLoginRequestPOST
+
+    public int parseErrorCode(JSONObject response) {
+
+        int error_code = 5; // ak JSON feed nie je v poriadku, nastavi sa tato hodnota
+
+        if (response != null/* && response.length() > 2*/) {
+            try {
+                // kontrola error_code
+                if (response.has(KEY_ERROR_CODE) && !response.isNull(KEY_ERROR_CODE)) {
+                    error_code = response.getInt(KEY_ERROR_CODE);
+                }
+
+            } catch (JSONException jsonEx) {
+                Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA JSON PARSOVANIA" + jsonEx.getMessage(), Toast.LENGTH_LONG).show();
+            } //end catch
+        } // end if
+
+        return error_code;
+    }
+
+    public String parseAPI_key(JSONObject response) {
+        String API_key = "NA";
+        try {
+            //kontrola API_key
+            if (response.has(KEY_APY_KEY) && !response.isNull(KEY_APY_KEY)) {
+                API_key = response.getString(KEY_APY_KEY);
+            }
+
+        } catch (JSONException e) {
+            Toast.makeText(CustomApplication.getCustomAppContext(), "Chyba parsovnania API_key!", Toast.LENGTH_LONG).show();
+        }
+        return API_key;
+    }
+
+    public void handleLoginErrorCode(int error_code){
+        switch (error_code){
+            case 1:{
+                Toast.makeText(CustomApplication.getCustomAppContext(), "Chýba email alebo heslo!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case 2:{
+                Toast.makeText(CustomApplication.getCustomAppContext(), "Zadaný email nie je v databáze!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case 3:{
+                Toast.makeText(CustomApplication.getCustomAppContext(), "Nesprávne heslo!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            case 4:{
+                Toast.makeText(CustomApplication.getCustomAppContext(), "Chyba pripojenia na databázu!", Toast.LENGTH_LONG).show();
+                break;
+            }
+            default: {
+                Toast.makeText(CustomApplication.getCustomAppContext(), "Chyba parsovania!", Toast.LENGTH_LONG).show();
+                break;
+            }
+        } // end switch
+    }
 
     //TODO zakomponovat tuto metodu do kodu vyssie - preburat kod!!
     private boolean contains(JSONObject jsonObject, String key){
         return jsonObject != null && jsonObject.has(key) && !jsonObject.isNull(key) ? true : false;
     }
+
 } // end of VolleySingleton class

@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import bc.cestaplus.R;
 import bc.cestaplus.activities.RubrikaAktivity;
@@ -22,7 +21,7 @@ import bc.cestaplus.adapters.RubrikyAdapter;
 /**
  * fragment Rubriky
  */
-public class FragmentRubriky
+public class RubrikyFragment
         extends Fragment
         implements AdapterView.OnItemClickListener{
 
@@ -41,14 +40,14 @@ public class FragmentRubriky
     /**
      * Returns a new instance of this fragment for the given section number.
      */
-    public static FragmentRubriky newInstance() {
-        return new FragmentRubriky();
+    public static RubrikyFragment newInstance() {
+        return new RubrikyFragment();
     }
 
     /**
      * default empty constructor
      */
-    public FragmentRubriky() {
+    public RubrikyFragment() {
     }
 
     @Override

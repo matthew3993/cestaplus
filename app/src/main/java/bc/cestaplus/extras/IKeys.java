@@ -6,6 +6,10 @@ package bc.cestaplus.extras;
 public interface IKeys {
     public interface IPrehlad {
 
+    //login
+        public static final String KEY_ERROR_CODE = "error_code";
+        public static final String KEY_APY_KEY = "API_key";
+
     //articleObj
         public static final String KEY_CLANKY = "cestaplus_allArticles";
         public static final String KEY_TITLE = "title";

@@ -1,4 +1,4 @@
-package bc.cestaplus.fragments;
+package bc.cestaplus.test;
 
 
 import android.content.Intent;

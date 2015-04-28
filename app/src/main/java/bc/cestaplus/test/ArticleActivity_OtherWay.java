@@ -1,4 +1,4 @@
-package bc.cestaplus.activities;
+package bc.cestaplus.test;
 
 import android.content.res.Configuration;
 import android.support.v7.app.ActionBarActivity;

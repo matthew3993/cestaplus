@@ -21,11 +21,10 @@ import java.util.ArrayList;
 
 import bc.cestaplus.R;
 import bc.cestaplus.adapters.ClanokRecyclerViewAdapter;
-import bc.cestaplus.fragments.FragmentRubriky;
+import bc.cestaplus.fragments.RubrikyFragment;
 import bc.cestaplus.listeners.RecyclerItemClickListener;
 import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.objects.ArticleObj;
-import bc.cestaplus.tasks.UpdateTask;
 import bc.cestaplus.utilities.CustomApplication;
 
 
@@ -68,7 +67,6 @@ public class RubrikaAktivity
         volleySingleton = VolleySingleton.getInstance(this);
         tvVolleyErrorRubrika = (TextView) findViewById(R.id.tvVolleyErrorRubrika);
 
-
         //inicializacia RecyclerView
         recyclerViewRubrika = (RecyclerView) findViewById(R.id.rvRubrika);
         recyclerViewRubrika.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
@@ -76,10 +74,10 @@ public class RubrikaAktivity
     //nacitanie informacii, o ktoru rubriku ide z intentu
         Intent intent = getIntent();
 
-        sectionName = intent.getStringExtra(FragmentRubriky.EXTRA_NAZOV_RUBRIKY);
+        sectionName = intent.getStringExtra(RubrikyFragment.EXTRA_NAZOV_RUBRIKY);
         getSupportActionBar().setTitle(sectionName); //nastavenie label-u aktivity podla mena konkretnej rubriky
 
-        sectionID = intent.getIntExtra(FragmentRubriky.EXTRA_ID_RUBRIKY, -1);  // negative number will cause translate method to return all == error
+        sectionID = intent.getIntExtra(RubrikyFragment.EXTRA_ID_RUBRIKY, -1);  // negative number will cause translate method to return all == error
 
     if (sectionID > 1){ // NEpodporovaná rubrika
         recyclerViewRubrika.setVisibility(View.GONE);

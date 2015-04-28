@@ -24,7 +24,7 @@ import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.utilities.MyApplication;
 import bc.cestaplus.extras.ArticlesLoadedListener;
 import bc.cestaplus.network.VolleySingleton;
-import bc.cestaplus.network.requests.JsonArrayUtf8FutureRequest;
+import bc.cestaplus.network.custom_requests.JsonArrayUtf8FutureRequest;
 import bc.cestaplus.utilities.CustomApplication;
 import bc.cestaplus.utilities.Util;
 
@@ -64,9 +64,10 @@ public class UpdateTask
      */
     public UpdateTask(ArticlesLoadedListener myComponent, boolean issueNotification) {
         //this.myService = myService;
-        this.myComponent = myComponent;
         volleySingleton = VolleySingleton.getInstance(CustomApplication.getCustomAppContext());
         requestQueue = volleySingleton.getRequestQueue();
+
+        this.myComponent = myComponent;
         this.issueNotification = issueNotification;
     }
 
@@ -87,9 +88,9 @@ public class UpdateTask
         ArrayList<ArticleObj> newArticles = getNewArticles(listArticles);
 
         if (!newArticles.isEmpty()) { // if new articles are not empty
-            MyApplication.getWritableDatabase().updateArticles(newArticles); // update database
+            MyApplication.getWritableDatabase().updateArticles(newArticles); //3 - update database
 
-            MyApplication.saveToPreferences(CustomApplication.getCustomAppContext(), "lastUpdate", tryTime); //change update time
+            MyApplication.saveToPreferences(CustomApplication.getCustomAppContext(), "lastUpdate", tryTime); // 4 - change update time
 
             if (issueNotification){
                 Util.issueNotification("Počet nových článkov: " + newArticles.size(), 1); // ak sú nové články id = 1
@@ -102,7 +103,7 @@ public class UpdateTask
         }
 
         return MyApplication.getWritableDatabase().getAllArticles();
-    }
+    } //end doInBackground
 
     private ArrayList<ArticleObj> getNewArticles(ArrayList<ArticleObj> listArticles) {
         ArrayList<ArticleObj> newArticles = new ArrayList<ArticleObj>();

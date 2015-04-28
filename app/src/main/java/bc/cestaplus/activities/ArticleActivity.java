@@ -51,7 +51,7 @@ public class ArticleActivity
 
         mWebView.getSettings().setBuiltInZoomControls(true);
 
-            Toast.makeText(getApplicationContext(), "Načítavam článok...", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "Načítavam článok...", Toast.LENGTH_LONG).show();
 
         //vytvorí listenery a odošle request
         loadArticle(); //naplní article text zobrazení do webView

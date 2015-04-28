@@ -37,7 +37,15 @@
         </activity>
 
         <activity
-            android:name=".activities.ArticleActivity_OtherWay"
+            android:name=".activities.LoginActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustPan" >
+
+        </activity>
+
+        <activity
+            android:name=".test.ArticleActivity_OtherWay"
             android:configChanges="keyboard|keyboardHidden|screenSize|orientation"
             android:label="@string/title_activity_clanok"
             android:parentActivityName=".activities.MainActivity" >
@@ -66,7 +74,7 @@
         </activity>
 
         <service
-            android:name=".services.MyService"
+            android:name=".services.UpdateService"
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="true" >
         </service>
