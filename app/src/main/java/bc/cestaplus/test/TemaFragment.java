@@ -2,6 +2,7 @@ package bc.cestaplus.test;
 
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment; // musi byt .v4.app.Fragment a nie len .Fragment
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +21,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import bc.cestaplus.network.Parser;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 import bc.cestaplus.activities.ArticleActivity;
@@ -105,9 +107,9 @@ public class TemaFragment extends Fragment {
                                             tvVolleyError.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
                                         //page-ovanie
                                             if (pocSrt == 1) {  // ak ide o prvu stranku, zoznam je prepisany
-                                                zoznamTema = volleySingleton.parseJsonArrayResponse(response);
+                                                zoznamTema = Parser.parseJsonArrayResponse(response);
                                             } else {            // ak ide o stranky nasledujuce, nove rubriky su pridane k existujucemu zoznamu
-                                                zoznamTema.addAll(volleySingleton.parseJsonArrayResponse(response));
+                                                zoznamTema.addAll(Parser.parseJsonArrayResponse(response));
                                             }
                                             crvaTema.setClanky(zoznamTema);
                                         }
@@ -138,7 +140,7 @@ public class TemaFragment extends Fragment {
                             }
                         }));
 
-        crvaTema = new ClanokRecyclerViewAdapter(getActivity());
+        crvaTema = new ClanokRecyclerViewAdapter(getActivity().getApplicationContext());
 
         // tu to bolo
         if (savedInstanceState != null){ //ak nie je null = nastala zmena stavu, napr. rotacia obrazovky
@@ -153,7 +155,7 @@ public class TemaFragment extends Fragment {
                 public void onResponse(JSONArray response) {
                     //Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
                     tvVolleyError.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
-                    zoznamTema = volleySingleton.parseJsonArrayResponse(response);
+                    zoznamTema = Parser.parseJsonArrayResponse(response);
                     crvaTema.setClanky(zoznamTema);
                 }
 

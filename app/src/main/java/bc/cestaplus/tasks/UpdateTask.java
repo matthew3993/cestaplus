@@ -1,6 +1,7 @@
 package bc.cestaplus.tasks;
 
 import android.os.AsyncTask;
+import android.text.Html;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -19,6 +20,8 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.utilities.MyApplication;
@@ -59,6 +62,10 @@ public class UpdateTask
     private VolleySingleton volleySingleton;
     private RequestQueue requestQueue;
 
+    //semaphore
+    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+    private final Lock w = rwl.writeLock();
+
     /**
      * CONSTRUCTOR
      */
@@ -76,16 +83,20 @@ public class UpdateTask
         super.onPreExecute();
     }
 
+    //what about synchronized??
     protected ArrayList<ArticleObj> doInBackground(Void... params) {
+
+        if(rwl.isWriteLocked()){
+            Util.issueNotification("Čakám, semafor zamknutý", 4); // semafory id = 4
+        }
+        w.lock(); //uzamknutie semafora
 
         long tryTime = currentTimeMillis(); //save current time before sending request
 
         JSONArray response = sentUpdateRequest(); // 1 - send request
         ArrayList<ArticleObj> listArticles = parseJsonArrayResponse(response); // 2 - parse the response //response null check inside this method
-        //MyApplication.getWritableDatabase().insertArticlesAll(listArticles, false); // 3 - insert parsed articles into database
 
-        //check if they are really new
-        ArrayList<ArticleObj> newArticles = getNewArticles(listArticles);
+        ArrayList<ArticleObj> newArticles = getNewArticles(listArticles); //check if they are really new
 
         if (!newArticles.isEmpty()) { // if new articles are not empty
             MyApplication.getWritableDatabase().updateArticles(newArticles); //3 - update database
@@ -96,13 +107,18 @@ public class UpdateTask
                 Util.issueNotification("Počet nových článkov: " + newArticles.size(), 1); // ak sú nové články id = 1
             }
 
-        } else {
+        /*} else {
             if (issueNotification){
                 Util.issueNotification("Žiadne nové články", 2); // ak nie sú žiadne nové články id = 2
             }
+            */
         }
 
-        return MyApplication.getWritableDatabase().getAllArticles();
+        ArrayList<ArticleObj> ret = MyApplication.getWritableDatabase().getAllArticles(); //nacitanie clankov z databazy
+
+        w.unlock(); //odomknutie semafora
+
+        return ret;
     } //end doInBackground
 
     private ArrayList<ArticleObj> getNewArticles(ArrayList<ArticleObj> listArticles) {
@@ -111,10 +127,11 @@ public class UpdateTask
         long defaultVal = 0;
         try {
             defaultVal = dateFormatAPP.parse("2010-01-01 00:00:00").getTime();
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        Date lastUpdate = new Date(MyApplication.readFromPreferences(CustomApplication.getCustomAppContext(),"lastUpdate", defaultVal));
+        Date lastUpdate = new Date(MyApplication.readFromPreferences(CustomApplication.getCustomAppContext(), "lastUpdate", defaultVal));
 
     //check
         for (int i = 0; i < listArticles.size(); i++){
@@ -139,9 +156,6 @@ public class UpdateTask
     private JSONArray sentUpdateRequest(){
         JSONArray response = null;
 
-
-        //int seconds = Calendar.getInstance().get(Calendar.SECOND);
-
         RequestFuture<JSONArray> requestFuture = RequestFuture.newFuture();
 
         JsonArrayUtf8FutureRequest request = new JsonArrayUtf8FutureRequest(
@@ -152,6 +166,7 @@ public class UpdateTask
                 requestFuture,
                 requestFuture); //end of JsonArrayUtf8FutureRequest
 
+        request.setShouldCache(false); //disable caching
         requestQueue.add(request);
 
         try {
@@ -187,7 +202,6 @@ public class UpdateTask
         }
         String lastUpdateTime = dateFormatAPI.format(MyApplication.readFromPreferences(CustomApplication.getCustomAppContext(),"lastUpdate", defaultVal));
 
-        //String lastUpdateTime = "2015-03-29%23:29:59";
         return URL_CESTA_PLUS_ANDROID + GET_NEW_ARTICLES + "?date=" + lastUpdateTime + "&limit="+20 + "&page="+1;
     }
 
@@ -260,6 +274,17 @@ public class UpdateTask
                         locked = false; // zatial !!!
                     }
 
+                    switch (section) {
+                        case "kuchynskateologia":
+                        case "normalnarodinka":
+                        case "animamea":
+                        case "tabule": {
+                            //short_text = HtmlEscape.unescapeHtml(short_text); //cez externu kniznicu
+                            short_text = Html.fromHtml(short_text).toString();
+                            break;
+                        }//end case
+                    }//end switch
+
                     //kontrola, ci bude clanok pridany do zoznamu
                     if (/*id != -1 && */ !title.equals("NA")) {
                         if (!pubDate.equals("NA")) {
@@ -293,4 +318,5 @@ public class UpdateTask
         //Toast.makeText(CustomApplication.getCustomAppContext(), "Načítaných " + tempArticles.size() + " článkov.", Toast.LENGTH_LONG).show();
         return tempArticles;
     } //end parseJsonArrayResponse
+
 } //end inner class UpdateTask

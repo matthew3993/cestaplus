@@ -21,7 +21,7 @@ public class ArticleObj
     private Date pubDate;       // datum a cas vydania                  // kvoli notifikáciam a aktualizacii
     private String section;        // typ / druh clanku, section           // kvoli notifikaciam len na vybranu rubriku a nadpisu v ArticleActivity_OtherWay
 
-    private String ID;             // id clanku                            // kvoli nacitaniu textu konkretneho clanku // ci pouzijem link??
+    private String ID;             // id clanku                            // kvoli nacitaniu textu konkretneho clanku
     private boolean locked;     // ci ide o zamknuty clanok alebo nie
     //private String link;        // odkaz na dany clanok na webe
 

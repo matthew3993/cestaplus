@@ -2,18 +2,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context="bc.cestaplus.test.ArticleActivity">
 
     <item
-        android:id="@+id/action_refresh"
-        android:title="@string/action_refresh"
-        android:icon="@drawable/ic_action_refresh"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/account"
-        android:title="@string/account"
+        android:id="@+id/action_text_size"
+        android:title="@string/action_text_size"
         android:orderInCategory="100"
         app:showAsAction="never" />
 

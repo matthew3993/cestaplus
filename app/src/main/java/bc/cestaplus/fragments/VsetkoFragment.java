@@ -2,6 +2,7 @@ package bc.cestaplus.fragments;
 
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment; // musi byt .v4.app.Fragment a nie len .Fragment
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +27,8 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import bc.cestaplus.activities.BaterkaActivity;
+import bc.cestaplus.network.Parser;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 import bc.cestaplus.activities.ArticleActivity;
@@ -132,9 +135,9 @@ public class VsetkoFragment
                                             tvVolleyError.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
                                             //page-ovanie
                                             if (pocSrt == 1) {  // ak ide o prvu stranku, zoznam je prepisany
-                                                zoznamVsetko = volleySingleton.parseJsonArrayResponse(response);
+                                                zoznamVsetko = Parser.parseJsonArrayResponse(response);
                                             } else {            // ak ide o stranky nasledujuce, nove rubriky su pridane k existujucemu zoznamu
-                                                zoznamVsetko.addAll(volleySingleton.parseJsonArrayResponse(response));
+                                                zoznamVsetko.addAll(Parser.parseJsonArrayResponse(response));
                                             }
                                             crvaVsetko.setClanky(zoznamVsetko);
                                         }
@@ -153,18 +156,23 @@ public class VsetkoFragment
                                     Toast.makeText(getActivity().getApplicationContext(), "Load more in VSETKOFragment" + pocSrt, Toast.LENGTH_SHORT).show();
 
                                 } else { // ak bolo kliknute na clanok
-                                    //Intent intent = new Intent(getActivity().getApplicationContext(), ArticleActivity_OtherWay.class);
-                                    Intent intent = new Intent(getActivity().getApplicationContext(), ArticleActivity.class);
-                                    intent.putExtra("clanok", zoznamVsetko.get(position));
+                                    if (zoznamVsetko.get(position).getSection().equalsIgnoreCase("baterka")){ //if baterka was clicked
+                                        Intent intent = new Intent(getActivity().getApplicationContext(), BaterkaActivity.class);
+                                        intent.putExtra("baterka", zoznamVsetko.get(position));
 
-                                    //ActivityCompat.startActivity(ArticleActivity_OtherWay, intent, null);
-                                    //view.getContext().startActivity(intent);
-                                    startActivity(intent);
+                                        startActivity(intent);
+
+                                    } else { // if other sections was clicked
+                                        Intent intent = new Intent(getActivity().getApplicationContext(), ArticleActivity.class);
+                                        intent.putExtra("clanok", zoznamVsetko.get(position));
+
+                                        startActivity(intent);
+                                    }
                                 }
                             }
                         }));
 
-        crvaVsetko = new ClanokRecyclerViewAdapter(getActivity());
+        crvaVsetko = new ClanokRecyclerViewAdapter(getActivity().getApplicationContext());
 
         if (savedInstanceState != null){ //ak nie je null = nastala zmena stavu, napr. rotacia obrazovky
             //obnovenie ulozeneho stavu

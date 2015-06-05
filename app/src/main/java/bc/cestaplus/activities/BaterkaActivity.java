@@ -1,7 +1,6 @@
 package bc.cestaplus.activities;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -17,11 +16,12 @@ import com.android.volley.VolleyError;
 
 import org.json.JSONObject;
 
-import bc.cestaplus.network.Parser;
-import bc.cestaplus.objects.ArticleObj;
-import bc.cestaplus.objects.ArticleText;
 import bc.cestaplus.R;
+import bc.cestaplus.network.Parser;
+import bc.cestaplus.network.Requestor;
 import bc.cestaplus.network.VolleySingleton;
+import bc.cestaplus.objects.ArticleObj;
+import bc.cestaplus.objects.BaterkaText;
 import bc.cestaplus.utilities.CustomApplication;
 import bc.cestaplus.utilities.SessionManager;
 import bc.cestaplus.utilities.Templator;
@@ -30,13 +30,12 @@ import bc.cestaplus.utilities.Util;
 /**
  * Created by Matej on 19. 3. 2015.
  */
-public class ArticleActivity
+public class BaterkaActivity
     extends ActionBarActivity {
 
     //data
     private ArticleObj article;
-    private ArticleText articleText;
-    private int articleErrorCode;
+    private BaterkaText baterkaText;
 
     //UI
     private WebView mWebView;
@@ -49,12 +48,12 @@ public class ArticleActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_article);
+        setContentView(R.layout.activity_article); //layout is same as for ArticleActivity
 
         volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //inicializácia volleySingleton - dôležité !!!
-        article = getIntent().getParcelableExtra("clanok");
+        article = getIntent().getParcelableExtra("baterka");
 
-        setCustomTitle(article.getSection()); // nastavenie nadpisu aktivity
+        getSupportActionBar().setTitle("Baterka"); // nastavenie nadpisu aktivity
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true); ak by nesla navigacia UP, resp. sa nezobrazila šípka
 
@@ -63,10 +62,9 @@ public class ArticleActivity
 
         mWebView.getSettings().setBuiltInZoomControls(true);
 
-        //vytvorí listenery a odošle request
-        loadArticle(); //naplní article text zobrazení do webView
+        loadBaterka(); //vytvorí listenery a request
 
-    } //end onCreate
+    } //end onCreate()
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -80,6 +78,7 @@ public class ArticleActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         switch (item.getItemId()) {
             case R.id.action_text_size:
                 showTextSizeDialog();
@@ -93,26 +92,21 @@ public class ArticleActivity
         return super.onOptionsItemSelected(item);
     }
 
-    // ======================================== VLASTNÉ METÓDY =====================================================================================
-    private void loadArticle() {
-        //nacitanie short text-u, autora a textu článku
+
+// ======================================== VLASTNÉ METÓDY =====================================================================================
+
+    private void loadBaterka(){ //loading a text of Baterka
+
         Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
 
                 tvVolleyErrorArticle.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
 
-                if (article.isLocked()){ //zamknuté články
-                    articleErrorCode = Parser.parseErrorCode(response);//get error code from response
-
-                } else { //verejné články
-                    articleErrorCode = 0;
-                }
-
-                articleText = Parser.parseArticleTextResponse(response); //uloženie stiahnutého textu do atribútu articleText
+                baterkaText = Parser.parseBaterka(response); //uloženie stiahnutého textu do atribútu baterkaText
 
                 //zobrazenie do webView
-                mWebView.loadDataWithBaseURL(null, Templator.createHtmlString(article, articleText, articleErrorCode),
+                mWebView.loadDataWithBaseURL(null, Templator.createBaterkaHtmlString(baterkaText, article.getPubDate()),
                         "text/html", "utf-8", null);
             }//end of onResponse
 
@@ -128,47 +122,9 @@ public class ArticleActivity
         };
 
         //odoslanie requestu
-        volleySingleton.sendGetArticleRequest(article.getID(), article.isLocked(), responseLis, errorLis, true); //boolean = či aj z obrázkami
-    }
+        Requestor.createBaterkaRequest(volleySingleton.getRequestQueue(), article.getPubDate(), responseLis, errorLis); //boolean = či aj z obrázkami
 
-    private void setCustomTitle(String section) {
-        String title = "";
-
-        switch (section) {
-            case "clanok": {
-                title = "Článok";
-                break;
-            }
-            case "tema": {
-                title = "Téma mesiaca";
-                break;
-            }
-            case "baterka": {
-                title = "Baterka";
-                break;
-            }
-            case "kuchynskateologia": {
-                title = "Kuchynská teológia";
-                break;
-            }
-            case "normalnarodinka": {
-                title = "Normálna rodinka";
-                break;
-            }
-            case "animamea": {
-                title = "Anima mea";
-                break;
-            }
-            case "tabule": {
-                title = "Tabule";
-                break;
-            }
-            default:
-                title = "Článok";
-        }//end switch
-
-        getSupportActionBar().setTitle(title); //nastavenie label-u konkretnej aktivity
-    }//end setCustomTitle()
+    }//end loadBaterka
 
     public void showTextSizeDialog() {
         // Session manager
@@ -204,11 +160,11 @@ public class ArticleActivity
         session.setTextSize(textSize); //save chosen size
 
         //reload webview
-        mWebView.loadDataWithBaseURL(null, Templator.createHtmlString(article, articleText, articleErrorCode),
+        mWebView.loadDataWithBaseURL(null, Templator.createBaterkaHtmlString(baterkaText, article.getPubDate()),
                 "text/html", "utf-8", null);
 
         dialog.dismiss(); //dismiss the dialog
 
     } //end handleSelection()
 
-}//end ArticleActivity
+}//end BaterkaActivity

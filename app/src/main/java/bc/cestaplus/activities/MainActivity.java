@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBarActivity;
@@ -28,20 +29,24 @@ import com.android.volley.VolleyError;
 
 import org.json.JSONObject;
 
+import bc.cestaplus.activities.konto_activities.LoggedActivity;
+import bc.cestaplus.activities.konto_activities.NotLoggedActivity;
+import bc.cestaplus.fragments.BaterkaFragment;
 import bc.cestaplus.fragments.RubrikyFragment;
 import bc.cestaplus.R;
 import bc.cestaplus.fragments.VsetkoFragment;
+import bc.cestaplus.network.Parser;
 import bc.cestaplus.network.VolleySingleton;
-import bc.cestaplus.test.webViewTestFragment;
 
 import bc.cestaplus.utilities.CustomApplication;
 import bc.cestaplus.utilities.SessionManager;
-import bc.cestaplus.utilities.Util;
 import me.tatarka.support.job.JobInfo;
 import me.tatarka.support.job.JobScheduler;
 import bc.cestaplus.services.UpdateService;
 
-
+/**
+ * Hlavná aktivita, spúšťa sa ako prvá pri spustení aplikácie
+ */
 public class MainActivity
     extends ActionBarActivity
     implements ActionBar.TabListener {
@@ -72,25 +77,33 @@ public class MainActivity
         session = new SessionManager(getApplicationContext());
         volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //inicializácia volleySingleton - dôležité !!!
 
-    //kontrola prihlásenia
-        if (!session.isLoggedIn()){ // ak už nie sme prihlásení
+    //kontrola módu aplikácie
+        int rola = session.getRola();
 
-            if (session.isRemembered()){ //ak je zapamätané meno a heslo
-                // Progress dialog
-                pDialog = new ProgressDialog(this);
-                pDialog.setCancelable(false);
+        if (rola == 50){ //prve spustenie appky
+            // Launching the login activity
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+            finish();
 
-                loginTry(session.getEmail(), session.getPassword());
+        } else { //dalsie spustenia
 
-            } else { ////ak NIE je zapamätané meno a heslo
-                // Launching the login activity
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
+            if (rola > 0) { //ak používame aplikáciu v prihlásenom móde
+
+                //TODO: kontrola prihlásenia
+                if (!session.isLoggedIn()) {// ak už nie sme prihlásení
+                    //pokus o opätovné prihlásenie
+                    // Progress dialog
+                    pDialog = new ProgressDialog(this);
+                    pDialog.setCancelable(false);
+
+                    loginTry(session.getEmail(), session.getPassword());
+                }
+
+            } //else { //ak používam aplikáciu v neprihlásenom móde == tak nič :D
+
+            //}
         }
-
-        //long currentTime = currentTimeMillis();
 
         MainActivity.context = getApplicationContext(); //getBaseContext();
         Log.i("LIFECYCLE", "MainActivity.onCreate() was called");
@@ -182,13 +195,53 @@ public class MainActivity
             case R.id.action_refresh:
                 Toast.makeText(this, "Aktualizujem...", Toast.LENGTH_LONG).show();
                 return true;
+
             case R.id.action_settings:
-                //star
-                //composeMessage();
+                checkScreenSize();
+                return true;
+
+            case R.id.account:
+                if (session.getRola() > 0){
+                    // Launching the LOGGED activity
+                    Intent intent = new Intent(getApplicationContext(), LoggedActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                } else {
+                    // Launching the NOT Logged activity
+                    Intent intent = new Intent(getApplicationContext(), NotLoggedActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void checkScreenSize() {
+        int screenSize = getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK;
+
+        String toastMsg;
+        switch(screenSize) {
+            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+                toastMsg = "Extra Large screen";
+                break;
+            case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                toastMsg = "Large screen";
+                break;
+            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+                toastMsg = "Normal screen";
+                break;
+            case Configuration.SCREENLAYOUT_SIZE_SMALL:
+                toastMsg = "Small screen";
+                break;
+            default:
+                toastMsg = "Nedá sa určiť veľkosť obrazovky!";
+        }
+        Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -303,7 +356,7 @@ public class MainActivity
         mJobScheduler.schedule(builder.build());
 
         //4 - (optional) info notification
-        Util.issueNotification("Job naplánovaný", 3); // naplánovanie id = 3
+        //Util.issueNotification("Job naplánovaný", 3); // naplánovanie id = 3
     }
 
     private void loginTry(final String email, final String password) {
@@ -317,20 +370,21 @@ public class MainActivity
             @Override
             public void onResponse(JSONObject response){
 
-                int error_code = volleySingleton.parseErrorCode(response);
+                int error_code = Parser.parseErrorCode(response);
 
                 if (error_code == 0){
-                    String API_key = volleySingleton.parseAPI_key(response);
+                    String API_key = Parser.parseAPI_key(response);
 
                     session.prihlas(API_key);
+                    session.setRola(1); //používame aplikáciu v prihlásenom móde
 
                     //inform the user
                     hideDialog();
-                    Toast.makeText(CustomApplication.getCustomAppContext(), "Prihlásenie úspešné!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CustomApplication.getCustomAppContext(), "Prihlásenie s uloženými údajmi bolo úspešné!", Toast.LENGTH_LONG).show();
 
                 } else {
                     hideDialog();
-                    volleySingleton.handleLoginErrorCode(error_code);
+                    Parser.handleLoginErrorCode(error_code);
                 }
 
             }//end onResponse
@@ -386,7 +440,7 @@ public class MainActivity
                 case 1:
                     return RubrikyFragment.newInstance();
                 case 2:
-                    return webViewTestFragment.newInstance();
+                    return BaterkaFragment.newInstance();
             }
             return VsetkoFragment.newInstance();
         }

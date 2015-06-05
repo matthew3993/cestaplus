@@ -1,6 +1,7 @@
 package bc.cestaplus.activities;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import bc.cestaplus.R;
 import bc.cestaplus.adapters.ClanokRecyclerViewAdapter;
 import bc.cestaplus.fragments.RubrikyFragment;
 import bc.cestaplus.listeners.RecyclerItemClickListener;
+import bc.cestaplus.network.Parser;
 import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.utilities.CustomApplication;
@@ -67,7 +69,7 @@ public class RubrikaAktivity
         volleySingleton = VolleySingleton.getInstance(this);
         tvVolleyErrorRubrika = (TextView) findViewById(R.id.tvVolleyErrorRubrika);
 
-        //inicializacia RecyclerView
+    //inicializacia RecyclerView
         recyclerViewRubrika = (RecyclerView) findViewById(R.id.rvRubrika);
         recyclerViewRubrika.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
 
@@ -79,15 +81,7 @@ public class RubrikaAktivity
 
         sectionID = intent.getIntExtra(RubrikyFragment.EXTRA_ID_RUBRIKY, -1);  // negative number will cause translate method to return all == error
 
-    if (sectionID > 1){ // NEpodporovaná rubrika
-        recyclerViewRubrika.setVisibility(View.GONE);
-
-        tvVolleyErrorRubrika.setVisibility(View.VISIBLE);
-
-
-    } else { // podporovaná rubrika
-
-        // ======= RecyclerView Touch Listener ====================================================================
+    // ======= RecyclerView Touch Listener ====================================================================
         recyclerViewRubrika.addOnItemTouchListener(
                 new RecyclerItemClickListener(this.getApplicationContext(),
                         new RecyclerItemClickListener.OnItemClickListener() {
@@ -105,9 +99,9 @@ public class RubrikaAktivity
                                             tvVolleyErrorRubrika.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
                                             //page-ovanie
                                             if (pocSrt == 1) {  // ak ide o prvu stranku, zoznam je prepisany
-                                                zoznamRubrika = volleySingleton.parseJsonArrayResponse(response);
+                                                zoznamRubrika = Parser.parseJsonArrayResponse(response);
                                             } else {            // ak ide o stranky nasledujuce, nove rubriky su pridane k existujucemu zoznamu
-                                                zoznamRubrika.addAll(volleySingleton.parseJsonArrayResponse(response));
+                                                zoznamRubrika.addAll(Parser.parseJsonArrayResponse(response));
                                             }
                                             crvaRubrika.setClanky(zoznamRubrika);
                                         }
@@ -122,7 +116,7 @@ public class RubrikaAktivity
                                     };
 
                                     volleySingleton.sendGetClankyArrayRequestGET(translateSectionId(sectionID), 20, pocSrt, responseLis, errorLis);
-                                    Toast.makeText(CustomApplication.getCustomAppContext(), "Load more in RubrikaActivity" + pocSrt, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(CustomApplication.getCustomAppContext(), "Načítavam stránku číslo: " + pocSrt, Toast.LENGTH_SHORT).show();
 
                                 } else { // ak bolo kliknute na clanok
                                     Intent intent = new Intent(CustomApplication.getCustomAppContext(), ArticleActivity.class);
@@ -149,7 +143,7 @@ public class RubrikaAktivity
                 @Override
                 public void onResponse(JSONArray response) {
                     tvVolleyErrorRubrika.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
-                    zoznamRubrika = volleySingleton.parseJsonArrayResponse(response);
+                    zoznamRubrika = Parser.parseJsonArrayResponse(response);
                     crvaRubrika.setClanky(zoznamRubrika);
                 }
 
@@ -171,7 +165,6 @@ public class RubrikaAktivity
 
         recyclerViewRubrika.setAdapter(crvaRubrika);
 
-    } // end else sectionId > 2
     } //end onCreate
 
 
@@ -211,12 +204,17 @@ public class RubrikaAktivity
 
     private String translateSectionId(int sectionId){
         switch (sectionId){
-            case 0: return "tema";
-            case 1: return "tabule";
-            case 2: return "baterka";
-            case 3: return "hranice";
-            case 4: return "kazatelnica";
-            case 5: return "anima";
+            case  0: return "tema";
+            case  1: return "normalnarodinka";
+            case  2: return "tabule";
+            case  3: return "animamea";
+            case  4: return "kuchynskateologia";
+            case  5: return "kazatelnicazivot";
+            case  6: return "zahranicami";
+            case  7: return "fejton";
+            case  8: return "poboxnebo";
+            case  9: return "zparlamentu";
+            case 10: return "baterka";
             default: return "all"; //in case of some error will return all articles
         } //end switch
     }//end translateSectionId

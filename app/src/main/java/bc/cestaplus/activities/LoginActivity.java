@@ -4,6 +4,7 @@ package bc.cestaplus.activities;
  * Created by Matej on 22. 4. 2015.
  */
 import bc.cestaplus.R;
+import bc.cestaplus.network.Parser;
 import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.utilities.CustomApplication;
 
@@ -34,7 +35,7 @@ import bc.cestaplus.utilities.SessionManager;
 public class LoginActivity extends Activity {
 
     private Button btnLogin;
-    private Button btnLinkToRegister;
+    private Button btnUseAsNotLoggedIn;
     private EditText inputEmail;
     private EditText inputPassword;
     private ProgressDialog pDialog;
@@ -49,10 +50,10 @@ public class LoginActivity extends Activity {
 
         volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //inicializácia volleySingleton - dôležité !!!
 
-        inputEmail = (EditText) findViewById(R.id.email);
+        inputEmail = (EditText) findViewById(R.id.txtvNotLoggedIn);
         inputPassword = (EditText) findViewById(R.id.password);
         btnLogin = (Button) findViewById(R.id.btnLogin);
-        btnLinkToRegister = (Button) findViewById(R.id.btnLinkToRegisterScreen);
+        btnUseAsNotLoggedIn = (Button) findViewById(R.id.btnUseAsNotLoggedIn);
 
         // Progress dialog
         pDialog = new ProgressDialog(this);
@@ -60,6 +61,7 @@ public class LoginActivity extends Activity {
 
         // Session manager
         session = new SessionManager(getApplicationContext());
+
 
         // Check if user is already logged in or not
         if (session.isLoggedIn()) {
@@ -77,20 +79,16 @@ public class LoginActivity extends Activity {
             }//end onClick
 
         });
-
-        /*
-        // Link to Register Screen
-        btnLinkToRegister.setOnClickListener(new View.OnClickListener() {
+        
+        // Button use as not logged in Click Event
+        btnUseAsNotLoggedIn.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(),
-                        RegisterActivity.class);
-                startActivity(i);
-                finish();
+                setUseAsNotLoggedIn();
             }
-        });*/
+        });
 
-    }
+    }// end onCreate
 
     private void checkForm() {
         String email = inputEmail.getText().toString();
@@ -130,31 +128,31 @@ public class LoginActivity extends Activity {
             @Override
             public void onResponse(JSONObject response){
 
-                int error_code = volleySingleton.parseErrorCode(response);
+                int error_code = Parser.parseErrorCode(response);
 
                 if (error_code == 0){
-                    String API_key = volleySingleton.parseAPI_key(response);
+                    String API_key = Parser.parseAPI_key(response);
 
-                    if (remember) {
+                    //if (remember) {
                         session.prihlasAzapamataj(API_key, email, password);
+                        session.setRola(1); //používame aplikáciu v prihlásenom móde
 
-                    } else {
-                        session.prihlas(API_key);
-                    }
+                    //} else {
+                        //session.prihlas(API_key);
+                    //}
 
                     //inform the user
                     hideDialog();
                     Toast.makeText(CustomApplication.getCustomAppContext(), "Prihlásenie úspešné!", Toast.LENGTH_LONG).show();
 
                     // Launch main activity
-                    Intent intent = new Intent(LoginActivity.this,
-                            MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
 
                 } else { //error_code != 0
                     hideDialog();
-                    volleySingleton.handleLoginErrorCode(error_code);
+                    Parser.handleLoginErrorCode(error_code);
                 }
 
             }//end onResponse
@@ -174,6 +172,16 @@ public class LoginActivity extends Activity {
         params.put("password", password);
 
         volleySingleton.sendLoginRequestPOST(params, responseLis, errorLis);
+    }
+
+    private void setUseAsNotLoggedIn() {
+        session.setRola(0); //používame aplikáciu v NEprihlásenom móde
+
+        // Launch main activity
+        Intent intent = new Intent(LoginActivity.this,
+                MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void showDialog() {

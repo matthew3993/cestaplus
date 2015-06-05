@@ -21,7 +21,16 @@ public interface IKeys {
         public static final String KEY_ID = "ID";
 
     //articleText
-        public static final String KEY_AUTOR = "autor";
+        public static final String KEY_AUTOR = "author";
         public static final String KEY_TEXT = "text";
+
+     //baterka
+        public static final String KEY_COORDINATES = "coordinates";
+        public static final String KEY_SCRIPTURE = "scripture";
+        public static final String KEY_QUOTE = "quote";
+        public static final String KEY_DEPTH_1 = "depth1";
+        public static final String KEY_DEPTH_2 = "depth2";
+        public static final String KEY_DEPTH_3 = "depth3";
+        public static final String KEY_HINT = "hint";
     }
 }

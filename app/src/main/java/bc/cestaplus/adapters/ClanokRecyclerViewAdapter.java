@@ -1,6 +1,7 @@
 package bc.cestaplus.adapters;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,16 +9,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 import bc.cestaplus.utilities.CustomApplication;
+import bc.cestaplus.utilities.SessionManager;
 
 /**
  * Created by Matej on 4.3.2015.
@@ -29,6 +34,8 @@ public class ClanokRecyclerViewAdapter
 
     private LayoutInflater inflater;
     private ArrayList<ArticleObj> clanky  = new ArrayList<>(); // vseobecne pomenovanie v adaptery
+    private int rola;
+    private int screenSize;
 
     private VolleySingleton volleySingleton;
     private ImageLoader imageLoader;
@@ -37,11 +44,13 @@ public class ClanokRecyclerViewAdapter
      * Konstruktor
      * @param context
      */
-    public ClanokRecyclerViewAdapter(Context context/*, List data*/){
+    public ClanokRecyclerViewAdapter(Context context){
         inflater = LayoutInflater.from(context);
         /*this.rubriky = (ArrayList) data;*/
         volleySingleton = VolleySingleton.getInstance(CustomApplication.getCustomAppContext());
         imageLoader = volleySingleton.getImageLoader();
+        rola = new SessionManager(CustomApplication.getCustomAppContext()).getRola();
+        this.screenSize = CustomApplication.getCustomAppScreenSize(); //get screen size
     }
 
     /**
@@ -57,7 +66,21 @@ public class ClanokRecyclerViewAdapter
 
         switch (viewType) {
             case 0: {
-                View view = inflater.inflate(R.layout.clanok_list_item, viewGroup, false);
+                View view;
+                switch(screenSize) {
+                    case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+                    case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                        view = inflater.inflate(R.layout.clanok_list_item_large, viewGroup, false);
+                        break;
+
+                    case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+                    case Configuration.SCREENLAYOUT_SIZE_SMALL:
+                        view = inflater.inflate(R.layout.clanok_list_item, viewGroup, false);
+                        break;
+
+                    default:
+                        view = inflater.inflate(R.layout.clanok_list_item, viewGroup, false);
+                }
                 holder = new ArticleViewHolder(view);
                 break;  // !!!!
             }
@@ -89,17 +112,24 @@ public class ClanokRecyclerViewAdapter
             ArticleViewHolder holder = (ArticleViewHolder) viewHolder;
             ArticleObj actArticle = clanky.get(i);
 
+        //Title
             holder.title.setText(actArticle.getTitle());
+
+        //Short text
             holder.description.setText(actArticle.getShort_text());
 
+        //Image - start to load image and check if user is logged in or not
             String imageUrl = actArticle.getImageUrl();
             loadImage(imageUrl, holder);
 
-        // ak je clanok zamknuty treba zobrazit zamok
-            if (actArticle.isLocked()) {
+            // ak je rola 0 a článok je zamknuty treba zobrazit zamok
+            if (rola == 0 && actArticle.isLocked()) {
                 holder.lockImage.setVisibility(View.VISIBLE);
+                holder.image.setAlpha( (float) 0.3);
+
             } else {
                 holder.lockImage.setVisibility(View.GONE);
+                holder.image.setAlpha( (float) 1);
             }
 
         }
