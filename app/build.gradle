@@ -21,9 +21,10 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.mcxiaoke.volley:library:1.0.+'
-    compile 'com.android.support:recyclerview-v7:21.0.+'
-    compile 'me.tatarka.support:jobscheduler:0.1.1'
     compile files('libs/jsoup-1.8.1.jar')
+    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.mcxiaoke.volley:library:1.0.+'
+    compile 'com.android.support:recyclerview-v7:22.1.1'
+    compile 'me.tatarka.support:jobscheduler:0.1.1'
+    compile 'com.android.support:support-v4:22.1.1'
 }

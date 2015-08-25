@@ -34,7 +34,12 @@ public class SessionManager {
     private static final String KEY_PASS = "pass";
 
     private static final String KEY_LAST_BATERKA_DATE = "lastBaterkaDate";
-    private static final String KEY_TEXT_SIZE = "textSize";
+    private static final String KEY_TEXT_SIZE = "pref_text_size"; //also preference
+    private static final String KEY_LIST_STYLE = "pref_list_style"; //also preference
+    private static final String KEY_POST_NOTIFICATION = "pref_post_notifications"; //also preference
+
+    public static final int LIST_STYLE_ALL = 0;
+    public static final int LIST_STYLE_PICTURES_AND_TITLES = 1;
 
     public SessionManager(Context context) {
         this._context = context;
@@ -139,14 +144,28 @@ public class SessionManager {
     }
 
     public int getTextSize(){
-        return pref.getInt(KEY_TEXT_SIZE, Util.TEXT_SIZE_NORMAL);
+        return Integer.parseInt(pref.getString(KEY_TEXT_SIZE, "1"));
     }
 
     public void setTextSize(int textSize){
-        editor.putInt(KEY_TEXT_SIZE, textSize);
+        editor.putString(KEY_TEXT_SIZE, String.valueOf(textSize));
 
         // commit changes
         editor.commit();
     }
 
+    public int getListStyle(){
+        return Integer.parseInt(pref.getString(KEY_LIST_STYLE, "0"));
+    }
+
+    public void setListStyle(int listStyle){
+        editor.putString(KEY_LIST_STYLE, String.valueOf(listStyle));
+
+        // commit changes
+        editor.commit();
+    }
+
+    public boolean getPostNotificationStatus(){
+        return pref.getBoolean(KEY_POST_NOTIFICATION, true);
+    }
 }//end class SessionManager

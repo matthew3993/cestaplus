@@ -171,7 +171,7 @@ public class LoginActivity extends Activity {
         params.put("email", email);
         params.put("password", password);
 
-        volleySingleton.sendLoginRequestPOST(params, responseLis, errorLis);
+        volleySingleton.createLoginRequestPOST(params, responseLis, errorLis);
     }
 
     private void setUseAsNotLoggedIn() {

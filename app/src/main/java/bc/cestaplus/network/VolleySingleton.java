@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
@@ -22,32 +21,18 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import bc.cestaplus.network.custom_requests.JsonObjectCustomUtf8Request;
-import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 import bc.cestaplus.network.custom_requests.JsonArrayCustomUtf8Request;
 import bc.cestaplus.utilities.CustomApplication;
 import bc.cestaplus.utilities.SessionManager;
 
 // importy IKeys
-import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_CLANKY;
-import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_ID;
-import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_IMAGE_URL;
-import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_LOCKED;
-import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_PUB_DATE;
-import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_SECTION;
-import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_SHORT_TEXT;
-import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_TITLE;
 import static com.android.volley.Request.*;
 
 /**
@@ -116,32 +101,32 @@ public class VolleySingleton {
 
 // ======================================== VLASTNÉ METÓDY =====================================================================================
 
-    public void sendGetClankyArrayRequestGET(String section, int limit, int page,
-                                             Response.Listener<JSONArray> responseList, Response.ErrorListener errList){
+    public void createGetClankyArrayRequestGET(String section, int limit, int page,
+                                               Response.Listener<JSONArray> responseList, Response.ErrorListener errList){
 
         JsonArrayCustomUtf8Request request = new JsonArrayCustomUtf8Request(
                 Method.GET,
-                Endpoints.getRequestUrl(section, limit, page),
+                Endpoints.getListOfArticlesRequestUrl(section, limit, page),
                 null,
                 responseList,
                 errList);
 
         mRequestQueue.add(request);
-    } //end sendGetClankyObjectRequestGET
+    } //end createGetClankyObjectRequestGET
 
 
-    public void sendGetClankyObjectRequestGET(String section, int limit, int page,
-                                              Response.Listener<JSONObject> responseList, Response.ErrorListener errList){
+    public void createGetClankyObjectRequestGET(String section, int limit, int page,
+                                                Response.Listener<JSONObject> responseList, Response.ErrorListener errList){
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Method.GET,
-                Endpoints.getRequestUrl(section, limit, page),
+                Endpoints.getListOfArticlesRequestUrl(section, limit, page),
                 (JSONObject) null,
                 responseList,
                 errList);
 
         mRequestQueue.add(request);
-    } //end sendGetClankyObjectRequestGET
+    } //end createGetClankyObjectRequestGET
 
 
     public void handleVolleyError(VolleyError error, TextView tvVolleyError){
@@ -165,13 +150,13 @@ public class VolleySingleton {
     }//end handleVolleyError
 
 // nacitavanie konkretneho clanku
-    public void sendGetArticleRequest(String id, boolean locked,
-                                      Response.Listener<JSONObject> responseLis, Response.ErrorListener errLis, boolean withPictures){
+    public void createGetArticleRequest(String id, boolean locked,
+                                        Response.Listener<JSONObject> responseLis, Response.ErrorListener errLis, boolean withPictures){
 
         if (!locked){ //nezamknuty = verejny clanok
             JsonObjectRequest request = new JsonObjectRequest(
                     Method.GET,
-                    Endpoints.getArticleRequestUrl(id, withPictures, null),
+                    Endpoints.getConcreteArticleRequestUrl(id, withPictures, null),
                     (JSONObject) null,
                     responseLis,
                     errLis);
@@ -187,7 +172,7 @@ public class VolleySingleton {
                 //vytvorenie requestu
                 JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
                         Method.POST,
-                        Endpoints.getArticleRequestUrl(id, withPictures, session.getAPI_key()),
+                        Endpoints.getConcreteArticleRequestUrl(id, withPictures, session.getAPI_key()),
                         params,
                         responseLis,
                         errLis);
@@ -197,7 +182,7 @@ public class VolleySingleton {
             } else { // NIE sme prihlásení
                 JsonObjectRequest request = new JsonObjectRequest(
                         Method.GET,
-                        Endpoints.getArticleRequestUrl(id, withPictures, null),
+                        Endpoints.getConcreteArticleRequestUrl(id, withPictures, null),
                         (JSONObject) null,
                         responseLis,
                         errLis);
@@ -206,28 +191,12 @@ public class VolleySingleton {
             } // if isLoggedIn
         }// if !locked
 
-    }//end sendGetArticleRequest
+    }//end createGetArticleRequest
 
-    //login
-    public void sendLoginRequestPOST(final Map<String, String> parametre,
-                                     Response.Listener<JSONObject> responseList,
-                                     Response.ErrorListener errList){
+    public void createLoginRequestPOST(final Map<String, String> parametre,
+                                       Response.Listener<JSONObject> responseList,
+                                       Response.ErrorListener errList){
 
-    // create a login request
-        /*JsonObjectRequest request = new JsonObjectRequest(
-                Method.POST,
-                "http://vaii.fri.uniza.sk/~mahut8/bc/loginTest/login.php",
-                responseList,
-                errList) {
-
-            @Override
-            protected Map<String, String> getParams() {
-                // Posting parameters to login url
-                Map<String, String> params = parametre;
-                return params;
-            }
-
-        };*/
         JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
                 Method.POST,
                 Endpoints.getLoginUrl(),
@@ -238,11 +207,7 @@ public class VolleySingleton {
 
         request.setShouldCache(false); //disable caching
         mRequestQueue.add(request);
-    } //end sendLoginRequestPOST
 
-    //TODO zakomponovat tuto metodu do kodu vyssie - preburat kod!!
-    private boolean contains(JSONObject jsonObject, String key){
-        return jsonObject != null && jsonObject.has(key) && !jsonObject.isNull(key) ? true : false;
-    }
+    } //end createLoginRequestPOST
 
-} // end of VolleySingleton class
+} // end of class VolleySingleton

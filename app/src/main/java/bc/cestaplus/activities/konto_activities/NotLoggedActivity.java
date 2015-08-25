@@ -9,11 +9,29 @@ import android.view.View;
 import android.widget.Button;
 
 import bc.cestaplus.R;
+import bc.cestaplus.activities.ArticleActivity;
+import bc.cestaplus.activities.BaterkaActivity;
 import bc.cestaplus.activities.LoginActivity;
+import bc.cestaplus.activities.MainActivity;
+import bc.cestaplus.activities.OPortaliActivity;
+import bc.cestaplus.activities.RubrikaActivity;
+import bc.cestaplus.activities.SettingsActivity;
+
+import static bc.cestaplus.extras.IKeys.KEY_ARTICLE_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_BATERKA_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_MAIN_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_NOT_LOGGED_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_O_PORTALI_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_PARENT_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_RUBRIKA_ACTIVITY;
 
 public class NotLoggedActivity
     extends ActionBarActivity {
 
+    //data
+    private String parentActivity;
+
+    //UI
     private Button btnLogin;
 
     @Override
@@ -21,7 +39,11 @@ public class NotLoggedActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_not_logged);
 
+        parentActivity = getIntent().getExtras().getString(KEY_PARENT_ACTIVITY);
+
         setTitle("Konto");
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //ak by nesla navigacia UP, resp. sa nezobrazila šípka
 
         btnLogin = (Button) findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -49,10 +71,61 @@ public class NotLoggedActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            // Launching the Settings activity
+            Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            intent.putExtra(KEY_PARENT_ACTIVITY, KEY_NOT_LOGGED_ACTIVITY);
+            startActivity(intent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * This method implements what should happen when Up button is pressed
+     * @return
+     */
+    @Override
+    public Intent getSupportParentActivityIntent() {
+        return getCustomParentActivityIntent();
+    }
+
+    private Intent getCustomParentActivityIntent() {
+        Intent i = null;
+
+        switch (parentActivity){
+            case KEY_ARTICLE_ACTIVITY:{
+                i = new Intent(this, ArticleActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                break;
+            }
+
+            case KEY_BATERKA_ACTIVITY:{
+                i = new Intent(this, BaterkaActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                break;
+            }
+
+            case KEY_MAIN_ACTIVITY:{
+                i = new Intent(this, MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                break;
+            }
+
+            case KEY_O_PORTALI_ACTIVITY:{
+                i = new Intent(this, OPortaliActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                break;
+            }
+
+            case KEY_RUBRIKA_ACTIVITY:{
+                i = new Intent(this, RubrikaActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                break;
+            }
+        }
+
+        return i;
     }
 
     private void doLogin(){

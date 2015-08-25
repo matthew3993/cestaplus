@@ -11,8 +11,20 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/account"
+        android:title="@string/account"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_o_portali"
+        android:title="@string/action_o_portali"
         android:orderInCategory="100"
         app:showAsAction="never" />
 

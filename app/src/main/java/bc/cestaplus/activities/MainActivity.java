@@ -8,8 +8,11 @@ import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Handler;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -49,11 +52,11 @@ import bc.cestaplus.services.UpdateService;
  */
 public class MainActivity
     extends ActionBarActivity
-    implements ActionBar.TabListener {
+    implements ActionBar.TabListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
  // job constants
     private static final int UPDATE_JOB_ID = 50;   //ľubovoľne zvolená hodnota, ale stale tá istá pre update job
-    private static final int UPDATE_PERIOD_MIN = 60; // čas medzi automatickými aktualizáciami
+    public static final int UPDATE_PERIOD_MIN = 60; // čas medzi automatickými aktualizáciami
 
  // atributes
     public static Context context;
@@ -64,6 +67,7 @@ public class MainActivity
 
     private JobScheduler mJobScheduler;
 
+// session
     private SessionManager session;
 
     private VolleySingleton volleySingleton;
@@ -150,17 +154,23 @@ public class MainActivity
             getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt("selectedTab", 1));
 
         } else { //nove spustenie
-            //create a job
-            mJobScheduler = JobScheduler.getInstance(this);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    constructJob();
-                }
-            },
-            //(UPDATE_PERIOD_MIN/2)*60*1000); //delay polovica z nastavenej update period
-            30*1000); //30 sek
+            if (session.getPostNotificationStatus()){ //if notifications are on
+                //create a job
+                mJobScheduler = JobScheduler.getInstance(this);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        constructJob();
+                    }
+                },
+                //(UPDATE_PERIOD_MIN/2)*60*1000); //delay polovica z nastavenej update period
+                30*1000); //30 sek
+            }
         }
+
+        //register shared preferences change listener
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .registerOnSharedPreferenceChangeListener(this);
 
     } // end ActivityMain onCreate method
 
@@ -172,52 +182,6 @@ public class MainActivity
             context == get;
         }*/
         return MainActivity.context;
-    }
-
-    // vytvorenie menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    //handler na kliknutie na itemy v action bar-e
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.action_refresh:
-                Toast.makeText(this, "Aktualizujem...", Toast.LENGTH_LONG).show();
-                return true;
-
-            case R.id.action_settings:
-                checkScreenSize();
-                return true;
-
-            case R.id.account:
-                if (session.getRola() > 0){
-                    // Launching the LOGGED activity
-                    Intent intent = new Intent(getApplicationContext(), LoggedActivity.class);
-                    startActivity(intent);
-                    finish();
-
-                } else {
-                    // Launching the NOT Logged activity
-                    Intent intent = new Intent(getApplicationContext(), NotLoggedActivity.class);
-                    startActivity(intent);
-                    finish();
-
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     private void checkScreenSize() {
@@ -243,6 +207,21 @@ public class MainActivity
         }
         Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
     }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        //when onNewIntent() is called from notification super.onNewIntent() automatically stops and hides other activities
+        super.onNewIntent(intent); // so this is important!!
+
+        if (intent.getBooleanExtra("fromNotification", false)) {
+            //restart activity
+            this.finish();
+
+            Intent i = new Intent(this, MainActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+        }
+    } // end onNewIntent()
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -403,7 +382,7 @@ public class MainActivity
         params.put("email", email);
         params.put("password", password);
 
-        volleySingleton.sendLoginRequestPOST(params, responseLis, errorLis);
+        volleySingleton.createLoginRequestPOST(params, responseLis, errorLis);
     }
 
     private void showDialog() {
@@ -415,6 +394,21 @@ public class MainActivity
         if (pDialog.isShowing())
             pDialog.dismiss();
     }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equalsIgnoreCase("pref_post_notifications")) {
+            mJobScheduler = JobScheduler.getInstance(this);
+            if (session.getPostNotificationStatus()){
+                constructJob();
+                Toast.makeText(this, "Notifikácie povolené", Toast.LENGTH_SHORT).show();
+
+            } else {
+                mJobScheduler.cancel(UPDATE_JOB_ID); //cancel update job
+                Toast.makeText(this, "Notifikácie zakázané", Toast.LENGTH_SHORT).show();
+            }
+        }//end if
+    }//end onSharedPreferenceChanged
 
 // ---------------- adapter, ktory vytvara obsahy jednotlivych tab-ov -------------------------------------------------------------
     /**

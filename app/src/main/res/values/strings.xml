@@ -33,4 +33,8 @@
     <string name="title_activity_konto">KontoActivity</string>
     <string name="title_activity_logged">LoggedActivity</string>
     <string name="action_text_size">Veľkosť písma</string>
+    <string name="action_test_notification">Issue test notification</string>
+    <string name="title_activity_oportali">OPortaliActivity</string>
+    <string name="action_o_portali">O portáli</string>
+
 </resources>

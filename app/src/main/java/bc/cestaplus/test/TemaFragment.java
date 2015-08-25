@@ -2,7 +2,6 @@ package bc.cestaplus.test;
 
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment; // musi byt .v4.app.Fragment a nie len .Fragment
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,7 +24,7 @@ import bc.cestaplus.network.Parser;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 import bc.cestaplus.activities.ArticleActivity;
-import bc.cestaplus.adapters.ClanokRecyclerViewAdapter;
+import bc.cestaplus.adapters.ClanokRecyclerViewAdapter_All;
 import bc.cestaplus.listeners.RecyclerItemClickListener;
 import bc.cestaplus.network.VolleySingleton;
 
@@ -47,7 +46,7 @@ public class TemaFragment extends Fragment {
 
 // recyclerView
     private RecyclerView recyclerViewTema; // konkretne pomenovanie vo FragmentePrehlad
-    private ClanokRecyclerViewAdapter crvaTema;
+    private ClanokRecyclerViewAdapter_All crvaTema;
 
  // vypis chyb
     private TextView tvVolleyError;
@@ -82,7 +81,7 @@ public class TemaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_prehlad2, container, false);   //!!!!
+        View view = inflater.inflate(R.layout.fragment_prehlad, container, false);   //!!!!
         tvVolleyError = (TextView) view.findViewById(R.id.tvVolleyError);
 
         //inicializacia RecyclerView
@@ -124,7 +123,7 @@ public class TemaFragment extends Fragment {
                                     } //end of onErrorResponse
                                     };
 
-                                    volleySingleton.sendGetClankyArrayRequestGET("tema", 20, pocSrt, responseLis, errorLis);
+                                    volleySingleton.createGetClankyArrayRequestGET("tema", 20, pocSrt, responseLis, errorLis);
                                     Toast.makeText(getActivity().getApplicationContext(), "Load more in TEMAFragment" + pocSrt, Toast.LENGTH_SHORT).show();
 
                                 // ak bolo kliknute na clanok
@@ -140,7 +139,7 @@ public class TemaFragment extends Fragment {
                             }
                         }));
 
-        crvaTema = new ClanokRecyclerViewAdapter(getActivity().getApplicationContext());
+        crvaTema = new ClanokRecyclerViewAdapter_All(getActivity().getApplicationContext());
 
         // tu to bolo
         if (savedInstanceState != null){ //ak nie je null = nastala zmena stavu, napr. rotacia obrazovky
@@ -169,7 +168,7 @@ public class TemaFragment extends Fragment {
             } //end of onErrorResponse
             };
 
-            volleySingleton.sendGetClankyArrayRequestGET("tema", 20, 1, responseLis, errorLis);
+            volleySingleton.createGetClankyArrayRequestGET("tema", 20, 1, responseLis, errorLis);
         }
 
         recyclerViewTema.setAdapter(crvaTema);

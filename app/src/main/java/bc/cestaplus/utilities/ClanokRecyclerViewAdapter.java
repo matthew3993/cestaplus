@@ -1,4 +1,4 @@
-package bc.cestaplus.adapters;
+package bc.cestaplus.utilities;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -9,33 +9,29 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 
+import bc.cestaplus.R;
 import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.objects.ArticleObj;
-import bc.cestaplus.R;
-import bc.cestaplus.utilities.CustomApplication;
-import bc.cestaplus.utilities.SessionManager;
 
 /**
  * Created by Matej on 4.3.2015.
  */
-public class ClanokRecyclerViewAdapter
+public abstract class ClanokRecyclerViewAdapter
     extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int TYPE_FOOTER = 100; //ľubovoľná hodnota
+    protected static final int TYPE_NORMAL = 0; //ľubovoľná hodnota
+    protected static final int TYPE_FOOTER = 100; //ľubovoľná hodnota
 
-    private LayoutInflater inflater;
-    private ArrayList<ArticleObj> clanky  = new ArrayList<>(); // vseobecne pomenovanie v adaptery
-    private int rola;
-    private int screenSize;
+    protected LayoutInflater inflater;
+    protected ArrayList<ArticleObj> clanky  = new ArrayList<>(); // vseobecne pomenovanie v adaptery
+    protected int rola;
+    protected int screenSize;
 
     private VolleySingleton volleySingleton;
     private ImageLoader imageLoader;
@@ -49,7 +45,7 @@ public class ClanokRecyclerViewAdapter
         /*this.rubriky = (ArrayList) data;*/
         volleySingleton = VolleySingleton.getInstance(CustomApplication.getCustomAppContext());
         imageLoader = volleySingleton.getImageLoader();
-        rola = new SessionManager(CustomApplication.getCustomAppContext()).getRola();
+        rola = new SessionManager(CustomApplication.getCustomAppContext()).getRola(); //get rola
         this.screenSize = CustomApplication.getCustomAppScreenSize(); //get screen size
     }
 
@@ -61,80 +57,11 @@ public class ClanokRecyclerViewAdapter
      * @return
      */
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        RecyclerView.ViewHolder holder;
+    public abstract RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType);
 
-        switch (viewType) {
-            case 0: {
-                View view;
-                switch(screenSize) {
-                    case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                    case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                        view = inflater.inflate(R.layout.clanok_list_item_large, viewGroup, false);
-                        break;
-
-                    case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                    case Configuration.SCREENLAYOUT_SIZE_SMALL:
-                        view = inflater.inflate(R.layout.clanok_list_item, viewGroup, false);
-                        break;
-
-                    default:
-                        view = inflater.inflate(R.layout.clanok_list_item, viewGroup, false);
-                }
-                holder = new ArticleViewHolder(view);
-                break;  // !!!!
-            }
-
-            case TYPE_FOOTER: {
-                View view = inflater.inflate(R.layout.button_load_more, viewGroup, false);
-                holder = new FooterViewHolder(view);
-                break; // !!!!
-            }
-
-            default:{
-                View view = inflater.inflate(R.layout.clanok_list_item, viewGroup, false);
-                holder = new ArticleViewHolder(view);
-                break;  // !!!!
-            }
-        }
-
-        return holder;
-    }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int i) {
-
-        if (viewHolder instanceof FooterViewHolder){
-            FooterViewHolder holder = (FooterViewHolder) viewHolder;
-            //holder.btnLoadMore.setText("Load more");
-
-        } else {
-            ArticleViewHolder holder = (ArticleViewHolder) viewHolder;
-            ArticleObj actArticle = clanky.get(i);
-
-        //Title
-            holder.title.setText(actArticle.getTitle());
-
-        //Short text
-            holder.description.setText(actArticle.getShort_text());
-
-        //Image - start to load image and check if user is logged in or not
-            String imageUrl = actArticle.getImageUrl();
-            loadImage(imageUrl, holder);
-
-            // ak je rola 0 a článok je zamknuty treba zobrazit zamok
-            if (rola == 0 && actArticle.isLocked()) {
-                holder.lockImage.setVisibility(View.VISIBLE);
-                holder.image.setAlpha( (float) 0.3);
-
-            } else {
-                holder.lockImage.setVisibility(View.GONE);
-                holder.image.setAlpha( (float) 1);
-            }
-
-        }
-
-    }// end onBindViewHolder
+    public abstract void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int i);
 
         /*
         viewHolder.image.setOnClickListener(new View.OnClickListener() {
@@ -151,7 +78,7 @@ public class ClanokRecyclerViewAdapter
         if (position == clanky.size()){
             return TYPE_FOOTER;
         } else {
-            return 0;
+            return TYPE_NORMAL;
         }
     } //end getItemViewType
 
@@ -160,7 +87,7 @@ public class ClanokRecyclerViewAdapter
      * @param imageUrl
      * @param viewHolder
      */
-    private void loadImage(String imageUrl, final ArticleViewHolder viewHolder){
+    protected void loadImage(String imageUrl, final ArticleViewHolder viewHolder){
 
         if (!imageUrl.equals("NA")){
             imageLoader.get(imageUrl, new ImageLoader.ImageListener() {
@@ -191,24 +118,28 @@ public class ClanokRecyclerViewAdapter
     /**
      * ViewHolder sa vytvori raz a drží jednotlive Views z item_view, takze ich potom netreba hladat
      */
-    class ArticleViewHolder
+    protected abstract class ArticleViewHolder
         extends RecyclerView.ViewHolder
         //implements View.OnClickListener
         {
 
-        TextView title;
-        TextView description;
-        ImageView image;
-        ImageView lockImage;
+        /*TextView title;
+        TextView description;*/
+        protected ImageView image;
+
+            /*ImageView lockImage;
+        */
 
             public ArticleViewHolder(View itemView) {
                 super(itemView);
-
+                /*
                 title = (TextView) itemView.findViewById(R.id.item_tvTitle);
                 description = (TextView) itemView.findViewById(R.id.item_tvDescription);
+                */
                 image = (ImageView) itemView.findViewById(R.id.item_ivObr);
+                /*
                 lockImage = (ImageView) itemView.findViewById(R.id.item_ivLock);
-
+                */
                 //itemView.setOnClickListener(this);
             } //end konstructor ArticleViewHolder(View itemView)
 
@@ -235,7 +166,7 @@ public class ClanokRecyclerViewAdapter
     /**
      * Footer ViewHolder
      */
-    class FooterViewHolder
+    protected class FooterViewHolder
         extends RecyclerView.ViewHolder
         {
 

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <!-- the theme applied to the entire application -->
+    <style
+        name="AppTheme_new"
+        parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <!-- <item name="android:actionBarStyle">@style/action_bar</item> -->
+        <item name="android:actionBarTabStyle">@style/action_bar_tab</item>
+        <!-- <item name="android:actionBarTabBarStyle">@style/action_bar_tab_bar</item> -->
+
+        <!-- Support library compatibility -->
+        <!-- <item name="actionBarStyle">@style/action_bar</item> -->
+        <item name="actionBarTabStyle">@style/action_bar_tab</item>
+        <!-- <item name="actionBarTabBarStyle">@style/action_bar_tab_bar</item> -->
+    </style>
+
+    <!-- ActionBar style -->
+    <style name="action_bar"
+        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <!-- <item name="android:background">@drawable/actionbar_background</item> -->
+        <!-- <item name="android:backgroundStacked">@drawable/actionbar_background</item> -->
+        <!-- <item name="android:titleTextStyle">@style/action_bar_title</item> -->
+
+        <!-- Support library compatibility -->
+        <!-- <item name="background">@drawable/actionbar_background</item> -->
+        <!-- <item name="backgroundStacked">@drawable/actionbar_background</item> -->
+        <!-- <item name="titleTextStyle">@style/action_bar_title</item> -->
+</style>
+
+<!-- ActionBar Title style -->
+    <style
+        name="action_bar_title"
+        parent="Widget.AppCompat.ActionBar.TabBar">
+
+        <item name="android:typeface">serif</item>
+    </style>
+
+    <!-- ActionBar Tab style -->
+    <style name="action_bar_tab"
+        parent="@style/Widget.AppCompat.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_bar_background</item>
+
+        <!-- Support library compatibility -->
+        <item name="background">@drawable/tab_bar_background</item>
+
+    </style>
+
+    <!-- ActionBar Tab Bar style -->
+    <style name="action_bar_tab_bar"
+        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@drawable/tab_bar_color</item>
+
+
+        <!-- Support library compatibility -->
+        <item name="background">@drawable/tab_bar_color</item>
+
+    </style>
+
+</resources>

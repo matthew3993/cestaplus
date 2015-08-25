@@ -2,7 +2,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="bc.cestaplus.activities.RubrikaActivity">
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/action_text_size"
+        android:title="@string/action_text_size"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/account"
@@ -11,12 +17,7 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_list_style"
-        android:title="@string/action_list_style"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
-
-    <item android:id="@+id/action_settings"
+        android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"
         app:showAsAction="never" />
@@ -26,4 +27,5 @@
         android:title="@string/action_o_portali"
         android:orderInCategory="100"
         app:showAsAction="never" />
+
 </menu>

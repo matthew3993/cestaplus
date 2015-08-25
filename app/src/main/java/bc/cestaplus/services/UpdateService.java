@@ -47,4 +47,9 @@ public class UpdateService
         jobFinished(jobParameters, false);
     } //end onArticlesLoaded
 
+    @Override
+    public void numNewArticles(int count) {
+        //do nothing in this case for now
+    }
+
 } //end class UpdateService

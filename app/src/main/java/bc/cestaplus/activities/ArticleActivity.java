@@ -1,14 +1,20 @@
 package bc.cestaplus.activities;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +23,8 @@ import com.android.volley.VolleyError;
 
 import org.json.JSONObject;
 
+import bc.cestaplus.activities.konto_activities.LoggedActivity;
+import bc.cestaplus.activities.konto_activities.NotLoggedActivity;
 import bc.cestaplus.network.Parser;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.objects.ArticleText;
@@ -27,16 +35,25 @@ import bc.cestaplus.utilities.SessionManager;
 import bc.cestaplus.utilities.Templator;
 import bc.cestaplus.utilities.Util;
 
+//staticke importy
+import static bc.cestaplus.extras.IKeys.KEY_BATERKA_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_MAIN_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_PARENT_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_ARTICLE_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_RUBRIKA_ACTIVITY;
+
 /**
  * Created by Matej on 19. 3. 2015.
  */
 public class ArticleActivity
-    extends ActionBarActivity {
+    extends ActionBarActivity
+    implements SharedPreferences.OnSharedPreferenceChangeListener{
 
     //data
     private ArticleObj article;
     private ArticleText articleText;
     private int articleErrorCode;
+    private String parentActivity;
 
     //UI
     private WebView mWebView;
@@ -53,19 +70,38 @@ public class ArticleActivity
 
         volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //inicializácia volleySingleton - dôležité !!!
         article = getIntent().getParcelableExtra("clanok");
+        parentActivity = getIntent().getExtras().getString(KEY_PARENT_ACTIVITY);
+
+        //getIntent().getClass()
 
         setCustomTitle(article.getSection()); // nastavenie nadpisu aktivity
 
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true); ak by nesla navigacia UP, resp. sa nezobrazila šípka
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //ak by nesla navigacia UP, resp. sa nezobrazila šípka
 
         mWebView = (WebView) findViewById(R.id.webViewArticle);
         tvVolleyErrorArticle = (TextView) findViewById(R.id.tvVolleyErrorArticle);
 
-        mWebView.getSettings().setBuiltInZoomControls(true);
+        //mWebView.getSettings().setBuiltInZoomControls(true);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mWebView.setWebViewClient(new WebViewClient(){
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    if (url != null/* && url.startsWith("http://")*/) {
+                        view.getContext().startActivity(
+                                new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        }
 
         //vytvorí listenery a odošle request
         loadArticle(); //naplní article text zobrazení do webView
 
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .registerOnSharedPreferenceChangeListener(this);
     } //end onCreate
 
     @Override
@@ -81,16 +117,87 @@ public class ArticleActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
+            /*
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            */
+
             case R.id.action_text_size:
                 showTextSizeDialog();
                 return true;
 
-            case R.id.action_settings:
+            case R.id.account: {
+                // Session manager
+                final SessionManager session = new SessionManager(CustomApplication.getCustomAppContext());
+
+                if (session.getRola() > 0) {
+                    // Launching the LOGGED activity
+                    Intent intent = new Intent(getApplicationContext(), LoggedActivity.class);
+                    intent.putExtra(KEY_PARENT_ACTIVITY, KEY_ARTICLE_ACTIVITY);
+                    startActivity(intent);
+                    //getActivity().finish();
+
+                } else {
+                    // Launching the NOT Logged activity
+                    Intent intent = new Intent(getApplicationContext(), NotLoggedActivity.class);
+                    intent.putExtra(KEY_PARENT_ACTIVITY, KEY_ARTICLE_ACTIVITY);
+                    startActivity(intent);
+                    //getActivity().finish();
+
+                }
+                return true;
+            }
+
+            case R.id.action_settings:{
+                // Launching the Settings activity
+                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                intent.putExtra(KEY_PARENT_ACTIVITY, KEY_ARTICLE_ACTIVITY);
+                startActivity(intent);
+                return true;
+            }
+
+            case R.id.action_o_portali:
+                // Launching the O portáli activity
+                Intent intent = new Intent(getApplicationContext(), OPortaliActivity.class);
+                intent.putExtra(KEY_PARENT_ACTIVITY, KEY_ARTICLE_ACTIVITY);
+                startActivity(intent);
+                //getActivity().finish();
                 return true;
 
         } // end switch
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * This method implements what should happen when Up button is pressed
+     * @return
+     */
+    @Override
+    public Intent getSupportParentActivityIntent() {
+        return getCustomParentActivityIntent();
+    }
+
+    private Intent getCustomParentActivityIntent() {
+        Intent i = null;
+
+        switch (parentActivity){
+            case KEY_MAIN_ACTIVITY:{
+                i = new Intent(this, MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                break;
+            }
+
+            case KEY_RUBRIKA_ACTIVITY:{
+                i = new Intent(this, RubrikaActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                break;
+            }
+
+        }
+
+        return i;
     }
 
     // ======================================== VLASTNÉ METÓDY =====================================================================================
@@ -128,7 +235,7 @@ public class ArticleActivity
         };
 
         //odoslanie requestu
-        volleySingleton.sendGetArticleRequest(article.getID(), article.isLocked(), responseLis, errorLis, true); //boolean = či aj z obrázkami
+        volleySingleton.createGetArticleRequest(article.getID(), article.isLocked(), responseLis, errorLis, true); //boolean = či aj z obrázkami
     }
 
     private void setCustomTitle(String section) {
@@ -210,5 +317,14 @@ public class ArticleActivity
         dialog.dismiss(); //dismiss the dialog
 
     } //end handleSelection()
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equalsIgnoreCase("pref_text_size")) {
+            //reload webview
+            mWebView.loadDataWithBaseURL(null, Templator.createHtmlString(article, articleText, articleErrorCode),
+                    "text/html", "utf-8", null);
+        }
+    }//end onSharedPreferenceChanged
 
 }//end ArticleActivity

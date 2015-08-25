@@ -1,6 +1,7 @@
 package bc.cestaplus.network;
 
 import android.text.Html;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -11,6 +12,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.objects.ArticleText;
@@ -42,7 +44,9 @@ import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_TITLE;
  */
 public class Parser {
 
+    //dates formats
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static DateFormat baterkaShortDateFormat = new SimpleDateFormat("dd.MM.");
 
     public static BaterkaText parseBaterka(JSONObject response) {
         BaterkaText baterkaTextTemp = null;
@@ -171,6 +175,13 @@ public class Parser {
                 for(int i = 0; i < response.length(); i++){
                     JSONObject actArticle = response.getJSONObject(i); //vrati clanok na aktualnej pozicii
 
+                    //spracovanie ID
+                    if (actArticle.has(KEY_ID) && !actArticle.isNull(KEY_ID)){
+                        ID = actArticle.getString(KEY_ID);
+                    } else {
+                        ID = "NA"; // akoze chyba
+                    }
+
                     //kontrola title
                     if (actArticle.has(KEY_TITLE) && !actArticle.isNull(KEY_TITLE)){
                         title = actArticle.getString(KEY_TITLE);
@@ -184,7 +195,7 @@ public class Parser {
                         short_text = "Popis nedostuný"; // ak JSON feed nie je v poriadku, nastavi sa tato hodnota
                     }
 
-                    //spracovanie obrazka - ostrenie v pripade, ze orazok nie je dostupny
+                    //spracovanie obrazka - ostrenie v pripade, ze obrazok nie je dostupny
                     img = null; //title image URL
                     if(actArticle.has(KEY_IMAGE_URL) && !actArticle.isNull(KEY_IMAGE_URL)){
                         img = actArticle.getString(KEY_IMAGE_URL);
@@ -206,20 +217,21 @@ public class Parser {
                         section = "Nezaradené"; // Článok
                     }
 
-                    //spracovanie ID
-                    if (actArticle.has(KEY_ID) && !actArticle.isNull(KEY_ID)){
-                        ID = actArticle.getString(KEY_ID);
-                    } else {
-                        ID = "NA"; // akoze chyba
-                    }
-
                     //spracovanie locked
-                    if (actArticle.has(KEY_LOCKED) && !actArticle.isNull(KEY_LOCKED)) {
-                        locked = actArticle.getBoolean(KEY_LOCKED);
+                    if(section.equalsIgnoreCase("baterka")){ //if this article is Baterka
+                        locked = false; //Baterka is never locked
+
+                        title = baterkaShortDateFormat.format(dateFormat.parse(pubDate)) + ": " + title; //add the date of this Baterka into it's title
+
                     } else {
-                        locked = false; // zatial !!!
+                        if (actArticle.has(KEY_LOCKED) && !actArticle.isNull(KEY_LOCKED)) {
+                            locked = actArticle.getBoolean(KEY_LOCKED);
+                        } else {
+                            locked = false; // zatial !!!
+                        }
                     }
 
+                    //unescaping short_text for some sections
                     switch (section) {
                         case "normalnarodinka":
                         case "tabule":
@@ -251,20 +263,22 @@ public class Parser {
                                 tempArticles.add(new ArticleObj(title, short_text, img, dateFormat.parse("2000-01-01 00:00:00"), section, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
                             } catch (ParseException pEx){
-                                Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
+                                Log.e("error", "CHYBA PARSOVANIA DATUMU" + pEx.getMessage());
                             }
                         }
                     }
                 } // end for
 
             } catch (JSONException jsonEx){
-                Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA JSON PARSOVANIA" + jsonEx.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e("error", "CHYBA JSON PARSOVANIA" + jsonEx.getMessage());
 
             } //end catch
+            catch (ParseException e) {
+                Log.e("error", "CHYBA PARSOVANIA DATUMU BATERKY" + e.getMessage());
+            }
 
         } //end if response !=null ...
 
-        Toast.makeText(CustomApplication.getCustomAppContext(), "Načítaných " + tempArticles.size() + " článkov.", Toast.LENGTH_LONG).show();
         return tempArticles;
     } //end parseJsonArrayResponse
 
@@ -428,21 +442,21 @@ public class Parser {
                                 tempArticles.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
                             } catch (ParseException pEx){
-                                Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
+                                Log.e("error", "CHYBA PARSOVANIA DATUMU" + pEx.getMessage());
                             }
                         } else { // tu je rieseny pripad, ze clanok nema v poriadku datum zverejnenia
                             try {
                                 tempArticles.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse("2000-01-01 00:00:00"), section, ID, locked)); // pridanie do docasneho zoznamu clankov
                                 //zoznamVsetko.add(new ArticleObj(title, short_text, imageUrl, dateFormat.parse(pubDate), section));
                             } catch (ParseException pEx){
-                                Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA PARSOVANIA DATUMU" + pEx.getMessage(), Toast.LENGTH_LONG).show();
+                                Log.e("error", "CHYBA PARSOVANIA DATUMU" + pEx.getMessage());
                             }
                         }
                     }
                 } // end for
 
             } catch (JSONException jsonEx){
-                Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA PARSOVANIA JSON" + jsonEx.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e("error", "CHYBA PARSOVANIA JSON" + jsonEx.getMessage());
 
             } //end catch
 
@@ -477,6 +491,7 @@ public class Parser {
         } // end switch
     }//end handleLoginErrorCode()
 
+    //TODO zakomponovat tuto metodu do kodu vyssie - preburat kod!!
     public static boolean contains(JSONObject jsonObject, String key) {
         return jsonObject != null && jsonObject.has(key) && !jsonObject.isNull(key) ? true : false;
     }// end contains()

@@ -9,4 +9,5 @@ import bc.cestaplus.objects.ArticleObj;
  */
 public interface ArticlesLoadedListener {
     public void onArticlesLoaded(ArrayList<ArticleObj> listArticles);
+    public void numNewArticles(int count); //count of new articles
 }

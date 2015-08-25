@@ -1,8 +1,10 @@
 package bc.cestaplus.activities;
 
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,17 +23,28 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 
 import bc.cestaplus.R;
-import bc.cestaplus.adapters.ClanokRecyclerViewAdapter;
+import bc.cestaplus.activities.konto_activities.LoggedActivity;
+import bc.cestaplus.activities.konto_activities.NotLoggedActivity;
+import bc.cestaplus.adapters.ClanokRecyclerViewAdapter_All;
 import bc.cestaplus.fragments.RubrikyFragment;
 import bc.cestaplus.listeners.RecyclerItemClickListener;
 import bc.cestaplus.network.Parser;
 import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.objects.ArticleObj;
+import bc.cestaplus.utilities.ClanokRecyclerViewAdapter;
 import bc.cestaplus.utilities.CustomApplication;
+import bc.cestaplus.utilities.SessionManager;
+import bc.cestaplus.utilities.Util;
+
+import static bc.cestaplus.extras.IKeys.KEY_MAIN_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_PARENT_ACTIVITY;
+import static bc.cestaplus.extras.IKeys.KEY_RUBRIKA_ACTIVITY;
 
 
-public class RubrikaAktivity
-    extends ActionBarActivity {
+
+public class RubrikaActivity
+    extends ActionBarActivity
+    implements SwipeRefreshLayout.OnRefreshListener, SharedPreferences.OnSharedPreferenceChangeListener{
 
 // ======================================= ATRIBÚTY ================================================================================
     //constants
@@ -46,6 +59,13 @@ public class RubrikaAktivity
     //received from intent
     private String sectionName;
     private int sectionID;
+
+    // session
+    private SessionManager session;
+
+//UI
+    //swipeRefreshLayout
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     // recyclerView
     private RecyclerView recyclerViewRubrika; // konkretne pomenovanie v RubrikaActivity
@@ -67,7 +87,12 @@ public class RubrikaAktivity
     //inicializacia atributov
         zoznamRubrika = new ArrayList<>();
         volleySingleton = VolleySingleton.getInstance(this);
+        session = new SessionManager(this);
         tvVolleyErrorRubrika = (TextView) findViewById(R.id.tvVolleyErrorRubrika);
+
+        //find SwipeRefreshLayout
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeSection);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
     //inicializacia RecyclerView
         recyclerViewRubrika = (RecyclerView) findViewById(R.id.rvRubrika);
@@ -115,20 +140,29 @@ public class RubrikaAktivity
                                         } //end of onErrorResponse
                                     };
 
-                                    volleySingleton.sendGetClankyArrayRequestGET(translateSectionId(sectionID), 20, pocSrt, responseLis, errorLis);
-                                    Toast.makeText(CustomApplication.getCustomAppContext(), "Načítavam stránku číslo: " + pocSrt, Toast.LENGTH_SHORT).show();
+                                    volleySingleton.createGetClankyArrayRequestGET(translateSectionId(sectionID), 20, pocSrt, responseLis, errorLis);
+                                    Toast.makeText(CustomApplication.getCustomAppContext(), "Načítavam stránku číslo " + pocSrt, Toast.LENGTH_SHORT).show();
 
                                 } else { // ak bolo kliknute na clanok
-                                    Intent intent = new Intent(CustomApplication.getCustomAppContext(), ArticleActivity.class);
-                                    intent.putExtra("clanok", zoznamRubrika.get(position));
+                                    if (zoznamRubrika.get(position).getSection().equalsIgnoreCase("baterka")){ //if baterka was clicked
+                                        Intent intent = new Intent(getApplicationContext(), BaterkaActivity.class);
+                                        intent.putExtra("baterka", zoznamRubrika.get(position));
+                                        intent.putExtra(KEY_PARENT_ACTIVITY, KEY_RUBRIKA_ACTIVITY);
 
+                                        startActivity(intent);
 
-                                    startActivity(intent);
+                                    } else { // if other sections was clicked
+                                        Intent intent = new Intent(getApplicationContext(), ArticleActivity.class);
+                                        intent.putExtra("clanok", zoznamRubrika.get(position));
+                                        intent.putExtra(KEY_PARENT_ACTIVITY, KEY_RUBRIKA_ACTIVITY);
+
+                                        startActivity(intent);
+                                    }
                                 }
                             }
                         }));
 
-        crvaRubrika = new ClanokRecyclerViewAdapter(this.getApplicationContext());
+        crvaRubrika = Util.getCrvaType(session, getApplicationContext());
 
         if (savedInstanceState != null) { //ak nie je null = nastala zmena stavu, napr. rotacia obrazovky
             //obnovenie ulozeneho stavu
@@ -145,6 +179,8 @@ public class RubrikaAktivity
                     tvVolleyErrorRubrika.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
                     zoznamRubrika = Parser.parseJsonArrayResponse(response);
                     crvaRubrika.setClanky(zoznamRubrika);
+
+                    Toast.makeText(CustomApplication.getCustomAppContext(), "Načítaných " + zoznamRubrika.size() + " článkov.", Toast.LENGTH_SHORT).show();
                 }
 
             };
@@ -157,7 +193,7 @@ public class RubrikaAktivity
                 } //end of onErrorResponse
             };
 
-            volleySingleton.sendGetClankyArrayRequestGET(translateSectionId(sectionID), 20, 1, responseLis, errorLis);
+            volleySingleton.createGetClankyArrayRequestGET(translateSectionId(sectionID), 20, 1, responseLis, errorLis);
 
         } //end else savedInstanceState
 
@@ -165,6 +201,8 @@ public class RubrikaAktivity
 
         recyclerViewRubrika.setAdapter(crvaRubrika);
 
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .registerOnSharedPreferenceChangeListener(this);
     } //end onCreate
 
 
@@ -177,16 +215,59 @@ public class RubrikaAktivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
+            /*
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 //Toast.makeText(this, "Rubriky back pressed", Toast.LENGTH_SHORT).show();
+                return true;*/
+
+            case R.id.account: {
+                // Session manager
+                final SessionManager session = new SessionManager(CustomApplication.getCustomAppContext());
+
+                if (session.getRola() > 0) {
+                    // Launching the LOGGED activity
+                    Intent intent = new Intent(getApplicationContext(), LoggedActivity.class);
+                    intent.putExtra(KEY_PARENT_ACTIVITY, KEY_RUBRIKA_ACTIVITY);
+                    startActivity(intent);
+                    //getActivity().finish();
+
+                } else {
+                    // Launching the NOT Logged activity
+                    Intent intent = new Intent(getApplicationContext(), NotLoggedActivity.class);
+                    intent.putExtra(KEY_PARENT_ACTIVITY, KEY_RUBRIKA_ACTIVITY);
+                    startActivity(intent);
+                    //getActivity().finish();
+
+                }
                 return true;
-        }
+            }
+
+            case R.id.action_list_style: {
+                Util.showListStyleDialog(session, RubrikaActivity.this /*not getApplicationContext()*/, // context for creation of Dialog - it has to be context of activity, not context of application
+                    crvaRubrika, recyclerViewRubrika, zoznamRubrika);
+                return true;
+            }
+
+            case R.id.action_settings: {
+                // Launching the Settings activity
+                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                intent.putExtra(KEY_PARENT_ACTIVITY, KEY_RUBRIKA_ACTIVITY);
+                startActivity(intent);
+                return true;
+            }
+
+            case R.id.action_o_portali: {
+                // Launching the O portáli activity
+                Intent intent = new Intent(getApplicationContext(), OPortaliActivity.class);
+                intent.putExtra(KEY_PARENT_ACTIVITY, KEY_RUBRIKA_ACTIVITY);
+                startActivity(intent);
+                //getActivity().finish();
+                return true;
+            }
+
+        }//end switch item.getItemId()
         return super.onOptionsItemSelected(item);
     }
 
@@ -201,6 +282,40 @@ public class RubrikaAktivity
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(outState);
     }
+
+    @Override
+    public void onRefresh() {
+        //nove nacitanie
+        Response.Listener<JSONArray> responseLis = new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                tvVolleyErrorRubrika.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
+                zoznamRubrika = Parser.parseJsonArrayResponse(response);
+                crvaRubrika.setClanky(zoznamRubrika);
+
+                Toast.makeText(CustomApplication.getCustomAppContext(), "Načítaných " + zoznamRubrika.size() + " článkov.", Toast.LENGTH_SHORT).show();
+                if(mSwipeRefreshLayout.isRefreshing()){
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            }
+
+        };
+
+        Response.ErrorListener errorLis = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Toast.makeText(getActivity(), "ERROR " + error.toString(), Toast.LENGTH_LONG).show();
+                volleySingleton.handleVolleyError(error, tvVolleyErrorRubrika);
+                if(mSwipeRefreshLayout.isRefreshing()){
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            } //end of onErrorResponse
+        };
+
+        volleySingleton.createGetClankyArrayRequestGET(translateSectionId(sectionID), 20, 1, responseLis, errorLis);
+
+    }//en onRefresh
+
 
     private String translateSectionId(int sectionId){
         switch (sectionId){
@@ -219,4 +334,10 @@ public class RubrikaAktivity
         } //end switch
     }//end translateSectionId
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equalsIgnoreCase("pref_list_style")) {
+            Util.refreshRecyclerView(session, getApplicationContext(), crvaRubrika, recyclerViewRubrika, zoznamRubrika);
+        }
+    }//end onSharedPreferenceChanged
 }// end RubrikaActivity

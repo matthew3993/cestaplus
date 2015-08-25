@@ -3,14 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="bc.cestaplus.activities.RubrikaAktivity">
+    tools:context="bc.cestaplus.activities.RubrikaActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvRubrika"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeSection"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </android.support.v7.widget.RecyclerView>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvRubrika"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <TextView
         android:id="@+id/tvVolleyErrorRubrika"

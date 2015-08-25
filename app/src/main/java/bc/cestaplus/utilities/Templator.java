@@ -74,35 +74,23 @@ public class Templator {
     }//end checkVideos()
 
     private static String getShortTeplate(ArticleObj article, ArticleText articleText, int articleErrorCode) {
-        return "<html>\n" +
-                "    <head>\n" +
-                "        <link rel=\"stylesheet\" type=\"text/css\" href=\"file:///android_asset/articleStyle.css\"/>\n" +
+        return "<html>" +
+                "    <head>" +
+                "        <link rel=\"stylesheet\" type=\"text/css\" href=\"file:///android_asset/articleStyle.css\"/>" +
                 "        <style>" +
                 getInternalArticleStyle() +
                 "        </style>" +
-                "    </head>\n" +
-                "    \n" +
-                "    <body>\n" +
-                "        <div class=\"body1_left_pisuinde\" style=\" height: 100%;\">                    \n" +
-                "            <h1>\n" +
+                "    </head>" +
+                "    <body>" +
+                "        <div class=\"articleText\" style=\" height: 100%;\">" +
+                "            <h1>" +
                 article.getTitle() +
-                "            </h1>\n" +
+                "            </h1>" +
                 "\n" +
                 "            <div id=\"text_clanok\">" +
                 checkVideos(articleText) +
                 "            </div>        \n" +
-
-                (articleErrorCode == 0 ? "" : (
-                        "<div id=\"info\">" +
-                                "Zvyšok článku je prístupný iba predplatiteľom.<br>" +
-                                "<font style=\"color: #005494\">Staňte sa našim <b>predplatiteľom</b> a získajte aj iné <b>výhody</b>.</font>\n" +
-                                "\t\t\t\t\t<br />Informácie o predplatnom na <a href=\"http://www.cestaplus.sk/predplatne\">www.cestaplus.sk/predplatne</a>.\n" +
-                                "\t\t\t\t\t<br />\t\n" +
-                                "\t\t\t\t\t<br />\t\n" +
-                                "\t\t\t\t\t<b>cesta+</b>\n" +
-                                "\t\t\t\t\t<br />\n" +
-                                "</div>        \n")) +
-                "           " +
+                (articleErrorCode == 0 ? "" : ( getWarning( articleText.getText().length()) ) ) +
                 "            <div id=\"end\">" +
                 "               <p> <br/> </p>" +
                 "            </div>        \n" +
@@ -121,7 +109,7 @@ public class Templator {
                 "        </style>" +
                 "    </head>" +
                 "    <body>" +
-                "        <div class=\"body1_left_pisuinde\" style=\" height: 100%;\">" +
+                "        <div class=\"articleText\" style=\" height: 100%;\">" +
                 "            <h1>" +
                                 article.getTitle() +
                 "            </h1>" +
@@ -134,17 +122,7 @@ public class Templator {
                 "            <div id=\"text_clanok\">" +
                                 checkVideos(articleText) +
                 "            </div>        \n" +
-
-                (articleErrorCode == 0 ? "" : (
-                        "   <div id=\"info\">" +
-                                "Zvyšok článku je prístupný iba predplatiteľom.<br>" +
-                                "<font style=\"color: #005494\">Staňte sa našim <b>predplatiteľom</b> a získajte aj iné <b>výhody</b>.</font>\n" +
-                                "\t\t\t\t\t<br />Informácie o predplatnom na <a href=\"http://www.cestaplus.sk/predplatne\">www.cestaplus.sk/predplatne</a>.\n" +
-                                "\t\t\t\t\t<br />\t\n" +
-                                "\t\t\t\t\t<br />\t\n" +
-                                "\t\t\t\t\t<b>cesta+</b>\n" +
-                                "\t\t\t\t\t<br />\n" +
-                        "   </div>        \n")) +
+                             (articleErrorCode == 0 ? "" : ( getWarning( articleText.getText().length()) ) ) +
                 "            <div id=\"end\">" +
                 "               <p> <br/> </p>" +
                 "            </div>        \n" +
@@ -153,6 +131,20 @@ public class Templator {
                 "</html>"
                 ;
     }//end getShortTemplate()
+
+    private static String getWarning(int length){
+        return "<div id=\"info\">" +
+                    ((length > 2 ) ?
+                        "Zvyšok článku je prístupný iba predplatiteľom.<br>" :
+                        "Články, ktoré sú staršie viac ako jeden mesiac, sú prístupné iba predplatiteľom.<br>") +
+                    "<font style=\"color: #005494\">Staňte sa našim <b>predplatiteľom</b> a získajte aj iné <b>výhody</b>.</font>" +
+                    "\t\t\t\t\t<br />Informácie o predplatnom na <a href=\"http://www.cestaplus.sk/predplatne\">www.cestaplus.sk/predplatne</a>." +
+                    "\t\t\t\t\t<br />\t" +
+                    "\t\t\t\t\t<br />\t" +
+                    "\t\t\t\t\t<b>cesta+</b>" +
+                    "\t\t\t\t\t<br />" +
+               "</div>";
+    }//end getWarning()
 
     public static String createBaterkaHtmlString(BaterkaText baterkaText, Date pubDate) {
         return  "<html>" +
@@ -328,7 +320,7 @@ public class Templator {
         return ret;
     }//end getInternalBaterkaStyle()
 
-    private static String getInternalArticleStyle() {
+    public static String getInternalArticleStyle() {
 
         SessionManager session = new SessionManager(CustomApplication.getCustomAppContext());
         int textSizeConstant = session.getTextSize();
@@ -340,17 +332,17 @@ public class Templator {
                 switch (textSizeConstant){
                     case Util.TEXT_SIZE_BIG:{
                         ret = "h1   {font-size: 35px;}" +
-                              "p    {font-size: 25px;} ";
+                              "div.articleText    {font-size: 25px;} ";
                         break;
                     }
                     case Util.TEXT_SIZE_NORMAL:{
                         ret = "h1   {font-size: 30px;}" +
-                              "p    {font-size: 20px;} ";
+                              "div.articleText    {font-size: 20px;} ";
                         break;
                     }
                     case Util.TEXT_SIZE_SMALL:{
                         ret = "h1   {font-size: 25px;}" +
-                              "p    {font-size: 15px;} ";
+                              "div.articleText    {font-size: 15px;} ";
                         break;
                     }
                 }
@@ -361,17 +353,17 @@ public class Templator {
                 switch (textSizeConstant){
                     case Util.TEXT_SIZE_BIG:{
                         ret = "h1   {font-size: 30px;}" +
-                              "p    {font-size: 20px;} ";
+                              "div.articleText    {font-size: 20px;} ";
                         break;
                     }
                     case Util.TEXT_SIZE_NORMAL:{
                         ret = "h1   {font-size: 25px;}" +
-                              "p    {font-size: 15px;} ";
+                              "div.articleText    {font-size: 15px;} ";
                         break;
                     }
                     case Util.TEXT_SIZE_SMALL:{
                         ret = "h1   {font-size: 20px;}" +
-                              "p    {font-size: 10px;} ";
+                              "div.articleText    {font-size: 10px;} ";
                         break;
                     }
                 }
@@ -380,5 +372,4 @@ public class Templator {
 
         return ret;
     }//end getInternalArticleStyle()
-
 }//end class Templator
