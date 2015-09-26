@@ -35,6 +35,11 @@ public class Templator {
                 Toast.makeText(CustomApplication.getCustomAppContext(), "Ľutujeme, ale tento článok patrí do rubriky, ktorá nie je podporovaná!", Toast.LENGTH_SHORT).show();
                 break;
             }
+            case "180stupnov":
+            case "naceste":
+            case "rodicovskeskratky":
+            case "napulze":
+            case "umatusa":
             case "normalnarodinka":
             case "tabule":
             case "animamea":

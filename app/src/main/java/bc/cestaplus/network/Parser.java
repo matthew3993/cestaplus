@@ -233,6 +233,11 @@ public class Parser {
 
                     //unescaping short_text for some sections
                     switch (section) {
+                        case "180stupnov":
+                        case "naceste":
+                        case "rodicovskeskratky":
+                        case "napulze":
+                        case "umatusa":
                         case "normalnarodinka":
                         case "tabule":
                         case "animamea":

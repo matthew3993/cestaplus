@@ -366,6 +366,7 @@ public class VsetkoFragment
 
         zoznamVsetko = listArticles;
         crvaVsetko.setClanky(listArticles);
+        pocSrt = 1;
     }//end onArticlesLoaded
 
     @Override

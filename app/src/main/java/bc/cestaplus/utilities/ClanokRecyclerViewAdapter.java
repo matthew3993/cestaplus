@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.ArrayList;
 
@@ -90,6 +91,14 @@ public abstract class ClanokRecyclerViewAdapter
     protected void loadImage(String imageUrl, final ArticleViewHolder viewHolder){
 
         if (!imageUrl.equals("NA")){
+            //imageLoader.get(imageUrl, ImageLoader.getImageListener(viewHolder.image, 0, R.drawable.err_pic)); //not good way
+                // - this way is slower and causes image changes during scrolling = showing image that doesn't belong to selected
+                // article for short while = very annoing
+
+            viewHolder.image.setImageUrl(imageUrl, imageLoader);
+            viewHolder.image.setErrorImageResId(R.drawable.err_pic); //better way of showing error picture
+
+            /* old implementation using classic ImageView instead Volley's NetworkImageView
             imageLoader.get(imageUrl, new ImageLoader.ImageListener() {
                 @Override
                 public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
@@ -100,7 +109,7 @@ public abstract class ClanokRecyclerViewAdapter
                 public void onErrorResponse(VolleyError error) {
                     //do nothing
                 }
-            });
+            });*/
         }
     }// end loadImage
 
@@ -125,7 +134,7 @@ public abstract class ClanokRecyclerViewAdapter
 
         /*TextView title;
         TextView description;*/
-        protected ImageView image;
+        protected NetworkImageView image;
 
             /*ImageView lockImage;
         */
@@ -136,7 +145,7 @@ public abstract class ClanokRecyclerViewAdapter
                 title = (TextView) itemView.findViewById(R.id.item_tvTitle);
                 description = (TextView) itemView.findViewById(R.id.item_tvDescription);
                 */
-                image = (ImageView) itemView.findViewById(R.id.item_ivObr);
+                image = (NetworkImageView) itemView.findViewById(R.id.item_ivObr);
                 /*
                 lockImage = (ImageView) itemView.findViewById(R.id.item_ivLock);
                 */

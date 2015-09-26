@@ -320,16 +320,21 @@ public class RubrikaActivity
     private String translateSectionId(int sectionId){
         switch (sectionId){
             case  0: return "tema";
-            case  1: return "normalnarodinka";
-            case  2: return "tabule";
-            case  3: return "animamea";
-            case  4: return "kuchynskateologia";
-            case  5: return "kazatelnicazivot";
-            case  6: return "zahranicami";
-            case  7: return "fejton";
-            case  8: return "poboxnebo";
-            case  9: return "zparlamentu";
-            case 10: return "baterka";
+            case  1: return "180stupnov";
+            case  2: return "naceste";
+            case  3: return "rodicovskeskratky";
+            case  4: return "napulze";
+            case  5: return "umatusa";
+            case  6: return "normalnarodinka";
+            case  7: return "tabule";
+            case  8: return "animamea";
+            case  9: return "kuchynskateologia";
+            case 10: return "kazatelnicazivot";
+            case 11: return "zahranicami";
+            case 12: return "fejton";
+            case 13: return "poboxnebo";
+            case 14: return "zparlamentu";
+            case 15: return "baterka";
             default: return "all"; //in case of some error will return all articles
         } //end switch
     }//end translateSectionId

@@ -46,16 +46,21 @@ public class RubrikyFragment
     public static final String EXTRA_ID_RUBRIKY = "id_rubriky";
 
     String [] rubriky = {"Téma mesiaca",        //id =  0
-                         "Normálna rodinka",    //id =  1
-                         "Tabule",              //id =  2
-                         "Anima Mea",           //id =  3
-                         "Kuchynská teológia",  //id =  4
-                         "Kazateľnica život",   //id =  5
-                         "Za hranicami",        //id =  6
-                         "Fejtón",              //id =  7
-                         "P.O.BOX Nebo",        //id =  8
-                         "Z parlamentu",        //id =  9
-                         "Baterka"};            //id = 10
+                         "180 stupňov",         //id =  1
+                         "Na ceste",            //id =  2
+                         "Rodičovské skratky",  //id =  3
+                         "Na pulze",            //id =  4
+                         "U Matúša",            //id =  5
+                         "Normálna rodinka",    //id =  6
+                         "Tabule",              //id =  7
+                         "Anima Mea",           //id =  8
+                         "Kuchynská teológia",  //id =  9
+                         "Kazateľnica život",   //id =  10
+                         "Za hranicami",        //id =  11
+                         "Fejtón",              //id =  12
+                         "P.O.BOX Nebo",        //id =  13
+                         "Z parlamentu",        //id =  14
+                         "Baterka"};            //id =  15
 
     //UI
     private static ArrayAdapter<String> adapterRubriky;
