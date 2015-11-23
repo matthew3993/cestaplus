@@ -8,18 +8,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import org.json.JSONObject;
 
@@ -31,12 +32,12 @@ import bc.cestaplus.objects.ArticleText;
 import bc.cestaplus.R;
 import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.utilities.CustomApplication;
+import bc.cestaplus.utilities.SectionsUtil;
 import bc.cestaplus.utilities.SessionManager;
 import bc.cestaplus.utilities.Templator;
 import bc.cestaplus.utilities.Util;
 
 //staticke importy
-import static bc.cestaplus.extras.IKeys.KEY_BATERKA_ACTIVITY;
 import static bc.cestaplus.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static bc.cestaplus.extras.IKeys.KEY_PARENT_ACTIVITY;
 import static bc.cestaplus.extras.IKeys.KEY_ARTICLE_ACTIVITY;
@@ -58,10 +59,13 @@ public class ArticleActivity
     //UI
     private WebView mWebView;
     private TextView tvVolleyErrorArticle; // vypis chyb so sieťou
+    private ImageView ivRefresh;
 
     //networking
     private VolleySingleton volleySingleton;
 
+    // Session manager
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,14 +76,17 @@ public class ArticleActivity
         article = getIntent().getParcelableExtra("clanok");
         parentActivity = getIntent().getExtras().getString(KEY_PARENT_ACTIVITY);
 
+        session = new SessionManager(getApplicationContext());
+
         //getIntent().getClass()
 
-        setCustomTitle(article.getSection()); // nastavenie nadpisu aktivity
+        getSupportActionBar().setTitle(SectionsUtil.getSectionTitle(article.getSection())); //nastavenie label-u konkretnej aktivity
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //ak by nesla navigacia UP, resp. sa nezobrazila šípka
 
-        mWebView = (WebView) findViewById(R.id.webViewArticle);
+        mWebView = (WebView) findViewById(R.id.webViewArticle); //find webView - important!!
         tvVolleyErrorArticle = (TextView) findViewById(R.id.tvVolleyErrorArticle);
+        ivRefresh = (ImageView) findViewById(R.id.ivRefreshArticle);
 
         //mWebView.getSettings().setBuiltInZoomControls(true);
 
@@ -97,11 +104,11 @@ public class ArticleActivity
             });
         }
 
-        //vytvorí listenery a odošle request
-        loadArticle(); //naplní article text zobrazení do webView
+        tryLoadArticle();
 
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                 .registerOnSharedPreferenceChangeListener(this);
+
     } //end onCreate
 
     @Override
@@ -190,7 +197,7 @@ public class ArticleActivity
             }
 
             case KEY_RUBRIKA_ACTIVITY:{
-                i = new Intent(this, RubrikaActivity.class);
+                i = new Intent(this, SectionActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 break;
             }
@@ -201,26 +208,38 @@ public class ArticleActivity
     }
 
     // ======================================== VLASTNÉ METÓDY =====================================================================================
+    private void tryLoadArticle(){
+        if (Util.isNetworkAvailable(this)) {
+            //vytvorí listenery a odošle request
+            loadArticle(); //naplní article text zobrazení do webView
+
+        } else {
+            showNoConnection("Nie ste pripojený k sieti!");
+        }
+    }
+
+    private void showNoConnection(String msg) {
+        //Toast.makeText(getApplicationContext(), "ERROR ", Toast.LENGTH_LONG).show();
+        mWebView.setVisibility(View.GONE);
+
+        tvVolleyErrorArticle.setVisibility(View.VISIBLE);
+        ivRefresh.setVisibility(View.VISIBLE);
+
+        tvVolleyErrorArticle.setText(msg);
+        ivRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tryLoadArticle();
+            }
+        });
+    }
+
     private void loadArticle() {
         //nacitanie short text-u, autora a textu článku
         Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-
-                tvVolleyErrorArticle.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
-
-                if (article.isLocked()){ //zamknuté články
-                    articleErrorCode = Parser.parseErrorCode(response);//get error code from response
-
-                } else { //verejné články
-                    articleErrorCode = 0;
-                }
-
-                articleText = Parser.parseArticleTextResponse(response); //uloženie stiahnutého textu do atribútu articleText
-
-                //zobrazenie do webView
-                mWebView.loadDataWithBaseURL(null, Templator.createHtmlString(article, articleText, articleErrorCode),
-                        "text/html", "utf-8", null);
+                createResponseListener(response);
             }//end of onResponse
 
         };
@@ -228,54 +247,58 @@ public class ArticleActivity
         Response.ErrorListener errorLis = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "ERROR " + error.toString(), Toast.LENGTH_LONG).show();
-                mWebView.setVisibility(View.GONE);
-                volleySingleton.handleVolleyError(error, tvVolleyErrorArticle);
+                showNoConnection("Chyba pripojenia na server!");
             } //end of onErrorResponse
         };
 
         //odoslanie requestu
         volleySingleton.createGetArticleRequest(article.getID(), article.isLocked(), responseLis, errorLis, true); //boolean = či aj z obrázkami
-    }
+    }//end loadArticle()
 
-    private void setCustomTitle(String section) {
-        String title = "";
+    private void createResponseListener(JSONObject response) {
+        mWebView.setVisibility(View.VISIBLE);
 
-        switch (section) {
-            case "clanok": {
-                title = "Článok";
-                break;
-            }
-            case "tema": {
-                title = "Téma mesiaca";
-                break;
-            }
-            case "baterka": {
-                title = "Baterka";
-                break;
-            }
-            case "kuchynskateologia": {
-                title = "Kuchynská teológia";
-                break;
-            }
-            case "normalnarodinka": {
-                title = "Normálna rodinka";
-                break;
-            }
-            case "animamea": {
-                title = "Anima mea";
-                break;
-            }
-            case "tabule": {
-                title = "Tabule";
-                break;
-            }
-            default:
-                title = "Článok";
-        }//end switch
+        tvVolleyErrorArticle.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
+        ivRefresh.setVisibility(View.GONE);
 
-        getSupportActionBar().setTitle(title); //nastavenie label-u konkretnej aktivity
-    }//end setCustomTitle()
+        if (article.isLocked()){ //zamknuté články
+            articleErrorCode = Parser.parseErrorCode(response);//get error code from response
+
+        } else { //verejné články
+            articleErrorCode = 0;
+        }
+
+        /*
+        if ((articleErrorCode > 0) && (session.getRola() > 0)){//user is logged in, but there is a problem with api key
+
+        }*/
+
+        articleText = Parser.parseArticleTextResponse(response); //uloženie stiahnutého textu do atribútu articleText
+
+        //zobrazenie do webView
+        mWebView.loadDataWithBaseURL(null, Templator.createHtmlString(article, articleText, articleErrorCode),
+                "text/html", "utf-8", null);
+
+        //load ad
+        loadAd();
+    }//end createResponseListener
+
+    private void loadAd() {
+        //load ads only if app is NOT logged mode
+        AdView adView = (AdView) findViewById(R.id.adView);
+
+        if (session.getRola() == 0) { //user use apllication in NOT logged mode
+
+            AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("EFA584B4E2545BEBE8DC114EBD032C8B")
+                    .build();
+
+            adView.loadAd(adRequest);
+
+        } else {
+            adView.setVisibility(View.GONE);
+        }//end if
+    }//end loadAd()
 
     public void showTextSizeDialog() {
         // Session manager

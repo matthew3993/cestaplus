@@ -6,17 +6,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.android.gms.ads.AdView;
 
 import org.json.JSONObject;
 
@@ -33,7 +33,6 @@ import bc.cestaplus.utilities.SessionManager;
 import bc.cestaplus.utilities.Templator;
 import bc.cestaplus.utilities.Util;
 
-import static bc.cestaplus.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static bc.cestaplus.extras.IKeys.KEY_BATERKA_ACTIVITY;
 import static bc.cestaplus.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static bc.cestaplus.extras.IKeys.KEY_PARENT_ACTIVITY;
@@ -54,6 +53,7 @@ public class BaterkaActivity
     //UI
     private WebView mWebView;
     private TextView tvVolleyErrorArticle; // vypis chyb so sieťou
+    private ImageView ivRefresh;
 
     //networking
     private VolleySingleton volleySingleton;
@@ -62,7 +62,7 @@ public class BaterkaActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_article); //layout is same as for ArticleActivity
+        setContentView(R.layout.activity_baterka);
 
         volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //inicializácia volleySingleton - dôležité !!!
         article = getIntent().getParcelableExtra("baterka");
@@ -74,10 +74,11 @@ public class BaterkaActivity
 
         mWebView = (WebView) findViewById(R.id.webViewArticle);
         tvVolleyErrorArticle = (TextView) findViewById(R.id.tvVolleyErrorArticle);
+        ivRefresh = (ImageView) findViewById(R.id.ivRefreshArticle);
 
         //mWebView.getSettings().setBuiltInZoomControls(true);
 
-        loadBaterka(); //vytvorí listenery a request
+        tryLoadBaterka();
 
         //register On Shared Preference Change Listener
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
@@ -162,7 +163,7 @@ public class BaterkaActivity
             }
 
             case KEY_RUBRIKA_ACTIVITY:{
-                i = new Intent(this, RubrikaActivity.class);
+                i = new Intent(this, SectionActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 break;
             }
@@ -175,13 +176,42 @@ public class BaterkaActivity
 
 // ======================================== VLASTNÉ METÓDY =====================================================================================
 
+    private void tryLoadBaterka(){
+        if (Util.isNetworkAvailable(this)) {
+            //vytvorí listenery a odošle request
+            loadBaterka(); //naplní article text zobrazení do webView
+
+        } else {
+            showNoConnection("Nie ste pripojený k sieti!");
+        }
+    }
+
+    private void showNoConnection(String msg) {
+        //Toast.makeText(getApplicationContext(), "ERROR ", Toast.LENGTH_LONG).show();
+        mWebView.setVisibility(View.GONE);
+
+        tvVolleyErrorArticle.setVisibility(View.VISIBLE);
+        ivRefresh.setVisibility(View.VISIBLE);
+
+        tvVolleyErrorArticle.setText(msg);
+        ivRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tryLoadBaterka();
+            }
+        });
+    }
+
     private void loadBaterka(){ //loading a text of Baterka
 
         Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
 
+                mWebView.setVisibility(View.VISIBLE);
+
                 tvVolleyErrorArticle.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
+                ivRefresh.setVisibility(View.GONE);
 
                 baterkaText = Parser.parseBaterka(response); //uloženie stiahnutého textu do atribútu baterkaText
 
@@ -195,9 +225,7 @@ public class BaterkaActivity
         Response.ErrorListener errorLis = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "ERROR " + error.toString(), Toast.LENGTH_LONG).show();
-                mWebView.setVisibility(View.GONE);
-                volleySingleton.handleVolleyError(error, tvVolleyErrorArticle);
+                showNoConnection("Chyba pripojenia na server!");
             } //end of onErrorResponse
         };
 

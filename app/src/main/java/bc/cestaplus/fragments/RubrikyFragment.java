@@ -20,13 +20,13 @@ import android.widget.ListView;
 
 import bc.cestaplus.R;
 import bc.cestaplus.activities.OPortaliActivity;
-import bc.cestaplus.activities.RubrikaActivity;
+import bc.cestaplus.activities.SectionActivity;
 import bc.cestaplus.activities.SettingsActivity;
 import bc.cestaplus.activities.konto_activities.LoggedActivity;
 import bc.cestaplus.activities.konto_activities.NotLoggedActivity;
 import bc.cestaplus.adapters.RubrikyAdapter;
+import bc.cestaplus.utilities.SectionsUtil;
 import bc.cestaplus.utilities.SessionManager;
-import bc.cestaplus.utilities.Util;
 
 import static bc.cestaplus.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static bc.cestaplus.extras.IKeys.KEY_PARENT_ACTIVITY;
@@ -45,22 +45,7 @@ public class RubrikyFragment
     public static final String EXTRA_NAZOV_RUBRIKY = "nazov_rubriky";
     public static final String EXTRA_ID_RUBRIKY = "id_rubriky";
 
-    String [] rubriky = {"Téma mesiaca",        //id =  0
-                         "180 stupňov",         //id =  1
-                         "Na ceste",            //id =  2
-                         "Rodičovské skratky",  //id =  3
-                         "Na pulze",            //id =  4
-                         "U Matúša",            //id =  5
-                         "Normálna rodinka",    //id =  6
-                         "Tabule",              //id =  7
-                         "Anima Mea",           //id =  8
-                         "Kuchynská teológia",  //id =  9
-                         "Kazateľnica život",   //id =  10
-                         "Za hranicami",        //id =  11
-                         "Fejtón",              //id =  12
-                         "P.O.BOX Nebo",        //id =  13
-                         "Z parlamentu",        //id =  14
-                         "Baterka"};            //id =  15
+    String [] rubriky = SectionsUtil.getSectionsList();
 
     //UI
     private static ArrayAdapter<String> adapterRubriky;
@@ -166,7 +151,7 @@ public class RubrikyFragment
         //Toast.makeText(MainActivity.context/*MainActivity.getContext()*/, "Klikli ste na rubriku " + txtV.getText(), Toast.LENGTH_LONG).show();
 
         // potrebne nastavenia na spustenie novej aktivity Rubrika + preposlanie informacie ktora rubrika
-        Intent intent = new Intent(getActivity().getApplicationContext(), RubrikaActivity.class);
+        Intent intent = new Intent(getActivity().getApplicationContext(), SectionActivity.class);
         intent.putExtra(EXTRA_NAZOV_RUBRIKY, rubriky[position]);
         intent.putExtra(EXTRA_ID_RUBRIKY, position);
 

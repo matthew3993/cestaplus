@@ -3,7 +3,11 @@ package bc.cestaplus.utilities;
 /**
  * Created by Matej on 25. 9. 2015.
  */
-public enum Sections {
+
+/**
+ * TODO: should be changed to IntDef annotations
+ */
+public enum SectionsEnum {
 
     TEMA                (0, "Téma mesiaca", "tema", false),
     STO80STUPNOV        (1, "180 stupňov", "180stupnov", true),
@@ -29,7 +33,7 @@ public enum Sections {
     private boolean needShortTemplate;
 
     //constructor
-    Sections(int numID, String fullName, String stringID, boolean needShortTemplate) {
+    SectionsEnum(int numID, String fullName, String stringID, boolean needShortTemplate) {
         this.numID = numID;
         this.fullName = fullName;
         this.stringID = stringID;

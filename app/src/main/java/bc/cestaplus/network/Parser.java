@@ -18,6 +18,7 @@ import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.objects.ArticleText;
 import bc.cestaplus.objects.BaterkaText;
 import bc.cestaplus.utilities.CustomApplication;
+import bc.cestaplus.utilities.SectionsUtil;
 
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_APY_KEY;
 import static bc.cestaplus.extras.IKeys.IPrehlad.KEY_AUTOR;
@@ -232,26 +233,10 @@ public class Parser {
                     }
 
                     //unescaping short_text for some sections
-                    switch (section) {
-                        case "180stupnov":
-                        case "naceste":
-                        case "rodicovskeskratky":
-                        case "napulze":
-                        case "umatusa":
-                        case "normalnarodinka":
-                        case "tabule":
-                        case "animamea":
-                        case "kuchynskateologia":
-                        case "kazatelnicazivot":
-                        case "zahranicami":
-                        case "fejton":
-                        case "poboxnebo":
-                        case "zparlamentu":{
+                    if (SectionsUtil.needsShortTemplate(section)){
                             //short_text = HtmlEscape.unescapeHtml(short_text); //cez externu kniznicu
                             short_text = Html.fromHtml(short_text).toString();
-                            break;
-                        }//end case
-                    }//end switch
+                    }//end if needsShortTemplate
 
                     //kontrola, ci bude clanok pridany do zoznamu
                     if (/*id != -1 && */ !title.equals("NA")) {

@@ -1,16 +1,13 @@
 package bc.cestaplus.utilities;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
@@ -27,7 +24,8 @@ public abstract class ClanokRecyclerViewAdapter
     extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     protected static final int TYPE_NORMAL = 0; //ľubovoľná hodnota
-    protected static final int TYPE_FOOTER = 100; //ľubovoľná hodnota
+    protected static final int TYPE_LOAD_MORE = 100; //ľubovoľná hodnota
+    protected static final int TYPE_PROGRESS_BAR = 150; //ľubovoľná hodnota
 
     protected LayoutInflater inflater;
     protected ArrayList<ArticleObj> clanky  = new ArrayList<>(); // vseobecne pomenovanie v adaptery
@@ -36,6 +34,9 @@ public abstract class ClanokRecyclerViewAdapter
 
     private VolleySingleton volleySingleton;
     private ImageLoader imageLoader;
+
+    private boolean loading; //if we are loading more data at the specified moment
+    private boolean noMoreArticles; //if
 
     /**
      * Konstruktor
@@ -48,6 +49,8 @@ public abstract class ClanokRecyclerViewAdapter
         imageLoader = volleySingleton.getImageLoader();
         rola = new SessionManager(CustomApplication.getCustomAppContext()).getRola(); //get rola
         this.screenSize = CustomApplication.getCustomAppScreenSize(); //get screen size
+        loading = false;
+        noMoreArticles = false;
     }
 
     /**
@@ -76,10 +79,19 @@ public abstract class ClanokRecyclerViewAdapter
 
     @Override
     public int getItemViewType(int position) {
-        if (position == clanky.size()){
-            return TYPE_FOOTER;
+        if (noMoreArticles){
+            return TYPE_NORMAL; //if there are no more articles, do not show footer
+
         } else {
-            return TYPE_NORMAL;
+            if (position == clanky.size()) {//
+                if (loading) {
+                    return TYPE_PROGRESS_BAR;
+                } else {
+                    return TYPE_LOAD_MORE;
+                }
+            } else {
+                return TYPE_NORMAL;
+            }
         }
     } //end getItemViewType
 
@@ -115,14 +127,33 @@ public abstract class ClanokRecyclerViewAdapter
 
     @Override
     public int getItemCount() {
-        return clanky.size()+1; // dolezite !!! // +1 kvoli footeru
+        if (noMoreArticles){
+            return clanky.size(); //if there are no more articles, do not show footer
+
+        } else {  //if there ARE more articles, do NEED to show footer
+            return clanky.size() + 1; // dolezite !!! // +1 kvoli footeru
+        }
     }
 
     public void setClanky(ArrayList<ArticleObj> clanky){
         this.clanky = clanky;
+        loading = false; //in case we're setting articles, we are not loading nothing anymore
         notifyItemRangeChanged(0, clanky.size()); //upornenie adaptera na zmenu rozsahu (poctu) clankov
     }
 
+    public void startAnim() {
+        loading = true;
+        notifyItemChanged(clanky.size());
+    }
+
+    public void setError() {
+        loading = false;
+        notifyItemChanged(clanky.size());
+    }
+
+    public void setNoMoreArticles() {
+        noMoreArticles = true;
+    }
 
     /**
      * ViewHolder sa vytvori raz a drží jednotlive Views z item_view, takze ich potom netreba hladat
@@ -173,15 +204,15 @@ public abstract class ClanokRecyclerViewAdapter
         */
 
     /**
-     * Footer ViewHolder
+     * LoadMoreBtn ViewHolder
      */
-    protected class FooterViewHolder
+    protected class LoadMoreBtnViewHolder
         extends RecyclerView.ViewHolder
         {
 
         Button btnLoadMore;
 
-        public FooterViewHolder(View view) {
+        public LoadMoreBtnViewHolder(View view) {
             super(view);
             btnLoadMore = (Button) itemView.findViewById(R.id.btnLoadMore);
         }
@@ -189,7 +220,22 @@ public abstract class ClanokRecyclerViewAdapter
             public Button getBtnLoadMore() {
                 return btnLoadMore;
             }
-        } // end FooterViewHolder
+    } // end FooterViewHolder
 
+
+    /**
+     * ProgressBar ViewHolder
+     */
+    public static class ProgressViewHolder
+        extends RecyclerView.ViewHolder
+        {
+
+        public ProgressBar progressBar;
+
+        public ProgressViewHolder(View v) {
+            super(v);
+            progressBar = (ProgressBar) v.findViewById(R.id.progressBar1);
+        }
+    }//end of ProgressViewHolder class
 
 }//end ClanokRecyclerViewAdapter

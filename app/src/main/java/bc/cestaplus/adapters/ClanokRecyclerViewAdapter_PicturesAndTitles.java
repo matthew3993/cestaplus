@@ -3,24 +3,14 @@ package bc.cestaplus.adapters;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
-
-import java.util.ArrayList;
-
 import bc.cestaplus.R;
-import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.utilities.ClanokRecyclerViewAdapter;
-import bc.cestaplus.utilities.CustomApplication;
-import bc.cestaplus.utilities.SessionManager;
 
 /**
  * Created by Matej on 4.3.2015.
@@ -69,9 +59,15 @@ public class ClanokRecyclerViewAdapter_PicturesAndTitles
                 break;  // !!!!
             }
 
-            case TYPE_FOOTER: {
+            case TYPE_LOAD_MORE: {
                 View view = inflater.inflate(R.layout.button_load_more, viewGroup, false);
-                holder = new FooterViewHolder(view);
+                holder = new LoadMoreBtnViewHolder(view);
+                break; // !!!!
+            }
+
+            case TYPE_PROGRESS_BAR: {
+                View view = inflater.inflate(R.layout.progressbar_item, viewGroup, false);
+                holder = new ProgressViewHolder(view);
                 break; // !!!!
             }
 
@@ -80,7 +76,7 @@ public class ClanokRecyclerViewAdapter_PicturesAndTitles
                 holder = new ArticleViewHolder_PicturesAndTitles(view);
                 break;  // !!!!
             }
-        }
+        }//end switch
 
         return holder;
     }
@@ -88,9 +84,13 @@ public class ClanokRecyclerViewAdapter_PicturesAndTitles
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int i) {
 
-        if (viewHolder instanceof FooterViewHolder){
-            FooterViewHolder holder = (FooterViewHolder) viewHolder;
+        if (viewHolder instanceof LoadMoreBtnViewHolder){
+            LoadMoreBtnViewHolder holder = (LoadMoreBtnViewHolder) viewHolder;
             //holder.btnLoadMore.setText("Load more");
+
+        } else if (viewHolder instanceof ProgressViewHolder) {
+            ProgressViewHolder holder = (ProgressViewHolder) viewHolder;
+            holder.progressBar.setIndeterminate(true);
 
         } else {
             ArticleViewHolder_PicturesAndTitles holder = (ArticleViewHolder_PicturesAndTitles) viewHolder;

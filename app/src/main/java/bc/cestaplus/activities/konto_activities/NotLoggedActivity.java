@@ -14,7 +14,7 @@ import bc.cestaplus.activities.BaterkaActivity;
 import bc.cestaplus.activities.LoginActivity;
 import bc.cestaplus.activities.MainActivity;
 import bc.cestaplus.activities.OPortaliActivity;
-import bc.cestaplus.activities.RubrikaActivity;
+import bc.cestaplus.activities.SectionActivity;
 import bc.cestaplus.activities.SettingsActivity;
 
 import static bc.cestaplus.extras.IKeys.KEY_ARTICLE_ACTIVITY;
@@ -119,7 +119,7 @@ public class NotLoggedActivity
             }
 
             case KEY_RUBRIKA_ACTIVITY:{
-                i = new Intent(this, RubrikaActivity.class);
+                i = new Intent(this, SectionActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 break;
             }

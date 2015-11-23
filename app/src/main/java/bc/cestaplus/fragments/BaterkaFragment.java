@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ public class BaterkaFragment
     //UI
     private WebView mWebView;
     private TextView tvVolleyErrorArticle; // vypis chyb so sieťou
+    private ImageView ivRefresh;
 
     //session
     private SessionManager session;
@@ -98,7 +100,8 @@ public class BaterkaFragment
         View view = inflater.inflate(R.layout.fragment_baterka2, container, false);
 
         mWebView = (WebView) view.findViewById(R.id.webViewBaterka);
-        tvVolleyErrorArticle = (TextView) view.findViewById(R.id.tvVolleyErrorBaterka);
+        tvVolleyErrorArticle = (TextView) view.findViewById(R.id.tvVolleyErrorBaterkaFragment);
+        ivRefresh = (ImageView) view.findViewById(R.id.ivRefreshBaterkaFragment);
 
         //mWebView.getSettings().setBuiltInZoomControls(true);
 
@@ -110,7 +113,7 @@ public class BaterkaFragment
 
         } else {*/
             // if dates are NOT equal - load new baterka from API
-            loadBaterkaTextFromAPI();
+            tryLoadBaterkaFromAPI();
 
         //}
 
@@ -174,12 +177,41 @@ public class BaterkaFragment
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadBaterkaTextFromAPI() {
+    private void tryLoadBaterkaFromAPI(){
+        if (Util.isNetworkAvailable(getActivity().getApplicationContext())) {
+            //vytvorí listenery a odošle request
+            loadBaterkaFromAPI(); //naplní article text zobrazení do webView
+
+        } else {
+            showNoConnection("Nie ste pripojený k sieti!");
+        }
+    }
+
+    private void showNoConnection(String msg) {
+        //Toast.makeText(getApplicationContext(), "ERROR ", Toast.LENGTH_LONG).show();
+        mWebView.setVisibility(View.GONE);
+
+        tvVolleyErrorArticle.setVisibility(View.VISIBLE);
+        ivRefresh.setVisibility(View.VISIBLE);
+
+        tvVolleyErrorArticle.setText(msg);
+        ivRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tryLoadBaterkaFromAPI();
+            }
+        });
+    }
+
+    private void loadBaterkaFromAPI() {
         Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
 
+                mWebView.setVisibility(View.VISIBLE);
+
                 tvVolleyErrorArticle.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
+                ivRefresh.setVisibility(View.GONE);
 
                 baterkaText = Parser.parseBaterka(response); //uloženie stiahnutého textu do atribútu baterkaText
 
@@ -193,9 +225,7 @@ public class BaterkaFragment
         Response.ErrorListener errorLis = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity().getApplicationContext(), "ERROR " + error.toString(), Toast.LENGTH_LONG).show();
-                mWebView.setVisibility(View.GONE);
-                volleySingleton.handleVolleyError(error, tvVolleyErrorArticle);
+                showNoConnection("Chyba pripojenia na server!");
             } //end of onErrorResponse
         };
 

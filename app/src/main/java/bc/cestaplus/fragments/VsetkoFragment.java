@@ -1,16 +1,18 @@
 package bc.cestaplus.fragments;
 
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment; // musi byt .v4.app.Fragment a nie len .Fragment
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,13 +23,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
 import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
@@ -36,33 +32,30 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import bc.cestaplus.activities.BaterkaActivity;
+import bc.cestaplus.activities.MainActivity;
 import bc.cestaplus.activities.OPortaliActivity;
 import bc.cestaplus.activities.SettingsActivity;
 import bc.cestaplus.activities.konto_activities.LoggedActivity;
 import bc.cestaplus.activities.konto_activities.NotLoggedActivity;
-import bc.cestaplus.adapters.ClanokRecyclerViewAdapter_PicturesAndTitles;
+import bc.cestaplus.listeners.ListStyleChangeListener;
+import bc.cestaplus.listeners.RecyclerTouchListener;
 import bc.cestaplus.network.Endpoints;
 import bc.cestaplus.network.Parser;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
 import bc.cestaplus.activities.ArticleActivity;
-import bc.cestaplus.adapters.ClanokRecyclerViewAdapter_All;
-import bc.cestaplus.extras.ArticlesLoadedListener;
-import bc.cestaplus.listeners.RecyclerItemClickListener;
+import bc.cestaplus.listeners.ArticlesLoadedListener;
 import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.tasks.UpdateTask;
 import bc.cestaplus.utilities.ClanokRecyclerViewAdapter;
 import bc.cestaplus.utilities.CustomApplication;
 import bc.cestaplus.utilities.MyApplication;
 import bc.cestaplus.utilities.SessionManager;
-import bc.cestaplus.utilities.Templator;
 import bc.cestaplus.utilities.Util;
 
 //staticke importy
 import static bc.cestaplus.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static bc.cestaplus.extras.IKeys.KEY_PARENT_ACTIVITY;
-import static bc.cestaplus.utilities.SessionManager.LIST_STYLE_ALL;
-import static bc.cestaplus.utilities.SessionManager.LIST_STYLE_PICTURES_AND_TITLES;
 import static java.lang.System.currentTimeMillis;
 
 /**
@@ -72,7 +65,7 @@ import static java.lang.System.currentTimeMillis;
  */
 public class VsetkoFragment
     extends Fragment
-    implements ArticlesLoadedListener, SwipeRefreshLayout.OnRefreshListener, SharedPreferences.OnSharedPreferenceChangeListener
+    implements ArticlesLoadedListener, SwipeRefreshLayout.OnRefreshListener, SharedPreferences.OnSharedPreferenceChangeListener, ListStyleChangeListener
         //implements RecyclerView.OnClickListener
     {
 
@@ -157,58 +150,16 @@ public class VsetkoFragment
 
         // ======= RecyclerView Touch Listener ====================================================================
         recyclerViewVsetko.addOnItemTouchListener(
-                new RecyclerItemClickListener(getActivity().getApplicationContext(),
-                        new RecyclerItemClickListener.OnItemClickListener() {
+                new RecyclerTouchListener(getActivity().getApplicationContext(), recyclerViewVsetko,
+                    new RecyclerTouchListener.ClickListener() {
                             @Override
-                            public void onItemClick(View view, int position) {
+                            public void onClick(View view, int position) {
+                                handleClick(view, position);
+                            }
 
-                                if (position == zoznamVsetko.size()){ // ak bolo kliknute na button nacitaj viac
-
-                                    pocSrt++;                                // !!! zvysenie poctu nacitanych stran !!!
-                                    //nacitanie dalsej stranky
-                                    Response.Listener<JSONArray> responseLis = new Response.Listener<JSONArray>() {
-                                        @Override
-                                        public void onResponse(JSONArray response) {
-                                            //Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
-                                            tvVolleyError.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
-                                            //page-ovanie
-                                            if (pocSrt == 1) {  // ak ide o prvu stranku, zoznam je prepisany
-                                                zoznamVsetko = Parser.parseJsonArrayResponse(response);
-                                            } else {            // ak ide o stranky nasledujuce, nove rubriky su pridane k existujucemu zoznamu
-                                                zoznamVsetko.addAll(Parser.parseJsonArrayResponse(response));
-                                            }
-                                            crvaVsetko.setClanky(zoznamVsetko);
-                                        }
-
-                                    };
-
-                                    Response.ErrorListener errorLis = new Response.ErrorListener() {
-                                        @Override
-                                        public void onErrorResponse(VolleyError error) {
-                                            //Toast.makeText(getActivity(), "ERROR " + error.toString(), Toast.LENGTH_LONG).show();
-                                            volleySingleton.handleVolleyError(error, tvVolleyError);
-                                        } //end of onErrorResponse
-                                    };
-
-                                    volleySingleton.createGetClankyArrayRequestGET("all", 20, pocSrt, responseLis, errorLis);
-                                    Toast.makeText(getActivity().getApplicationContext(), "Načítavam stránku číslo " + pocSrt, Toast.LENGTH_SHORT).show();
-
-                                } else { // ak bolo kliknute na clanok
-                                    if (zoznamVsetko.get(position).getSection().equalsIgnoreCase("baterka")){ //if baterka was clicked
-                                        Intent intent = new Intent(getActivity().getApplicationContext(), BaterkaActivity.class);
-                                        intent.putExtra("baterka", zoznamVsetko.get(position));
-                                        intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
-
-                                        startActivity(intent);
-
-                                    } else { // if other sections was clicked
-                                        Intent intent = new Intent(getActivity().getApplicationContext(), ArticleActivity.class);
-                                        intent.putExtra("clanok", zoznamVsetko.get(position));
-                                        intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
-
-                                        startActivity(intent);
-                                    }
-                                }
+                            @Override
+                            public void onLongClick(View view, int position) {
+                                //onLongClick code
                             }
                         }));
 
@@ -244,7 +195,76 @@ public class VsetkoFragment
         return view;
     } // end onCreateView
 
-    @Override
+        private void handleClick(View view, int position) {
+            if (position == zoznamVsetko.size()){ // ak bolo kliknute na button nacitaj viac
+
+                crvaVsetko.startAnim();
+
+                pocSrt++;                                // !!! zvysenie poctu nacitanych stran !!!
+                //nacitanie dalsej stranky
+                Response.Listener<JSONArray> responseLis = new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        //Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
+                        tvVolleyError.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
+                        //page-ovanie
+                        if (pocSrt == 1) {  // ak ide o prvu stranku, zoznam je prepisany
+                            zoznamVsetko = Parser.parseJsonArrayResponse(response);
+                            if (zoznamVsetko.size() < MainActivity.ART_NUM){
+                                crvaVsetko.setNoMoreArticles();
+                            }
+
+                        } else {            // ak ide o stranky nasledujuce, nove rubriky su pridane k existujucemu zoznamu
+                            ArrayList<ArticleObj> moreArticles = Parser.parseJsonArrayResponse(response);
+                            if (moreArticles.size() < MainActivity.ART_NUM){
+                                crvaVsetko.setNoMoreArticles();
+                            }
+                            zoznamVsetko.addAll(Parser.parseJsonArrayResponse(response));
+                        }
+                        crvaVsetko.setClanky(zoznamVsetko);
+                    }
+
+                };
+
+                Response.ErrorListener errorLis = new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //Toast.makeText(getActivity(), "ERROR " + error.toString(), Toast.LENGTH_LONG).show();
+                        crvaVsetko.setError();
+                        //volleySingleton.handleVolleyError(error, tvVolleyError);
+                        pocSrt--;                                // !!!  reducing of loaded pages number - because page was not loaded !!!
+                        Toast.makeText(getActivity(), "Chyba pri načítavaní ďalších článkov", Toast.LENGTH_SHORT).show();
+                    } //end of onErrorResponse
+                };
+
+                volleySingleton.createGetClankyArrayRequestGET("all", 20, pocSrt, responseLis, errorLis);
+                //Toast.makeText(getActivity().getApplicationContext(), "Načítavam stránku číslo " + pocSrt, Toast.LENGTH_SHORT).show();
+
+            } else { // ak bolo kliknute na clanok
+                final Intent intent;
+                if (zoznamVsetko.get(position).getSection().equalsIgnoreCase("baterka")){ //if baterka was clicked
+                    intent = new Intent(getActivity().getApplicationContext(), BaterkaActivity.class);
+                    intent.putExtra("baterka", zoznamVsetko.get(position));
+                    intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
+
+                } else { // if other sections was clicked
+                    intent = new Intent(getActivity().getApplicationContext(), ArticleActivity.class);
+                    intent.putExtra("clanok", zoznamVsetko.get(position));
+                    intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
+
+                }
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(intent);
+                    }
+                }, 250);
+            }
+        }//end handleClick()
+
+        @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_vsetko_fragment, menu);
 
@@ -280,8 +300,7 @@ public class VsetkoFragment
             }
 
             case R.id.action_list_style: {
-                Util.showListStyleDialog(session, getActivity() /*not getActivity.getApplicationContext()*/, // context for creation of Dialog - it has to be context of activity, not context of application
-                        crvaVsetko, recyclerViewVsetko, zoznamVsetko);
+                Util.showListStyleDialog(this, session, getActivity()); /*not getActivity.getApplicationContext()*/ // context for creation of Dialog - it has to be context of activity, not context of application);
                 return true;
             }
 
@@ -302,8 +321,12 @@ public class VsetkoFragment
                 return true;
             }
 
-            case R.id.action_test_notification:
+            /*case R.id.action_test_notification:
                 Util.issueNotification("Počet nových článkov: ???", 1);
+                return true;
+            */
+            case R.id.action_test_size_and_density:
+                checkScreenSize();
                 return true;
 
             default:
@@ -395,4 +418,62 @@ public class VsetkoFragment
         }
     }//end onSharedPreferenceChanged
 
-} // end class FragmentVsetko
+        private void checkScreenSize() {
+            int screenSize = getResources().getConfiguration().screenLayout &
+                    Configuration.SCREENLAYOUT_SIZE_MASK;
+
+            String toastMsg;
+            switch(screenSize) {
+                case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+                    toastMsg = "Extra Large screen";
+                    break;
+                case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                    toastMsg = "Large screen";
+                    break;
+                case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+                    toastMsg = "Normal screen";
+                    break;
+                case Configuration.SCREENLAYOUT_SIZE_SMALL:
+                    toastMsg = "Small screen";
+                    break;
+                default:
+                    toastMsg = "Nedá sa určiť veľkosť obrazovky!";
+            }
+
+            int density= getResources().getDisplayMetrics().densityDpi;
+            switch(density)
+            {
+                case DisplayMetrics.DENSITY_LOW:
+                    toastMsg += " LDPI";
+                    break;
+                case DisplayMetrics.DENSITY_MEDIUM:
+                    toastMsg += " MDPI";
+                    break;
+                case DisplayMetrics.DENSITY_HIGH:
+                    toastMsg += " HDPI";
+                    break;
+                case DisplayMetrics.DENSITY_XHIGH:
+                    toastMsg += " XHDPI";
+                    break;
+                case DisplayMetrics.DENSITY_XXHIGH:
+                    toastMsg += " XXHDPI";
+                    break;
+                case DisplayMetrics.DENSITY_XXXHIGH:
+                    toastMsg += " XXXHDPI";
+                    break;
+            }
+
+            Toast.makeText(this.getActivity().getApplicationContext(), toastMsg, Toast.LENGTH_LONG).show();
+        }//end check screensize()
+
+        @Override
+        public void handleSelection(DialogInterface dialog, int listStyle) {
+            session.setListStyle(listStyle); //save list style
+
+            crvaVsetko = Util.getCrvaType(session, getActivity().getApplicationContext());
+            crvaVsetko.setClanky(zoznamVsetko);
+            recyclerViewVsetko.setAdapter(crvaVsetko);
+
+            dialog.dismiss(); //dismiss the dialog
+        }
+    } // end class FragmentVsetko

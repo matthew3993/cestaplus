@@ -1,22 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="horizontal">
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
 
-    <WebView
-        android:id="@+id/webViewArticle"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants"
+    android:background="@color/white"
+    >
+
+    <ScrollView
+        android:id="@+id/scrollViewArticle"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        />
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <WebView
+                android:id="@+id/webViewArticle"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                />
+                <!-- android:layout_above="@+id/adView" -->
+
+
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                ads:adSize="BANNER"
+                ads:adUnitId="ca-app-pub-4483457963577151/4400468623">
+            </com.google.android.gms.ads.AdView>
+            <!--android:layout_alignParentBottom="true"-->
+
+        </LinearLayout>
+    </ScrollView>
 
     <TextView
         android:id="@+id/tvVolleyErrorArticle"
-        android:layout_gravity="center"
+        android:text="Chyba pripojenia na server!"
+        android:textColor="#000000"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/ivRefreshArticle"
+        android:layout_centerHorizontal="true"
         android:visibility="gone"
         />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/ivRefreshArticle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_refresh_black_48dp"
+        android:visibility="gone"
+        />
+
+</RelativeLayout>

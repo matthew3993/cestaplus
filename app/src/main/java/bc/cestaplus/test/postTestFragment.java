@@ -66,7 +66,7 @@ public class postTestFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_baterka, container, false);
+        View view = inflater.inflate(R.layout.fragment_baterka2, container, false);
 
         //TextView textView = view.findViewById(R.layout.);
         //textView.setText(R.string.hello_blank_fragment);

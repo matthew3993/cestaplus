@@ -1,13 +1,10 @@
 package bc.cestaplus.services;
 
-import android.widget.Toast;
-
 import java.util.ArrayList;
 
 import bc.cestaplus.objects.ArticleObj;
-import bc.cestaplus.extras.ArticlesLoadedListener;
+import bc.cestaplus.listeners.ArticlesLoadedListener;
 import bc.cestaplus.tasks.UpdateTask;
-import bc.cestaplus.utilities.CustomApplication;
 import me.tatarka.support.job.JobParameters;
 import me.tatarka.support.job.JobService;
 

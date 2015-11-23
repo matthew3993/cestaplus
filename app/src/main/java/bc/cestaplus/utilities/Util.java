@@ -12,6 +12,8 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +24,7 @@ import bc.cestaplus.R;
 import bc.cestaplus.activities.MainActivity;
 import bc.cestaplus.adapters.ClanokRecyclerViewAdapter_All;
 import bc.cestaplus.adapters.ClanokRecyclerViewAdapter_PicturesAndTitles;
+import bc.cestaplus.listeners.ListStyleChangeListener;
 import bc.cestaplus.objects.ArticleObj;
 
 import static bc.cestaplus.utilities.SessionManager.LIST_STYLE_ALL;
@@ -166,8 +169,8 @@ public class Util {
         } //end switch getListStyle()
     }
 
-    public static void showListStyleDialog(final SessionManager session, final Context context,
-                                     final ClanokRecyclerViewAdapter crva, final RecyclerView recyclerView, final ArrayList<ArticleObj> articleList) {
+    public static void showListStyleDialog(final ListStyleChangeListener listener,
+                                           final SessionManager session, final Context context) {
         String [] items = Util.getListStyles();
 
         new AlertDialog.Builder(context)
@@ -178,11 +181,11 @@ public class Util {
                             public void onClick(DialogInterface dialog, int item_num) {
                                 switch (item_num) {
                                     case 0:
-                                        handleSelection(dialog, LIST_STYLE_ALL, session, context, crva, recyclerView, articleList); // = 0
+                                        listener.handleSelection(dialog, LIST_STYLE_ALL); // = 0
                                         break;
 
                                     case 1:
-                                        handleSelection(dialog, LIST_STYLE_PICTURES_AND_TITLES, session, context, crva, recyclerView, articleList); // = 1
+                                        listener.handleSelection(dialog, LIST_STYLE_PICTURES_AND_TITLES); // = 1
                                         break;
                                 }// end switch
                             }
@@ -210,6 +213,9 @@ public class Util {
         recyclerView.setAdapter(crva);
     } //end refreshRecyclerView()
 
-
+    public static boolean isNetworkAvailable(final Context context) {
+        final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
 
 }//end Util class

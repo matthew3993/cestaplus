@@ -20,6 +20,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import bc.cestaplus.listeners.RecyclerTouchListener;
 import bc.cestaplus.network.Parser;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.R;
@@ -90,10 +91,10 @@ public class TemaFragment extends Fragment {
 
   // ======= RecyclerView Touch Listener ====================================================================
         recyclerViewTema.addOnItemTouchListener(
-                new RecyclerItemClickListener(getActivity().getApplicationContext(),
-                        new RecyclerItemClickListener.OnItemClickListener() {
+                new RecyclerTouchListener(getActivity().getApplicationContext(), recyclerViewTema,
+                        new RecyclerTouchListener.ClickListener() {
                             @Override
-                            public void onItemClick(View view, int position) {
+                            public void onClick(View view, int position) {
 
                                 if (position == zoznamTema.size()){ // ak bolo kliknute na button nacitaj viac
 
@@ -136,7 +137,12 @@ public class TemaFragment extends Fragment {
                                     //view.getContext().startActivity(intent);
                                     startActivity(intent);
                                 }
-                            }
+                            }// end onClick
+
+                            @Override
+                            public void onLongClick(View view, int position) {
+                                //onLongClick code
+                            }//end onLongClick
                         }));
 
         crvaTema = new ClanokRecyclerViewAdapter_All(getActivity().getApplicationContext());

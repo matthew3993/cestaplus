@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">cesta+</string>
+    <string name="app_name">cesta+ (beta)</string>
     <string name="title_section1">Prehľad</string>
     <string name="title_section2">Téma mesiaca</string>
     <string name="title_section3">Rubriky</string>
@@ -36,5 +36,6 @@
     <string name="action_test_notification">Issue test notification</string>
     <string name="title_activity_oportali">OPortaliActivity</string>
     <string name="action_o_portali">O portáli</string>
+    <string name="action_test_size_and_density">Check screen size and density</string>
 
 </resources>

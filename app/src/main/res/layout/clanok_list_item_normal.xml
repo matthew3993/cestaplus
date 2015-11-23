@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:weightSum="1"
-    android:background="#ffffff"
+    android:background="@drawable/custom_bg"
+    android:clickable="true"
     >
 
     <com.android.volley.toolbox.NetworkImageView

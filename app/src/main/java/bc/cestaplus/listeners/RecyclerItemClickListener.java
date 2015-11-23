@@ -6,8 +6,11 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-
-public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
+/**
+ * NEFUNGUJE SPRAVNE S RIPPLE EFEKTOM!!!!
+ */
+public class RecyclerItemClickListener
+        implements RecyclerView.OnItemTouchListener {
     private OnItemClickListener mListener;
 
     public interface OnItemClickListener {

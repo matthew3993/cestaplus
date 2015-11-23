@@ -18,7 +18,7 @@ import bc.cestaplus.network.Parser;
 import bc.cestaplus.network.Requestor;
 import bc.cestaplus.objects.ArticleObj;
 import bc.cestaplus.utilities.MyApplication;
-import bc.cestaplus.extras.ArticlesLoadedListener;
+import bc.cestaplus.listeners.ArticlesLoadedListener;
 import bc.cestaplus.network.VolleySingleton;
 import bc.cestaplus.utilities.CustomApplication;
 import bc.cestaplus.utilities.Util;
@@ -112,6 +112,7 @@ public class UpdateTask
     @Override
     protected void onPostExecute(ArrayList<ArticleObj> listArticles) {
         if ( myComponent != null){
+            //callback of listener
             myComponent.onArticlesLoaded(listArticles);
             myComponent.numNewArticles(newArticles.size());
         }

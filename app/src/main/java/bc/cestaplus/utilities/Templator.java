@@ -1,7 +1,6 @@
 package bc.cestaplus.utilities;
 
 import android.content.res.Configuration;
-import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
@@ -28,38 +27,12 @@ public class Templator {
 
     public static String createHtmlString(ArticleObj article, ArticleText articleText, int articleErrorCode) {
 
-        String ret = "";
+        if (SectionsUtil.needsShortTemplate(article.getSection())){
+            return getShortTeplate(article, articleText, articleErrorCode);
+        } else {
+            return getFullTeplate(article, articleText, articleErrorCode);
+        }
 
-        switch (article.getSection()) {
-            case "baterka": {
-                Toast.makeText(CustomApplication.getCustomAppContext(), "Ľutujeme, ale tento článok patrí do rubriky, ktorá nie je podporovaná!", Toast.LENGTH_SHORT).show();
-                break;
-            }
-            case "180stupnov":
-            case "naceste":
-            case "rodicovskeskratky":
-            case "napulze":
-            case "umatusa":
-            case "normalnarodinka":
-            case "tabule":
-            case "animamea":
-            case "kuchynskateologia":
-            case "kazatelnicazivot":
-            case "zahranicami":
-            case "fejton":
-            case "poboxnebo":
-            case "zparlamentu": {
-                ret = getShortTeplate(article, articleText, articleErrorCode);
-                break;
-            } //end case skrátená šablóna
-
-            default: {
-                ret = getFullTeplate(article, articleText, articleErrorCode);
-            } //end defaut - full template
-
-        }//end switch
-
-        return ret;
     }//end createHtmlString
 
     private static String checkVideos(ArticleText articleText) {
