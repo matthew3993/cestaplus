@@ -1,4 +1,4 @@
-package bc.cestaplus;
+package sk.cestaplus.cestaplusapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

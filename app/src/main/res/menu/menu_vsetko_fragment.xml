@@ -36,9 +36,11 @@
         app:showAsAction="never" />
     -->
 
+    <!--
     <item
         android:id="@+id/action_test_size_and_density"
         android:title="@string/action_test_size_and_density"
         android:orderInCategory="100"
         app:showAsAction="never" />
+    -->
 </menu>
