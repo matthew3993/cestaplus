@@ -7,8 +7,8 @@ android {
         applicationId "sk.cestaplus.cestaplusapp"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 1
-        versionName "alpha 1.01"
+        versionCode 3
+        versionName "alpha 1.2"
     }
     buildTypes {
         release {
