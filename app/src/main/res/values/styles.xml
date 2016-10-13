@@ -3,11 +3,17 @@
 
     <!-- Base application theme. -->
     <!-- the theme applied to the entire application -->
-    <style
-        name="AppTheme"
-        parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar" >
+
     </style>
 
+    <!-- Blue Theme - blue action bar -->
+    <style name="Blue.Base" parent="AppTheme.Base" >
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryColorDark</item>
+        <item name="android:textColorPrimary">@android:color/primary_text_dark</item>
+    </style>
+    
     <style
         name="item_Title"
         parent="Theme.AppCompat.Light.DarkActionBar">

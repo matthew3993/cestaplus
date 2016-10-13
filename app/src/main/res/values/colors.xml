@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--color of action bar; now 35% from h1 color;   before #9cddf1 -->
+    <color name="primaryColor">#0065b3</color>
 
-    <color name="primaryColor">#9cddf1</color>
+    <!--color of statur bar; same as h1 color -->
+    <color name="primaryColorDark">#005494</color>
 
     <color name="transparent">#00000000</color>
     <color name="tab_highlight">#9cddf1</color>
