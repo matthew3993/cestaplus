@@ -3,33 +3,21 @@
 
     <!-- Base application theme. -->
     <!-- the theme applied to the entire application -->
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar" >
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar" >
 
     </style>
 
+    <style name="AppTheme.WithoutActionBar" parent="AppTheme" >
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+
     <!-- Blue Theme - blue action bar -->
-    <style name="Blue.Base" parent="AppTheme.Base" >
+    <style name="Blue" parent="AppTheme" >
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryColorDark</item>
         <item name="android:textColorPrimary">@android:color/primary_text_dark</item>
-    </style>
-    
-    <style
-        name="item_Title"
-        parent="Theme.AppCompat.Light.DarkActionBar">
-
-        <item name="android:textColor">#005494</item>
-        <item name="android:typeface">serif</item>
-        <item name="android:textSize">14sp</item >
-    </style>
-
-    <style
-        name="item_short_text"
-        parent="Theme.AppCompat.Light.DarkActionBar">
-
-        <item name="android:textColor">#727f7f</item>
-        <item name="android:typeface">serif</item>
-        <item name="android:textSize">12sp</item >
     </style>
 
     <style
@@ -59,14 +47,29 @@
 
     <style
         name="button_load_more"
-        parent="Theme.AppCompat.Light.DarkActionBar">
+        parent="AppTheme.WithoutActionBar">
 
         <item name="android:textColor">#000000</item>
         <!-- <item name="android:textColor">#ffffffff</item> -->
         <item name="android:typeface">serif</item>
         <!-- <item name="android:background">#005494</item> -->
         <!-- <item name="android:textStyle">bold</item> -->
-
    </style>
+
+    <style
+        name="settingsToolbarTheme"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <!-- color of the title text in the Toolbar, in the Theme.AppCompat theme -->
+        <item name="android:textColorPrimary">@color/white</item>
+
+        <!-- color of the text of action (menu) items in the Toolbar, at least in the Theme.AppCompat theme.
+        For some reason, they already get the textColorPrimary when running on API 21, but not on older versions of
+        Android, so this is only necessary to support older Android versions. -->
+        <item name="actionMenuTextColor">@color/white</item>
+
+        <!-- color of the navigation icon (arrow) and menu overflow icon (three vertical dots) -->
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
 
 </resources>

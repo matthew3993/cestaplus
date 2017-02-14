@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:layout_height="wrap_content"
+    android:weightSum="1"
+    android:background="@drawable/custom_bg"
+    android:clickable="true"
+    android:orientation="horizontal">
 
     <Button
         android:layout_width="wrap_content"
@@ -16,5 +18,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        style="@style/button_load_more" />
+        style="@style/button_load_more"
+        android:fontFamily="sans-serif"
+        android:elevation="0dp" />
 </RelativeLayout>

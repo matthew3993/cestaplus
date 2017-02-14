@@ -31,7 +31,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dip"
-            android:background="@color/btn_login"
+            android:background="@color/notlogged_activity_btn_login_bg"
             android:text="@string/btn_login_big"
             android:textAllCaps="false"
             android:textColor="@color/white"

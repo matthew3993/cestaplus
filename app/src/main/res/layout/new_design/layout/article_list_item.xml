@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:weightSum="1"
+    android:background="@drawable/custom_bg"
+    android:clickable="true"
+    android:orientation="horizontal">
+
+        <!--
+            android:maxWidth="180dp"
+            android:maxHeight="120dp"
+
+            android:minWidth="180dp"
+            android:minHeight="120dp"
+        -->
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/nivListItem"
+
+            android:layout_width="@dimen/li_image_width"
+            android:layout_height="@dimen/li_image_height"
+
+            android:layout_alignParentTop="true"
+            android:scaleType="centerCrop"
+
+            android:layout_margin="@dimen/li_image_layout_margin"
+
+            android:paddingLeft="0dp"
+            android:paddingTop="0dp"
+            android:paddingRight="0dp"
+            android:paddingBottom="0dp"
+        />
+
+        <TextView
+                android:id="@+id/item_tvAuthor"
+                style="@style/item_Author"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentTop="true"
+
+                android:layout_toRightOf="@+id/nivListItem"
+
+                android:text="@string/test_author"
+                />
+
+            <TextView
+                android:id="@+id/item_tvTitle"
+                style="@style/item_Title"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@+id/item_tvAuthor"
+                android:layout_toRightOf="@+id/nivListItem"
+
+                android:text="@string/title_here"
+                />
+
+            <TextView
+                android:id="@+id/item_tvShortText"
+                style="@style/item_short_text"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@+id/item_tvTitle"
+                android:layout_toRightOf="@+id/nivListItem"
+
+                android:text="@string/description_here"
+                />
+
+            <ImageView
+                android:id="@+id/item_ivLock"
+                android:layout_width="@dimen/li_lock_image_height_width"
+                android:layout_height="@dimen/li_lock_image_height_width"
+
+                android:src="@drawable/old_lock"
+
+                android:layout_alignTop="@+id/nivListItem"
+                android:layout_alignLeft="@+id/nivListItem"
+
+                android:layout_marginTop="@dimen/li_lock_image_margin_top"
+                android:layout_marginLeft="@dimen/li_lock_image_margin_left"
+                />
+
+    </RelativeLayout>

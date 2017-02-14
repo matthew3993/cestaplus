@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_login"
+    android:background="@color/login_activity_bg"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="10dp" >
@@ -51,7 +51,7 @@
             android:layout_marginTop="20dip"
             android:background="@color/btn_login_bg"
             android:text="@string/btn_login"
-            android:textColor="@color/btn_login" />
+            android:textColor="@color/btn_login_text" />
 
         <!-- Use as not logged in button -->
 

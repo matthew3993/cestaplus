@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+
+    android:id="@+id/alert_locked_layout"
+    android:visibility="gone"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@color/alertLockedBackground"
+
+    android:padding="@dimen/alert_locked_layout_padding"
+
+    android:layout_margin="@dimen/linear_layout_padding"
+
+    tools:ignore="MissingPrefix"
+    >
+
+    <TextView
+        android:id="@+id/tvAlertLockedTitle"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="@string/alert_locked_title"
+        android:textColor="@color/alertLockedText"
+
+        android:textSize="@dimen/header_title_text_size"
+        fontPath="fonts/LatoLatin-Black.ttf"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="@string/alert_locked_text"
+
+        android:textColor="@color/alertLockedText"
+
+        android:textSize="@dimen/header_short_text_size"
+        android:lineSpacingMultiplier="1.3"
+        fontPath="fonts/LatoLatin-Regular.ttf"
+
+        android:layout_marginTop="@dimen/alert_locked_text_margin_top"
+        />
+
+    <!--
+        drawableRight SOURCE: http://stackoverflow.com/questions/22966143/android-button-with-icon-and-text
+    -->
+    <Button
+        android:id="@+id/btnAlertLocked"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:drawableRight="@drawable/btn_more_info_about_subscription_icon"
+        android:drawablePadding="@dimen/alert_locked_button_padding"
+
+        android:text="@string/more_info_about_subscription"
+
+        android:background="@color/black"
+        android:textColor="@color/white"
+
+        android:textSize="@dimen/li_short_text_size"
+        fontPath="fonts/LatoLatin-Black.ttf"
+
+        android:padding="@dimen/alert_locked_button_padding"
+
+        android:layout_marginTop="@dimen/alert_locked_button_margin_top"
+        />
+
+</LinearLayout>

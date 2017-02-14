@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    SOURCE: http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes
+    1. Create an attribute XML
+-->
+<resources>
+    <declare-styleable name="CircularTextView">
+        <attr name="solidColor" format="color"/>
+    </declare-styleable>
+</resources>

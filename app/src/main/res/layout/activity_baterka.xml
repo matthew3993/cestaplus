@@ -1,33 +1,382 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
-
-    android:orientation="vertical"
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/baterkaRootCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <WebView
-        android:id="@+id/webViewArticle"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-    />
+    <!-- APPBAR START ************************************************************* -->
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/baterkaAppBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <!-- scroll flags combination: scroll|enterAlways|enterAlwaysCollapsed
+        SOURCE: http://stackoverflow.com/questions/35186639/collapsingtoolbarlayout-and-hide-toolbar-while-scrolling-->
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/baterkaCollapsingToolbarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
+
+            <RelativeLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1"
+                android:background="@drawable/custom_bg"
+                android:clickable="true"
+                android:orientation="horizontal"
+
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="@dimen/baterka_title_image_collapseParallaxMultiplier"
+                >
+                <!--
+                <com.android.volley.toolbox.NetworkImageView
+                android:scaleType="centerCrop"
+                android:layout_height="400dp"
+                347
+                TODO: ako to bude s obrázkom baterky??
+                -->
+                <com.android.volley.toolbox.NetworkImageView
+                    android:id="@+id/nivBaterka"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/baterka_title_image_height"
+
+                    android:scaleType="centerCrop"
+
+                    android:layout_alignParentTop="true"
+                    />
+
+                <!-- SOUCRE: http://stackoverflow.com/questions/19974078/android-transparent-text -->
+                <it.gilvegliach.android.transparenttexttextview.TransparentTextTextView
+                    android:id="@+id/tvBaterkaAuthor"
+                    style="@style/baterka_Author"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_above="@+id/tvBaterkaTitle"
+                    android:layout_alignLeft="@+id/nivBaterka"
+
+                    android:text="@string/test_author"
+                    />
+
+                <TextView
+                    android:id="@+id/tvBaterkaTitle"
+                    style="@style/baterka_Title"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignLeft="@+id/nivBaterka"
+                    android:layout_alignBottom="@+id/nivBaterka"
+
+                    android:text="@string/title_here"
+
+                    android:minLines="1"
+                    />
+
+                    <!-- HERE can be TextView with source of photo -->
+            </RelativeLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+    <!-- APPBAR END *************************************************************** -->
+
+    <!-- ACTIVITY BODY START ******************************************************* -->
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- COORDINATES + SCRIPTURE START **************************************************** -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/coordinatesAndScriptureBackground">
+
+                <TextView
+                    android:id="@+id/tvCoordinates"
+                    style="@style/baterka_Coordinates"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvScripture"
+                    style="@style/baterka_Scripture"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+            <!-- COORDINATES + SCRIPTURE END ****************************************************** -->
+
+            <!-- DATE BOX START **************************************************** -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/baterka_DateRelativeLayout"
+                >
+
+                <!-- TODO: HERE SHOULD BE AUTOR PHOTO *********************************** -->
+
+                <TextView
+                    android:id="@+id/tvDayWeek"
+                    style="@style/baterka_DayInWeek"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignParentTop="true"/>
+
+                <TextView
+                    android:id="@+id/tvDateBaterka"
+                    style="@style/baterka_Date"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_below="@+id/tvDayWeek"/>
+
+            </RelativeLayout>
+            <!-- DATE BOX END ****************************************************** -->
+
+            <!-- MEDITATION START **************************************************** -->
+            <TextView
+                android:id="@+id/tvMeditationTitle"
+                style="@style/baterka_MeditationTitle"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/meditationTitle"/>
+
+            <TextView
+                android:id="@+id/tvMeditationText"
+                style="@style/baterka_MeditationText"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+            <!-- MEDITATION END ****************************************************** -->
+
+            <!-- QUOTATION BOX START ******************************************************* -->
+            <RelativeLayout
+                style="@style/baterka_QuotationBoxRelativeLayout"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <TextView
+                    android:id="@+id/tvQuotationText"
+                    style="@style/baterka_QuotationText"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignParentTop="true"
+                    />
+
+                <!-- TODO: HERE should be QUOTATION AUTHOR PICTURE -->
+
+                <TextView
+                    android:id="@+id/tvQuotationAuthor"
+                    style="@style/baterka_QuotationAuthor"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_below="@+id/tvQuotationText"
+                    />
+
+            </RelativeLayout>
+            <!-- QUOTATION BOX END ******************************************************* -->
+
+            <!-- TODO: HERE should be thank you for meditation BUTTON -->
+
+            <!-- DEPTH START ************************************************************ -->
+            <!-- DEPTH TITLE -->
+            <!-- depth title style same as meditation title style for now -->
+            <TextView
+                android:id="@+id/tvDephtTitle"
+                style="@style/baterka_MeditationTitle"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/depth_title"/>
+
+            <!-- SOURCE:  http://stackoverflow.com/questions/5049852/android-drawing-separator-divider-line-in-layout -->
+            <View style="@style/baterka_divider"/>
+
+            <!-- DEPTH 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- SOURCE of app:solidColor="@color/circularTv01" :
+                     http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes
+                     2. Use the attributes in your layout
+                     !!! DO NOT use android:background attribute - it over-paints the circle
+                -->
+                <sk.cestaplus.cestaplusapp.views.CircularTextView
+
+                    android:id="@+id/circtvDepth1"
+                    style="@style/baterka_CtvDepths"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    app:solidColor="@color/circularTv01"
+
+                    android:gravity="center"
+                    android:text="01"/>
+
+                <TextView
+                    android:id="@+id/tvDepth1"
+                    style="@style/baterka_TvDepths"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View style="@style/baterka_divider"/>
+
+            <!-- DEPTH 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <sk.cestaplus.cestaplusapp.views.CircularTextView
+                    android:id="@+id/circtvDepth2"
+                    style="@style/baterka_CtvDepths"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    app:solidColor="@color/circularTv02"
+
+                    android:gravity="center"
+                    android:text="02"/>
+
+                <TextView
+                    android:id="@+id/tvDepth2"
+                    style="@style/baterka_TvDepths"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View style="@style/baterka_divider"/>
+
+            <!-- DEPTH 3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <sk.cestaplus.cestaplusapp.views.CircularTextView
+                    android:id="@+id/circtvDepth3"
+                    style="@style/baterka_CtvDepths"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    app:solidColor="@color/circularTv03"
+
+                    android:gravity="center"
+                    android:text="03"/>
+
+                <TextView
+                    android:id="@+id/tvDepth3"
+                    style="@style/baterka_TvDepths"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View style="@style/baterka_divider"/>
+            <!-- DEPTH END ************************************************************** -->
+
+            <!-- TIP START ************************************************************** -->
+            <TextView
+                android:id="@+id/tvTipTitle"
+                style="@style/baterka_TipTitle"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/tip_for_you_title"/>
+
+            <!-- tip text style same as meditation text style for now -->
+            <TextView
+                android:id="@+id/tvTipText"
+                style="@style/baterka_MeditationText"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <!-- margin added here for last divider to be shown at the bottom of screen -->
+            <View
+                style="@style/baterka_divider"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                />
+            <!-- TIP END **************************************************************** -->
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+    <!-- ACTIVITY BODY END ********************************************************* -->
+
+    <!-- OTHER VIEWS START ********************************************************* -->
+    <ProgressBar
+        android:id="@+id/progressBarBaterka"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        />
 
     <TextView
-        android:id="@+id/tvVolleyErrorArticle"
-        android:text="Chyba pripojenia na server!"
+        android:id="@+id/tvVolleyErrorBaterka"
+        android:text="@string/connection_error_msg"
         android:textColor="#000000"
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/ivRefreshArticle"
+        android:layout_above="@+id/ivRefreshBaterka"
         android:layout_centerHorizontal="true"
         android:visibility="gone"
         />
 
     <ImageView
-        android:id="@+id/ivRefreshArticle"
+        android:id="@+id/ivRefreshBaterka"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
@@ -36,5 +385,6 @@
         android:src="@drawable/ic_refresh_black_48dp"
         android:visibility="gone"
         />
+    <!-- OTHER VIEWS END *********************************************************** -->
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

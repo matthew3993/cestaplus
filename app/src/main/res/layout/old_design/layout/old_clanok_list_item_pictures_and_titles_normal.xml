@@ -3,14 +3,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     android:weightSum="1"
     android:background="@drawable/custom_bg"
     android:clickable="true"
+    android:orientation="horizontal"
     >
 
     <com.android.volley.toolbox.NetworkImageView
-        android:id="@+id/item_ivObr"
+        android:id="@+id/nivBaterka"
         android:layout_width="120dp"
         android:layout_height="80dp"
         android:layout_gravity="center_horizontal|top"
@@ -30,40 +30,22 @@
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
 
         android:layout_weight="0.86"
 
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/item_ivObr"
+        android:layout_toRightOf="@+id/nivBaterka"
 
         android:text="Tu bude nadpis"
 
-        android:maxLines="2"
+        android:maxLines="4"
         android:minLines="1"
         android:paddingTop="5dp"
-        />
-
-    <TextView
-        android:id="@+id/item_tvDescription"
-        style="@style/item_short_text"
-        android:text="tu bude popis"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_below="@+id/item_tvTitle"
-        android:layout_toRightOf="@+id/item_ivObr"
-
-        android:layout_alignLeft="@+id/item_tvTitle"
-        android:layout_alignRight="@+id/item_tvTitle"
-
-        android:layout_alignParentLeft="false"
+        android:layout_alignBottom="@+id/nivBaterka"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
-        android:minLines="1"
-        android:maxLines="3"
-        android:paddingBottom="5dp"
- />
     <!-- android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
         android:layout_alignParentLeft="false"
@@ -76,10 +58,10 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
 
-        android:src="@drawable/lock"
+        android:src="@drawable/old_lock"
         android:layout_marginLeft="45dp"
         android:layout_below="@+id/item_tvTitle"
-        android:layout_alignTop="@id/item_ivObr"
-        android:layout_alignLeft="@id/item_ivObr"
+        android:layout_alignTop="@id/nivBaterka"
+        android:layout_alignLeft="@id/nivBaterka"
         android:layout_marginTop="25dp" />
 </RelativeLayout>

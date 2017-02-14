@@ -2,7 +2,6 @@
     <string name="title_activity_settings">Nastavenia</string>
 
     <!-- Strings related to Settings -->
-
     <string name="action_list_style">Možnosti zobrazenia zoznamu</string>
     <string name="pref_title_post_notifications">Povoliť notifikácie</string>
     <string name="pref_list_style">Štýl zoznamu</string>

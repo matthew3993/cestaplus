@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!-- ===================== MAIN ACTIVITY START ======================================================================================== -->
+    <!-- HEADER IMAGE -->
+    <dimen name="header_image_height">616dp</dimen> <!-- 616dp -->
+    <dimen name="header_image_gradient_from_bottom">308dp</dimen>
+
+    <!-- HEADER AUTHOR -->
+    <dimen name="header_author_text_size">13sp</dimen>
+
+    <!-- HEADER TITLE -->
+    <dimen name="header_title_text_size">25sp</dimen>
+
+    <!-- HEADER SHORT TEXT -->
+    <dimen name="header_short_text_size">15sp</dimen>
+
+    <!-- HEADER END *************************************** -->
+
+    <!-- RECYCLER VIEW LIST ITEMS START ******************* -->
+    <dimen name="li_all_margin_left_right">3dp</dimen>
+
+    <!-- article IMAGE -->
+    <dimen name="li_image_width">120dp</dimen>
+    <dimen name="li_image_height">80dp</dimen>
+    <dimen name="li_image_layout_margin">3dp</dimen>
+
+    <!-- AUTHOR -->
+    <dimen name="li_author_text_size">8sp</dimen>
+    <dimen name="li_author_layout_margin_top">3dp</dimen>
+
+    <!-- TITLE -->
+    <dimen name="li_title_text_size">13sp</dimen>
+    <item name="li_title_max_lines" format="string" type="dimen">2</item>
+
+    <dimen name="li_title_margin_top">3dp</dimen>
+    <dimen name="li_title_margin_bottom">3dp</dimen>
+
+    <!-- SHORT TEXT -->
+    <dimen name="li_short_text_size">12sp</dimen>
+    <item name="li_short_text_max_lines" format="string" type="dimen">3</item>
+    <dimen name="li_short_text_margin_bottom">5dp</dimen> <!-- 5dp -->
+
+    <!-- LOCK image -->
+    <dimen name="li_lock_image_height_width">30dp</dimen>
+    <dimen name="li_lock_image_margin_top">25dp</dimen>
+    <dimen name="li_lock_image_margin_left">45dp</dimen>
+
+    <!-- PICTURES AND TITLES ONLY START ********************* -->
+
+    <!-- AUTHOR -->
+    <dimen name="li_pat_author_text_size">11sp</dimen>
+
+    <!-- TITLE -->
+    <dimen name="li_pat_title_text_size">16sp</dimen>
+    <item name="li_pat_title_max_lines" format="string" type="dimen">4</item>
+
+    <dimen name="li_pat_title_margin_top">6dp</dimen>
+
+    <!-- PICTURES AND TITLES ONLY END *********************** -->
+
+    <!-- RECYCLER VIEW LIST ITEMS END ********************* -->
+
+<!-- ===================== MAIN ACTIVITY END ======================================================================================== -->
+
+<!-- ===================== ARTICLE ACTIVITY START =================================================================================== -->
+    <dimen name="linear_layout_padding">3dp</dimen>
+
+    <dimen name="article_font_size_big">22px</dimen>
+    <dimen name="article_font_size_normal">18px</dimen>
+    <dimen name="article_font_size_small">14px</dimen>
+
+    <dimen name="alert_locked_layout_padding">30dp</dimen>
+    <dimen name="alert_locked_text_margin_top">10dp</dimen>
+    <dimen name="alert_locked_button_padding">10dp</dimen>
+    <dimen name="alert_locked_button_margin_top">20dp</dimen>
+<!-- ===================== ARTICLE ACTIVITY END ===================================================================================== -->
+</resources>

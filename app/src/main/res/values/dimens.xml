@@ -1,5 +1,71 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
+
+    <!-- !@ == overrided other screen sizes config files -->
+
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="expanded_toolbar_title_margin_start">64dp</dimen>
+
+<!-- ===================== MAIN ACTIVITY START ======================================================================================== -->
+    <!-- HEADER IMAGE -->
+    <dimen name="header_image_height">600dp</dimen>
+    <dimen name="header_image_gradient_from_bottom">300dp</dimen> <!-- !@ -->
+
+    <!-- HEADER AUTHOR -->
+    <dimen name="header_author_text_size">15sp</dimen> <!-- !@ -->
+
+    <dimen name="header_author_margin_left">15dp</dimen>
+    <dimen name="header_author_margin_right">15dp</dimen>
+    <dimen name="header_author_margin_top">0dp</dimen>
+    <dimen name="header_author_margin_bottom">10dp</dimen>
+
+    <!-- HEADER TITLE -->
+    <dimen name="header_title_text_size">30sp</dimen> <!-- !@ -->
+
+    <dimen name="header_title_margin_left">15dp</dimen>
+    <dimen name="header_title_margin_right">15dp</dimen>
+    <dimen name="header_title_margin_top">0dp</dimen>
+    <dimen name="header_title_margin_bottom">5dp</dimen>
+
+    <!-- HEADER SHORT TEXT -->
+    <dimen name="header_short_text_size">17sp</dimen> <!-- !@ -->
+
+    <dimen name="header_short_margin_left">15dp</dimen>
+    <dimen name="header_short_margin_right">15dp</dimen>
+    <dimen name="header_short_margin_top">0dp</dimen>
+    <dimen name="header_short_margin_bottom">15dp</dimen>
+
+    <!-- HEADER END *************************************** -->
+
+    <!-- RECYCLER VIEW LIST ITEMS START ******************* -->
+    <dimen name="li_image_width">240dp</dimen> <!-- !@ -->
+    <dimen name="li_image_height">160dp</dimen> <!-- !@ -->
+
+    <!-- RECYCLER VIEW LIST ITEMS END ********************* -->
+
+<!-- ===================== MAIN ACTIVITY END ======================================================================================== -->
+
+<!-- ===================== BATERKA START ======================================================================================== -->
+    <!-- BATERKA TITLE IMAGE -->
+    <item  name="baterka_title_image_collapseParallaxMultiplier" format="float" type="dimen">0.7</item>
+    <dimen name="baterka_title_image_height">347dp</dimen>
+
+    <!-- BATERKA AUTHOR -->
+    <dimen name="baterka_author_text_size">15sp</dimen>
+
+    <dimen name="baterka_author_margin_left">30dp</dimen>
+    <dimen name="baterka_author_margin_right">20dp</dimen>
+    <dimen name="baterka_author_margin_top">0dp</dimen>
+    <dimen name="baterka_author_margin_bottom">15dp</dimen>
+
+    <!-- BATERKA TITLE -->
+    <dimen name="baterka_title_text_size">35sp</dimen>
+
+    <dimen name="baterka_title_margin_left">30dp</dimen>
+    <dimen name="baterka_title_margin_right">20dp</dimen>
+    <dimen name="baterka_title_margin_top">0dp</dimen>
+    <dimen name="baterka_title_margin_bottom">20dp</dimen>
+
+<!-- ===================== BATERKA END ========================================================================================== -->
 </resources>

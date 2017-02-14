@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="1"
+    android:background="@drawable/custom_bg"
+    android:clickable="true"
+    android:orientation="horizontal"
+    >
+    <!--
+    <com.android.volley.toolbox.NetworkImageView
+    android:scaleType="centerCrop"
+    -->
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/nivBaterka"
+        android:src="@drawable/clanok_psmanzelstvo"
+
+        android:layout_width="700dp"
+
+        android:layout_alignParentTop="true"
+
+        android:layout_marginBottom="5dp"
+        android:layout_height="400dp" />
+
+    <!-- SOUCRE: http://stackoverflow.com/questions/19974078/android-transparent-text -->
+    <it.gilvegliach.android.transparenttexttextview.TransparentTextTextView
+        android:id="@+id/item_tvAuthor"
+        style="@style/header_Author"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_above="@+id/item_tvTitle"
+        android:layout_alignLeft="@+id/nivBaterka"
+
+        android:text="@string/test_author"
+        />
+
+    <TextView
+        android:id="@+id/item_tvTitle"
+        style="@style/header_Title"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_above="@+id/item_tvShortText"
+        android:layout_alignLeft="@+id/nivBaterka"
+
+        android:text="@string/title_here"
+
+        android:minLines="1"
+        />
+
+    <TextView
+        android:id="@+id/item_tvShortText"
+        style="@style/header_short_text"
+        android:text="@string/description_here"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_alignBottom="@+id/nivBaterka"
+        android:layout_alignLeft="@+id/nivBaterka"
+
+        android:minLines="1"
+        android:maxLines="4"
+        />
+
+    <!--
+    <ImageView
+        android:id="@+id/item_ivLock"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+
+        android:src="@drawable/old_lock"
+
+
+        android:layout_alignTop="@+id/item_ivObr"
+        android:layout_marginTop="40dp"
+
+        android:layout_alignLeft="@+id/item_ivObr"
+        android:layout_marginLeft="70dp"
+        />
+-->
+</RelativeLayout>

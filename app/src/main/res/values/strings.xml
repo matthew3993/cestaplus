@@ -12,7 +12,10 @@
     <string name="title_activity_clanok">ClanokActivity</string>
     <string name="hello_world">Tu sa zobrazí vybraný článok</string>
     <string name="title_activity_rubrika_aktivity">RubrikaAktivity</string>
-    <string name="no_connection_error">Chyba pripojenia na server</string>
+
+    <!-- VOLLEY & NETWORK ERROR MESSAGES -->
+    <string name="no_connection_err_msg">Nie ste pripojený k sieti!</string>
+    <string name="connection_error_msg">Chyba pripojenia na server!</string>
     <string name="authentification_error">Chyba autentifikácie!</string>
     <string name="server_error">Chyba servera</string>
     <string name="network_error">Chyba siete</string>
@@ -38,4 +41,51 @@
     <string name="action_o_portali">O portáli</string>
     <string name="action_test_size_and_density">Check screen size and density</string>
 
+    <string name="test_author">Tu bude autor</string>
+    <string name="title_here">Martin Kramara o exhortácií Radosť lásky: Tí čo sa modlia, zostanú spolu</string>
+    <string name="description_here">Synodu o rodine sledovalo množstvo pozorných a zvedacých očí od bežného sveta až po množstvo
+    manželov aj tých, ktorá zažili bolesť z nevydareného vzťahu. </string>
+
+    <string name="tryAgain">Skúsiť znova</string>
+
+    <!-- BATERKA NAMES -->
+    <string name="meditationTitle">zamyslenie</string>
+    <string name="depth_title">poď na hlbinu</string>
+    <string name="tip_for_you_title">tip pre teba</string>
+
+    <string name="notifications_allowed">Notifikácie povolené</string>
+    <string name="notifications_forbidden">Notifikácie zakázané</string>
+    <string name="no_new_articles">Žiadne nové články</string>
+    <string name="num_of_new_articles">"Počet nových článkov: "</string>
+
+    <!-- NAMES OF DAYS -->
+    <string name="monday">Pondelok</string>
+    <string name="tuesday">Utorok</string>
+    <string name="wednesday">Streda</string>
+    <string name="thursday">Štvrtok</string>
+    <string name="friday">Piatok</string>
+    <string name="saturday">Sobota</string>
+    <string name="sunday">Nedeľa</string>
+
+    <!-- NAMES OF MONTHS -->
+    <string name="january">januára</string>
+    <string name="february">februára</string>
+    <string name="march">marca</string>
+    <string name="april">apríla</string>
+    <string name="may">mája</string>
+    <string name="june">júna</string>
+    <string name="july">júla</string>
+    <string name="august">augusta</string>
+    <string name="september">septembra</string>
+    <string name="october">októbra</string>
+    <string name="november">novembra</string>
+    <string name="december">decembra</string>
+
+    <string name="select_text_size_dialog_title">"Vyberte veľkosť písma: "</string>
+
+    <!-- ALERT LOCKED START ************************************* -->
+    <string name="alert_locked_title">prepáčte,</string>
+    <string name="alert_locked_text">zvyšok článku je prístupný iba predplatiteľom.\nStaňte sa našim predplatiteľom a získajte aj iné výhody.</string>
+    <string name="more_info_about_subscription">viac informácií o predplatnom      </string>
+    <!-- ALERT LOCKED END *************************************** -->
 </resources>

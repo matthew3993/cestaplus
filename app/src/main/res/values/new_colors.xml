@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- primary color of dark theme -->
+    <color name="primaryColorDark_new">#1d1c21</color>
+
+    <color name="divider_line_new">#f2f3f3</color>
+
+    <!-- ITEM COLORS -->
+    <color name="short_text">#333333</color>
+
+    <!-- ARTICLE COLORS START ************************************************* -->
+    <color name="articleDateBackground">#e5eaed</color>
+    <!-- <color name="articleDateText">#889ba6</color>   -->    <!-- same as dayInWeekAndDate -->
+    <!-- ARTICLE COLORS END *************************************************** -->
+
+    <!-- BATERKA COLORS START ************************************************* -->
+    <color name="coordinatesAndScriptureBackground">#333333</color>
+    <color name="dateBackground">#f3f5f6</color>
+    <color name="dayInWeekAndDate">#889ba6</color>
+    <color name="meditationTitle">#272b32</color>
+    <color name="meditationText">#3b454a</color>
+
+    <color name="quotationBoxBorder">#eaeef1</color>
+    <color name="quotationText">#272b32</color>
+    <color name="quotationAuthor">#792051</color>
+
+    <color name="divider">#e7ecef</color> <!-- #eeeeee -->
+    <color name="circularTv01">#792051</color>
+    <color name="circularTv02">#a54475</color>
+    <color name="circularTv03">#ac781e</color>
+    <!-- BATERKA COLORS END *************************************************** -->
+
+    <!-- ALERT LOCKED COLORS START ************************************* -->
+    <color name="alertLockedBackground">#e7ebed</color>
+    <color name="alertLockedText">#3b454a</color>
+    <!-- ALERT LOCKED COLORS END *************************************** -->
+</resources>
