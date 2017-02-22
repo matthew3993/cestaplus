@@ -4,7 +4,7 @@
         name="item_Author"
         parent="AppTheme.WithoutActionBar">
 
-        <item name="android:background">@color/primaryColorDark_new</item>
+        <item name="android:background">@color/articleItemTitle</item>
         <item name="android:textColor">@color/white</item>
 
         <item name="android:textSize">@dimen/li_author_text_size</item> <!-- !@ -->
@@ -39,13 +39,13 @@
     -->
     <style
         name="item_Title"
-        parent="AppTheme.WithoutActionBar">
+        parent="Theme.AppCompat.Light.DarkActionBar">
 
         <item name="android:ellipsize">end</item>
-        <item name="android:textColor">@color/primaryColorDark_new</item>
+        <item name="android:textColor">@color/articleItemTitle</item>
 
         <item name="android:textSize">@dimen/li_title_text_size</item > <!-- !@ -->
-        <item name="android:lineSpacingMultiplier">1.3</item>
+        <item name="android:lineSpacingMultiplier">1.2</item> <!-- 1.3 -->
 
         <item name="fontPath">fonts/LatoLatin-Black.ttf</item>
 
@@ -65,7 +65,7 @@
         parent="AppTheme.WithoutActionBar">
 
         <item name="android:ellipsize">end</item>
-        <item name="android:textColor">@color/short_text</item>
+        <item name="android:textColor">@color/articleItemShortText</item>
 
         <item name="android:textSize">@dimen/li_short_text_size</item > <!-- !@ -->
         <item name="android:lineSpacingMultiplier">1.2</item>

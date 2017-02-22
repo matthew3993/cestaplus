@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- MainActivity -->
-    <dimen name="header_image_height">528dp</dimen>
+    <dimen name="header_image_height">200dp</dimen> <!-- 528dp-->
     <dimen name="header_image_gradient_from_bottom">200dp</dimen> <!-- now 37.87%, 1/2 = 264dp -->
 
     <!-- BATERKA TITLE IMAGE -->

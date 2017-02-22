@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- primary color of dark theme -->
-    <color name="primaryColorDark_new">#1d1c21</color>
+
 
     <color name="divider_line_new">#f2f3f3</color>
 
     <!-- ITEM COLORS -->
-    <color name="short_text">#333333</color>
+    <color name="articleItemTitle">#1d1c21</color>     <!-- primary color of dark theme -->
+    <color name="articleItemShortText">#333333</color>
 
     <!-- ARTICLE COLORS START ************************************************* -->
     <color name="articleDateBackground">#e5eaed</color>

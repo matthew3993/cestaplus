@@ -31,9 +31,9 @@ import java.util.Map;
 import me.tatarka.support.job.JobInfo;
 import me.tatarka.support.job.JobScheduler;
 import sk.cestaplus.cestaplusapp.R;
+import sk.cestaplus.cestaplusapp.activities.konto_activities.LoginActivity;
 import sk.cestaplus.cestaplusapp.fragments.AllFragment_old;
-import sk.cestaplus.cestaplusapp.fragments.BaterkaFragment_old;
-import sk.cestaplus.cestaplusapp.fragments.SectionsFragment;
+import sk.cestaplus.cestaplusapp.fragments.SectionsFragment_old;
 import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.services.UpdateService;
@@ -331,8 +331,8 @@ public class MainActivity_old
                 if (error_code == 0){
                     String API_key = Parser.parseAPI_key(response);
 
-                    session.prihlas(API_key);
-                    session.setRola(1); //používame aplikáciu v prihlásenom móde
+                    session.login(API_key);
+                    session.setRole(1); //používame aplikáciu v prihlásenom móde
 
                     //inform the user
                     hideDialog();
@@ -411,9 +411,9 @@ public class MainActivity_old
                 /*case 1:
                     return TemaFragment.newInstance();*/
                 case 1:
-                    return SectionsFragment.newInstance();
+                    return SectionsFragment_old.newInstance();
                 case 2:
-                    return BaterkaFragment_old.newInstance();
+                    //return BaterkaFragment_old.newInstance();
             }
             return AllFragment_old.newInstance();
         }

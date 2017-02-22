@@ -22,13 +22,12 @@ import android.widget.Toast;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
 import org.json.JSONObject;
 
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.konto_activities.LoggedActivity;
+import sk.cestaplus.cestaplusapp.activities.konto_activities.LoginActivity;
 import sk.cestaplus.cestaplusapp.activities.konto_activities.NotLoggedActivity;
 import sk.cestaplus.cestaplusapp.extras.IKeys;
 import sk.cestaplus.cestaplusapp.network.Parser;
@@ -36,10 +35,10 @@ import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.objects.ArticleText;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
-import sk.cestaplus.cestaplusapp.utilities.SectionsUtil;
+import sk.cestaplus.cestaplusapp.utilities.SectionsUtil_old;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.Templator;
-import sk.cestaplus.cestaplusapp.utilities.Util;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextSizeUtil;
 
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
@@ -84,7 +83,7 @@ public class ArticleActivity_old
 
         session = new SessionManager(getApplicationContext());
 
-        getSupportActionBar().setTitle(SectionsUtil.getSectionTitle(article.getSection())); //nastavenie label-u konkretnej aktivity
+        getSupportActionBar().setTitle(SectionsUtil_old.getSectionTitle(article.getSection())); //nastavenie label-u konkretnej aktivity
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //ak by nesla navigacia UP, resp. sa nezobrazila šípka
 
@@ -332,7 +331,7 @@ public class ArticleActivity_old
         // Session manager
         final SessionManager session = new SessionManager(CustomApplication.getCustomAppContext());
 
-        String [] items = Util.getTextSizes(this);
+        String [] items = TextSizeUtil.getTextSizes(this);
 
         new AlertDialog.Builder(this)
                 .setTitle("Vyberte veľkosť písma: ")

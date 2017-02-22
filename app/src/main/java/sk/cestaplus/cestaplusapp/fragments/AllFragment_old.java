@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -14,7 +13,6 @@ import android.support.v4.app.Fragment; // musi byt .v4.app.Fragment a nie len .
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -45,7 +43,6 @@ import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.SimpleDividerItemDecoration;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
 import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
-import sk.cestaplus.cestaplusapp.network.Endpoints;
 import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.R;
@@ -54,9 +51,10 @@ import sk.cestaplus.cestaplusapp.listeners.ArticlesLoadedListener;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.tasks.UpdateTask;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.MyApplication;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
-import sk.cestaplus.cestaplusapp.utilities.Util;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.Util;
 
 //staticke importy
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
@@ -403,7 +401,7 @@ public class AllFragment_old
         //check last try time
         long defaultVal = 0;
         try {
-            defaultVal = Endpoints.dateFormatAPP.parse("2010-01-01 00:00:00").getTime();
+            defaultVal = DateFormats.dateFormatJSON.parse("2010-01-01 00:00:00").getTime();
         } catch (ParseException e) {
             e.printStackTrace();
         }

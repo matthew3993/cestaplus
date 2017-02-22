@@ -2,16 +2,29 @@
 <resources>
 
     <string name="app_name">cesta+ (alpha)</string>
+
+    <!-- TABS names -->
     <string name="title_section1">Prehľad</string>
     <string name="title_section2">Téma mesiaca</string>
     <string name="title_section3">Rubriky</string>
     <string name="title_section4">Baterka</string>
+
+    <!-- MENU ACTIONS -->
     <string name="action_settings">Nastavenia</string>
     <string name="action_refresh">Aktualizovať</string>
-    <string name="hello_blank_fragment">Tu sa zobrazí baterka na aktuálny deň</string>
-    <string name="title_activity_clanok">ClanokActivity</string>
-    <string name="hello_world">Tu sa zobrazí vybraný článok</string>
-    <string name="title_activity_rubrika_aktivity">RubrikaAktivity</string>
+    <string name="action_text_size">Veľkosť písma</string>
+    <string name="action_test_notification">Issue test notification</string>
+    <string name="action_o_portali">O portáli</string>
+    <string name="action_database_manager">Start database manager</string>
+    <string name="action_delete_db">Delete articles from ALL table</string>
+    <string name="action_test_size_and_density">Check screen size and density</string>
+
+    <!-- ACTIVITY TITLES -->
+    <string name="title_activity_article">ArticleActivity</string>
+    <string name="title_activity_section">SectionActivity</string>
+    <string name="title_activity_oportali">OPortaliActivity</string>
+    <string name="title_activity_not_logged">NotLoggedActivity</string>
+    <string name="title_activity_logged">LoggedActivity</string>
 
     <!-- VOLLEY & NETWORK ERROR MESSAGES -->
     <string name="no_connection_err_msg">Nie ste pripojený k sieti!</string>
@@ -20,6 +33,11 @@
     <string name="server_error">Chyba servera</string>
     <string name="network_error">Chyba siete</string>
     <string name="parse_error">Chyba parsovania</string>
+
+    <!-- LOGIN -->
+    <string name="enter_credentials_msg">Zadajte potrebné prihlasovacie údaje!</string>
+    <string name="login_successful_msg">Prihlásenie úspešné!</string>
+    <string name="login_loading_dialog_msg">Logging in …</string>
 
     <string name="hint_email">Email</string>
     <string name="hint_password">Heslo</string>
@@ -33,22 +51,9 @@
     <string name="btn_logout">ODHLÁSIŤ</string>
     <string name="name">Fullname</string>
     <string name="account">Konto</string>
-    <string name="title_activity_konto">KontoActivity</string>
-    <string name="title_activity_logged">LoggedActivity</string>
-    <string name="action_text_size">Veľkosť písma</string>
-    <string name="action_test_notification">Issue test notification</string>
-    <string name="title_activity_oportali">OPortaliActivity</string>
-    <string name="action_o_portali">O portáli</string>
-    <string name="action_test_size_and_density">Check screen size and density</string>
-
-    <string name="test_author">Tu bude autor</string>
-    <string name="title_here">Martin Kramara o exhortácií Radosť lásky: Tí čo sa modlia, zostanú spolu</string>
-    <string name="description_here">Synodu o rodine sledovalo množstvo pozorných a zvedacých očí od bežného sveta až po množstvo
-    manželov aj tých, ktorá zažili bolesť z nevydareného vzťahu. </string>
-
     <string name="tryAgain">Skúsiť znova</string>
 
-    <!-- BATERKA NAMES -->
+    <!-- BATERKA TITLES -->
     <string name="meditationTitle">zamyslenie</string>
     <string name="depth_title">poď na hlbinu</string>
     <string name="tip_for_you_title">tip pre teba</string>
@@ -81,11 +86,20 @@
     <string name="november">novembra</string>
     <string name="december">decembra</string>
 
-    <string name="select_text_size_dialog_title">"Vyberte veľkosť písma: "</string>
-
     <!-- ALERT LOCKED START ************************************* -->
     <string name="alert_locked_title">prepáčte,</string>
     <string name="alert_locked_text">zvyšok článku je prístupný iba predplatiteľom.\nStaňte sa našim predplatiteľom a získajte aj iné výhody.</string>
     <string name="more_info_about_subscription">viac informácií o predplatnom      </string>
     <!-- ALERT LOCKED END *************************************** -->
+
+    <!-- OTHER -->
+    <string name="select_text_size_dialog_title">"Vyberte veľkosť písma: "</string>
+
+    <string name="hello_blank_fragment">Tu sa zobrazí baterka na aktuálny deň</string>
+    <string name="hello_world">Tu sa zobrazí vybraný článok</string>
+    <string name="test_author">Tu bude autor</string>
+    <string name="title_here">Martin Kramara o exhortácií Radosť lásky: Tí čo sa modlia, zostanú spolu</string>
+    <string name="description_here">Synodu o rodine sledovalo množstvo pozorných a zvedacých očí od bežného sveta až po množstvo
+    manželov aj tých, ktorá zažili bolesť z nevydareného vzťahu. </string>
+
 </resources>

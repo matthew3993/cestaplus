@@ -57,8 +57,23 @@
     <dimen name="li_pat_title_margin_top">8dp</dimen>
 
     <!-- PICTURES AND TITLES ONLY END *********************** -->
-
     <!-- RECYCLER VIEW LIST ITEMS END ********************* -->
+
+    <!-- NAVIGATIONAL DRAWER START ************************ -->
+    <!-- GROUP TITLE -->
+    <dimen name="nav_dr_group_item_title_text_size">16sp</dimen> <!-- 14  20sp -->
+
+    <dimen name="nav_dr_group_item_title_margin_left">16dp</dimen>
+    <dimen name="nav_dr_group_item_title_margin_right">10dp</dimen>
+    <dimen name="nav_dr_group_item_title_margin_top_bottom">15dp</dimen>
+
+    <!-- CHILD ITEM TITLE -->
+    <dimen name="nav_dr_list_item_text_size">14sp</dimen> <!-- 17sp  -->
+
+    <dimen name="nav_dr_child_item_title_margin_left">55dp</dimen>
+    <dimen name="nav_dr_child_item_title_margin_right">10dp</dimen>
+    <dimen name="nav_dr_child_item_title_margin_top_bottom">10dp</dimen>
+    <!-- NAVIGATIONAL DRAWER END ************************** -->
 
     <!-- ===================== MAIN ACTIVITY END ======================================================================================== -->
 
@@ -74,5 +89,57 @@
     <dimen name="alert_locked_button_padding">15dp</dimen>
     <dimen name="alert_locked_button_margin_top">35dp</dimen>
     <!-- ===================== ARTICLE ACTIVITY END ===================================================================================== -->
+
+    <!-- ===================== BATERKA ACTIVITY START =================================================================================== -->
+    <!-- BATERKA TITLE IMAGE -->
+    <!-- SOURCE: http://stackoverflow.com/questions/3282390/add-floating-point-value-to-android-resources-values -->
+    <item name="baterka_title_image_collapseParallaxMultiplier" format="float" type="dimen">0.7</item>
+    <dimen name="baterka_title_image_height">347dp</dimen>
+
+    <!-- BATERKA AUTHOR -->
+    <dimen name="baterka_author_text_size">15sp</dimen>
+
+    <dimen name="baterka_author_margin_left">20dp</dimen>
+    <dimen name="baterka_author_margin_right">20dp</dimen>
+    <dimen name="baterka_author_margin_top">0dp</dimen>
+    <dimen name="baterka_author_margin_bottom">15dp</dimen>
+
+    <!-- BATERKA TITLE -->
+    <dimen name="baterka_title_text_size">35sp</dimen>
+
+    <dimen name="baterka_title_margin_left">20dp</dimen>
+    <dimen name="baterka_title_margin_right">20dp</dimen>
+    <dimen name="baterka_title_margin_top">0dp</dimen>
+    <dimen name="baterka_title_margin_bottom">20dp</dimen>
+
+    <!-- BATERKA BODY START ******** -->
+    <!-- COORDINATES -->
+    <dimen name="coordinates_margin_top">40dp</dimen>
+    <dimen name="coordinates_margin_botton">25dp</dimen>
+
+    <!-- SCRIPTURE-->
+    <dimen name="scripture_margin_bottom">40dp</dimen>
+
+    <!-- MEDITATION TITLE -->
+    <dimen name="meditation_title_text_size">25sp</dimen>
+
+    <!-- QUOTATION TEXT -->
+    <!-- This is margin of text view, not box-->
+    <dimen name="quotation_text_margin_left">40dp</dimen>
+    <dimen name="quotation_text_margin_right">40dp</dimen>
+    <dimen name="quotation_text_margin_top">40dp</dimen>
+    <dimen name="quotation_text_margin_botton">20dp</dimen>
+
+    <!-- QUOTATION AUTHOR -->
+    <!-- This is margin of text view, not box-->
+    <dimen name="quotation_author_margin_left">40dp</dimen>
+    <dimen name="quotation_author_margin_right">40dp</dimen>
+    <dimen name="quotation_author_margin_top">0dp</dimen>
+    <dimen name="quotation_author_margin_bottom">40dp</dimen>
+
+    <!-- TIP TITLE -->
+    <dimen name="tip_title_text_size">20sp</dimen>
+
+    <!-- ===================== BATERKA ACTIVITY START =================================================================================== -->
 
 </resources>

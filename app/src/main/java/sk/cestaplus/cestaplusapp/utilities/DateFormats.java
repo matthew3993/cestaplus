@@ -12,9 +12,13 @@ public class DateFormats {
 
     public static DateFormat dateFormatJSON = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    public static DateFormat dateFormatBaterkaURL = new SimpleDateFormat("dd-MM-yyyy");
     public static DateFormat dateFormatBaterkaShortPrint = new SimpleDateFormat("dd. MM.");
     public static DateFormat dateFormatBaterkaShort = new SimpleDateFormat("dd.MM.");
 
     public static DateFormat dateFormatDay = new SimpleDateFormat("d.");
     public static DateFormat dateFormatYear = new SimpleDateFormat("yyyy");
+
+    //public static DateFormat dateFormatAPP = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static DateFormat dateFormatAPI = new SimpleDateFormat("yyyy-MM-dd%HH:mm:ss");
 }

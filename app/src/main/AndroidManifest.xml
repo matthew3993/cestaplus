@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="sk.cestaplus.cestaplusapp.activities.LoginActivity"
+            android:name="sk.cestaplus.cestaplusapp.activities.konto_activities.LoginActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan" >
@@ -49,7 +49,7 @@
              -->
         <activity
             android:name="sk.cestaplus.cestaplusapp.activities.ArticleActivity"
-            android:label="@string/title_activity_clanok"
+            android:label="@string/title_activity_article"
             android:theme="@style/AppTheme.WithoutActionBar">
         </activity>
 
@@ -64,22 +64,13 @@
 
         <activity
             android:name="sk.cestaplus.cestaplusapp.activities.SectionActivity"
-            android:label="@string/title_activity_rubrika_aktivity"
-            android:parentActivityName="sk.cestaplus.cestaplusapp.activities.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="sk.cestaplus.cestaplusapp.activities.MainActivity" />
+            android:label="@string/title_activity_section"
+            android:theme="@style/AppTheme.WithoutActionBar">
         </activity>
-
-        <service
-            android:name="sk.cestaplus.cestaplusapp.services.UpdateService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" >
-        </service>
 
         <activity
             android:name="sk.cestaplus.cestaplusapp.activities.konto_activities.NotLoggedActivity"
-            android:label="@string/title_activity_konto" >
+            android:label="@string/title_activity_not_logged" >
         </activity>
         <activity
             android:name="sk.cestaplus.cestaplusapp.activities.konto_activities.LoggedActivity"
@@ -94,6 +85,17 @@
             android:label="@string/title_activity_settings" >
         </activity>
 
+        <service
+            android:name="sk.cestaplus.cestaplusapp.services.UpdateService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" >
+        </service>
+
+        <!-- DATABASE MANAGER
+            SOURCE: https://github.com/sanathp/DatabaseManager_For_Android
+        -->
+        <activity android:name="sk.cestaplus.cestaplusapp.utilities.sqlDatabaseManager.AndroidDatabaseManager"
+            android:theme="@style/Theme.AppCompat.Light"/>
     <!--
         <meta-data
             android:name="com.google.android.gms.version"

@@ -190,6 +190,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="visible"
+
+            android:indeterminateOnly="true"
             />
 
         <!-- SOURCE of icon: https://material.io/icons/ -->
@@ -206,13 +208,21 @@
         <!-- OTHER VIEWS END *********************************************************** -->
 
     </android.support.design.widget.CoordinatorLayout>
-        <!-- ACTIVITY LAYOUT END ******************************************** -->
+    <!-- ACTIVITY LAYOUT END ******************************************** -->
+
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <!-- LAYOUT OF DRAWER START *****************************************
     app:headerLayout="@layout/nav_header"
+
+    app:headerLayout="@layout/navigational_header"
+    app:menu="@layout/nav_drawer_items"
+
+
     -->
     <android.support.design.widget.NavigationView
+        android:id="@+id/mainActivityNavigationView"
+
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
 
@@ -220,7 +230,12 @@
 
         app:itemIconTint="#333"
         app:itemTextColor="#333"
-        app:menu="@menu/navigation_drawer_items">
+        >
+
+        <!--
+        <include layout="@layout/navigational_header"/>
+        -->
+        <include layout="@layout/nav_drawer_items"/>
 
     </android.support.design.widget.NavigationView>
     <!-- LAYOUT OF DRAWER END ******************************************* -->

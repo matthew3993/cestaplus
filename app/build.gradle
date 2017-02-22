@@ -7,19 +7,22 @@ android {
         applicationId "sk.cestaplus.cestaplusapp"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 6
-        versionName "alpha 1.4"
+        versionCode 7
+        versionName "alpha 1.41"
+
+        //vectorDrawables.useSupportLibrary = true
     }
 
     // subdirectories in layouts folder
     // SOURCES: https://plus.google.com/+DmytroDanylyk/posts/bjYgPZFK1ti
-    // https://eric-liang.com/android-app-development/how-to-create-subdirectories-in-android-studio-layouts-folder/
+    //          https://eric-liang.com/android-app-development/how-to-create-subdirectories-in-android-studio-layouts-folder/
     sourceSets{
         main {
             res.srcDirs = [
                     'src/main/res',
                     'src/main/res/layout/new_design',
-                    'src/main/res/layout/old_design'
+                    'src/main/res/layout/old_design',
+                    'src/main/res/layout/navigational_drawer'
             ]
         }
     }
@@ -51,4 +54,19 @@ dependencies {
     //          https://github.com/nuuneoi/Lab-Android-DesignLibrary
     compile 'com.android.support:design:23.3.0'
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+
+    // for comparing dates without time
+    //SOURCE: http://www.joda.org/joda-time/dependency-info.html
+    compile 'joda-time:joda-time:2.9.7'
+
+    // for DEBUGGING - SQLite database, network inspection, ...
+    // SOURCES:
+    //      http://facebook.github.io/stetho/
+    //      https://code.tutsplus.com/tutorials/debugging-android-apps-with-facebooks-stetho--cms-24205
+    //          (don't forget step 2 !)
+    //      http://stackoverflow.com/a/32173974
+    //      http://stackoverflow.com/a/31465301
+    // Look also: http://stackoverflow.com/questions/19194576/how-do-i-view-the-sqlite-database-on-an-android-device
+    compile 'com.facebook.stetho:stetho:1.4.2' // Stetho core
+    compile 'com.facebook.stetho:stetho-okhttp3:1.4.2' //If you want to add a network helper
 }

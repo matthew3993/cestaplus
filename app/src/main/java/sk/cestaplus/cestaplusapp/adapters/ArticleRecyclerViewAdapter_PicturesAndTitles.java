@@ -10,7 +10,7 @@ import android.widget.TextView;
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
-import sk.cestaplus.cestaplusapp.utilities.Util;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 
 /**
  * Created by Matej on 4.3.2015.
@@ -80,7 +80,7 @@ public class ArticleRecyclerViewAdapter_PicturesAndTitles
             holder.author.setText(actArticle.getAuthor().toUpperCase());
 
         //Title
-            Util.setTitleText(CustomApplication.getCustomAppContext(), Util.showLock(role, actArticle.isLocked()),
+            TextUtil.setTitleText(CustomApplication.getCustomAppContext(), TextUtil.showLock(role, actArticle.isLocked()),
                     actArticle.getTitle(), holder.title, R.drawable.lock_black);
 
         //Image - start to load image and check if user is logged in or not
@@ -88,7 +88,7 @@ public class ArticleRecyclerViewAdapter_PicturesAndTitles
             loadImage(imageUrl, holder);
 
             // ak je role 0 a článok je zamknuty treba zobrazit zamok
-            if (Util.showLock(role, actArticle.isLocked())) {
+            if (TextUtil.showLock(role, actArticle.isLocked())) {
                 holder.lockImage.setVisibility(View.VISIBLE);
                 holder.getImage().setAlpha( (float) 0.3);
 

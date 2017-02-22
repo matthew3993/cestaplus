@@ -19,10 +19,10 @@
     <!-- This is inner padding of box - from border to other views
          inside the box -->
     <padding
-        android:bottom="20dp"
-        android:left="20dp"
-        android:right="20dp"
-        android:top="20dp"/>
+        android:bottom="0dp"
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp"/>
 
     <corners
         android:bottomLeftRadius="5dp"

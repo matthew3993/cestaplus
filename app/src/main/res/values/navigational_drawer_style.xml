@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+    ***** !!! WARNING: DO NOT use android:textAllCaps="true" if you want to use images in SpannableString!!!
+    Using android:textAllCaps="true" will make images disappear!!!! *****
+    <item name="android:textAllCaps">true</item >
+    <item name="android:layout_marginTop">@dimen/nav_dr_group_item_title_margin_top_bottom</item>
+    <item name="android:layout_marginBottom">@dimen/nav_dr_group_item_title_margin_top_bottom</item>
+    -->
+    <style
+        name="nav_drawer_group_item_title"
+        parent="Theme.AppCompat.Light.DarkActionBar">
+
+        <item name="android:textColor">@color/articleItemTitle</item>
+
+        <item name="android:textSize">@dimen/nav_dr_group_item_title_text_size</item>
+        <item name="fontPath">fonts/LatoLatin-Black.ttf</item>
+        <item name="android:textAllCaps">true</item>
+
+        <item name="android:layout_marginLeft">@dimen/nav_dr_group_item_title_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/nav_dr_group_item_title_margin_right</item>
+
+    </style>
+
+    <style
+        name="nav_drawer_list_item_title"
+        parent="Theme.AppCompat.Light.DarkActionBar">
+
+        <item name="android:textColor">@color/articleItemShortText</item>
+
+        <item name="android:textSize">@dimen/nav_dr_list_item_text_size</item>
+        <item name="fontPath">fonts/LatoLatin-Regular.ttf</item>
+
+        <item name="android:layout_marginLeft">@dimen/nav_dr_child_item_title_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/nav_dr_child_item_title_margin_right</item>
+        <item name="android:layout_marginTop">@dimen/nav_dr_child_item_title_margin_top_bottom</item>
+        <item name="android:layout_marginBottom">@dimen/nav_dr_child_item_title_margin_top_bottom</item>
+    </style>
+    <!-- ************************** HEADER END ******************************* -->
+</resources>

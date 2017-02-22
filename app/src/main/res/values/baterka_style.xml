@@ -52,8 +52,8 @@
 
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginRight">20dp</item>
-        <item name="android:layout_marginTop">40dp</item>
-        <item name="android:layout_marginBottom">25dp</item>
+        <item name="android:layout_marginTop">@dimen/coordinates_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/coordinates_margin_botton</item>
     </style>
 
     <style
@@ -69,7 +69,7 @@
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginRight">20dp</item>
         <item name="android:layout_marginTop">0dp</item>
-        <item name="android:layout_marginBottom">40dp</item>
+        <item name="android:layout_marginBottom">@dimen/scripture_margin_bottom</item>
     </style>
 
     <style
@@ -124,7 +124,7 @@
 
         <item name="android:textColor">@color/meditationTitle</item>
 
-        <item name="android:textSize">25sp</item>
+        <item name="android:textSize">@dimen/meditation_title_text_size</item>
         <item name="android:lineSpacingMultiplier">1.2</item>
         <item name="android:textAllCaps">true</item >
         <item name="fontPath">fonts/LatoLatin-Black.ttf</item>
@@ -178,10 +178,10 @@
         <!-- DON'T FORGET PADDING in "quotation_box_bg.xml" !!! -->
 
         <!-- This is margin of text view, not box-->
-        <item name="android:layout_marginLeft">20dp</item>
-        <item name="android:layout_marginRight">20dp</item>
-        <item name="android:layout_marginTop">20dp</item>
-        <item name="android:layout_marginBottom">20dp</item>
+        <item name="android:layout_marginLeft">@dimen/quotation_text_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/quotation_text_margin_right</item>
+        <item name="android:layout_marginTop">@dimen/quotation_text_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/quotation_text_margin_botton</item>
     </style>
 
     <style
@@ -197,10 +197,10 @@
 
         <!-- DON'T FORGET PADDING in "quotation_box_bg.xml" !!! -->
 
-        <item name="android:layout_marginLeft">20dp</item>
-        <item name="android:layout_marginRight">20dp</item>
-        <item name="android:layout_marginTop">0dp</item>
-        <item name="android:layout_marginBottom">20dp</item>
+        <item name="android:layout_marginLeft">@dimen/quotation_author_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/quotation_author_margin_right</item>
+        <item name="android:layout_marginTop">@dimen/quotation_author_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/quotation_author_margin_bottom</item>
     </style>
     <!-- QUOTATION BOX END ******************************************************* -->
 
@@ -212,7 +212,7 @@
 
         <item name="android:textColor">@color/meditationTitle</item>
 
-        <item name="android:textSize">25sp</item>
+        <item name="android:textSize">@dimen/meditation_title_text_size</item>
         <item name="android:lineSpacingMultiplier">1.2</item>
         <item name="android:textAllCaps">true</item >
         <item name="fontPath">fonts/LatoLatin-Black.ttf</item>
@@ -276,7 +276,7 @@
         parent="baterka_MeditationTitle">
 
         <!-- overrided from baterka_MeditationTitle-->
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">@dimen/tip_title_text_size</item>
         <item name="android:layout_marginTop">20dp</item>
 
     </style>
