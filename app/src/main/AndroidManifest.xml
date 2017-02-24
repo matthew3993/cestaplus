@@ -63,12 +63,6 @@
         </activity>
 
         <activity
-            android:name="sk.cestaplus.cestaplusapp.activities.SectionActivity"
-            android:label="@string/title_activity_section"
-            android:theme="@style/AppTheme.WithoutActionBar">
-        </activity>
-
-        <activity
             android:name="sk.cestaplus.cestaplusapp.activities.konto_activities.NotLoggedActivity"
             android:label="@string/title_activity_not_logged" >
         </activity>

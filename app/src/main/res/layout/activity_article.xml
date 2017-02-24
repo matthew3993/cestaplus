@@ -16,14 +16,22 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <!-- scroll flags combination: scroll|enterAlways|enterAlwaysCollapsed
-        SOURCE: http://stackoverflow.com/questions/35186639/collapsingtoolbarlayout-and-hide-toolbar-while-scrolling-->
+        <!--
+        scroll flags combination: scroll|enterAlways|enterAlwaysCollapsed
+        SOURCE: http://stackoverflow.com/questions/35186639/collapsingtoolbarlayout-and-hide-toolbar-while-scrolling
+
+        For some reason, we must add app:statusBarScrim="@null" to CollapsingToolbarLayout, when used v4 fragments.
+        This solves crashing because of exception: "java.lang.NoSuchMethodError: No static method setLayoutDirection(Landroid/graphics/drawable/Drawable;I)V in class Landroid/support/v4/graphics/drawable/DrawableCompat; or its super classes (declaration of 'android.support.v4.graphics.drawable.DrawableCompat' appears in /data/data/sk.cestaplus.cestaplusapp/files/instant-run/dex/slice-com.android.support-support-v4-24.0.0_de8233fca3486557f0b1fc54e6082f58ad72ba11-classes.dex)"
+        SOURCE: http://stackoverflow.com/a/40453348
+        -->
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/articleCollapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+
+            app:statusBarScrim="@null">
 
             <RelativeLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"

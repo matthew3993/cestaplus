@@ -48,6 +48,10 @@
                  title is disabled here and set in Toolbar, because:
                     - title in Collapsing Toolbar Layout (here) is always expanding & collapsing
                     - title in Toolbar is normal title
+
+                 For some reason, we must add app:statusBarScrim="@null" to CollapsingToolbarLayout, when used v4 fragments.
+                 This solves crashing because of exception: "java.lang.NoSuchMethodError: No static method setLayoutDirection(Landroid/graphics/drawable/Drawable;I)V in class Landroid/support/v4/graphics/drawable/DrawableCompat; or its super classes (declaration of 'android.support.v4.graphics.drawable.DrawableCompat' appears in /data/data/sk.cestaplus.cestaplusapp/files/instant-run/dex/slice-com.android.support-support-v4-24.0.0_de8233fca3486557f0b1fc54e6082f58ad72ba11-classes.dex)"
+                 SOURCE: http://stackoverflow.com/a/40453348
             -->
             <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/mainActivityCollapsingToolbarLayout"
@@ -55,7 +59,9 @@
                 android:layout_height="match_parent"
                 app:contentScrim="?attr/colorPrimary"
                 app:titleEnabled="false"
-                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+
+                app:statusBarScrim="@null">
 
                 <RelativeLayout
                     android:id="@+id/collapsingToolbarRelativeLayoutMainActivity"
@@ -163,49 +169,23 @@
         <!-- APPBAR END *************************************************************** -->
 
         <!-- ACTIVITY BODY START ******************************************************* -->
-        <!-- this SwipeRefreshLayout is disabled in code - take a look on comment at the top -->
-        <!-- app:layout_behavior="@string/appbar_scrolling_view_behavior" -->
-        <android.support.v4.widget.SwipeRefreshLayout
-             android:id="@+id/swipeRecyclerViewMain"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-             <android.support.v7.widget.RecyclerView
-                 android:id="@+id/rvAll"
-                 android:layout_width="match_parent"
-                 android:layout_height="match_parent"
-                 android:visibility="gone"
-                 >
-             </android.support.v7.widget.RecyclerView>
+        <!-- this SwipeRefreshLayout is disabled in code - take a look on comment at the top -->
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRecyclerViewMain"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <LinearLayout
+                android:id="@+id/mainActivityMainFragmentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                />
 
         </android.support.v4.widget.SwipeRefreshLayout>
-
         <!-- ACTIVITY BODY END ********************************************************* -->
-
-        <!-- OTHER VIEWS START ********************************************************* -->
-        <ProgressBar
-            android:id="@+id/progressBarFragmentAll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="visible"
-
-            android:indeterminateOnly="true"
-            />
-
-        <!-- SOURCE of icon: https://material.io/icons/ -->
-        <ImageView
-            android:id="@+id/ivNoConnectionMain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_cloud_off_black_48dp"
-            android:visibility="gone"
-            />
-        <!-- OTHER VIEWS END *********************************************************** -->
 
     </android.support.design.widget.CoordinatorLayout>
     <!-- ACTIVITY LAYOUT END ******************************************** -->

@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
@@ -21,12 +20,11 @@ import java.util.List;
 
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.BaterkaActivity;
-import sk.cestaplus.cestaplusapp.activities.MainActivity;
 import sk.cestaplus.cestaplusapp.activities.OPortaliActivity;
-import sk.cestaplus.cestaplusapp.activities.SectionActivity;
 import sk.cestaplus.cestaplusapp.activities.SettingsActivity;
 import sk.cestaplus.cestaplusapp.activities.konto_activities.LoggedActivity;
 import sk.cestaplus.cestaplusapp.activities.konto_activities.NotLoggedActivity;
+import sk.cestaplus.cestaplusapp.extras.Constants;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView;
 
@@ -41,7 +39,6 @@ import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
 public class NavigationalDrawerPopulator {
 
     public static final int NO_ICON = -1;
-    public static final int DELAY_TO_START_ACTIVITY_MILLIS = 200;
 
     private AnimatedExpandableListView listView;
     private NavDrawerSectionsAdapter adapter;
@@ -49,9 +46,9 @@ public class NavigationalDrawerPopulator {
     private Context context;
     private final Activity activity;
 
-    public NavigationalDrawerPopulator(Context context, Activity activity) {
+    public NavigationalDrawerPopulator(Activity activity) {
         this.activity = activity;
-        this.context = context;
+        this.context = activity;
     }
 
     public void populateSectionsExpandableList(){
@@ -68,7 +65,7 @@ public class NavigationalDrawerPopulator {
         }
 
         groupItems.add(new GroupItem(R.drawable.ic_account_box_black_48dp ,"Konto",
-                new ActivityStarter(context, classToStart, KEY_MAIN_ACTIVITY, DELAY_TO_START_ACTIVITY_MILLIS)));
+                new ActivityStarter(context, classToStart, KEY_MAIN_ACTIVITY, Constants.DELAY_TO_START_ACTIVITY_MILLIS)));
 
         // init extras for BaterkaActivity
         List<AbstractMap.SimpleEntry<String, Serializable>> toExtras = new ArrayList<>();
@@ -79,7 +76,7 @@ public class NavigationalDrawerPopulator {
         //  https://material.io/icons/#ic_wb_incandescent
         //  https://material.io/icons/#ic_lightbulb_outline
         groupItems.add(new GroupItem(R.drawable.ic_highlight_black_48dp ,"Baterka na dnes",
-                new ActivityStarter(context, BaterkaActivity.class, KEY_MAIN_ACTIVITY, DELAY_TO_START_ACTIVITY_MILLIS, toExtras)));
+                new ActivityStarter(context, BaterkaActivity.class, KEY_MAIN_ACTIVITY, Constants.DELAY_TO_START_ACTIVITY_MILLIS, toExtras)));
 
 
         //region Sections FAMILY
@@ -153,10 +150,10 @@ public class NavigationalDrawerPopulator {
         // endregion
 
         groupItems.add(new GroupItem(R.drawable.ic_info_black_48dp ,"O portáli cesta+",
-                new ActivityStarter(context, OPortaliActivity.class, KEY_MAIN_ACTIVITY, DELAY_TO_START_ACTIVITY_MILLIS)));
+                new ActivityStarter(context, OPortaliActivity.class, KEY_MAIN_ACTIVITY, Constants.DELAY_TO_START_ACTIVITY_MILLIS)));
 
         groupItems.add(new GroupItem(R.drawable.ic_settings_black_48dp ,"Nastavenia",
-                new ActivityStarter(context, SettingsActivity.class, KEY_MAIN_ACTIVITY, DELAY_TO_START_ACTIVITY_MILLIS)));
+                new ActivityStarter(context, SettingsActivity.class, KEY_MAIN_ACTIVITY, Constants.DELAY_TO_START_ACTIVITY_MILLIS)));
 
         adapter = new NavDrawerSectionsAdapter(context);
         adapter.setData(groupItems);
@@ -227,20 +224,6 @@ public class NavigationalDrawerPopulator {
 
                 ChildItemSection childItemSection = adapter.getChild(groupPosition, childPosition);
 
-                final Intent intent = new Intent(context, SectionActivity.class);
-                intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
-                intent.putExtra(KEY_EXTRA_SECTION_ID, childItemSection.sectionId);
-
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //SOURCES: http://stackoverflow.com/a/12664620  http://stackoverflow.com/a/12319970
-
-                // delay the start because of onClick animation
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        context.startActivity(intent);
-                    }
-                }, DELAY_TO_START_ACTIVITY_MILLIS);
 
                 //expandableListView.setItemChecked(childPosition, true);
 

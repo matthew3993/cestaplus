@@ -54,7 +54,7 @@ public abstract class ArticleRecyclerViewAdapter
         inflater = LayoutInflater.from(context);
         volleySingleton = VolleySingleton.getInstance(CustomApplication.getCustomAppContext());
         imageLoader = volleySingleton.getImageLoader();
-        role = new SessionManager(CustomApplication.getCustomAppContext()).getRola(); //get role
+        role = new SessionManager(CustomApplication.getCustomAppContext()).getRole(); //get role
         this.screenSize = CustomApplication.getCustomAppScreenSize(); //get screen size
 
         this.hasHeader = hasHeader;

@@ -16,7 +16,7 @@ android {
     // subdirectories in layouts folder
     // SOURCES: https://plus.google.com/+DmytroDanylyk/posts/bjYgPZFK1ti
     //          https://eric-liang.com/android-app-development/how-to-create-subdirectories-in-android-studio-layouts-folder/
-    sourceSets{
+    sourceSets {
         main {
             res.srcDirs = [
                     'src/main/res',
@@ -39,21 +39,24 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/jsoup-1.8.1.jar')
-    compile 'com.android.support:appcompat-v7:23.3.0'
+
+    compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'me.tatarka.support:jobscheduler:0.1.1'
-    compile 'com.android.support:support-v4:23.3.0'
-    compile 'com.google.android.gms:play-services:8.3.0'
+    //compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.google.android.gms:play-services:10.2.0'
 
-    //Text wiew with transparent text and plain color back ground
-    // SOURCE: http://stackoverflow.com/questions/19974078/android-transparent-text
-    compile 'it.gilvegliach.android:transparent-text-textview:1.0.3'
+    // for using custom fonts
+    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
 
     // Because of CoordinatorLayout, AppBarLayout, NavigationView
     // SOURCES: https://inthecheesefactory.com/blog/android-design-support-library-codelab/en
     //          https://github.com/nuuneoi/Lab-Android-DesignLibrary
-    compile 'com.android.support:design:23.3.0'
-    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+    compile 'com.android.support:design:23.4.0'
+
+    //Text wiew with transparent text and plain color back ground
+    // SOURCE: http://stackoverflow.com/questions/19974078/android-transparent-text
+    compile 'it.gilvegliach.android:transparent-text-textview:1.0.3'
 
     // for comparing dates without time
     //SOURCE: http://www.joda.org/joda-time/dependency-info.html

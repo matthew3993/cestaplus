@@ -12,6 +12,8 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.widget.RecyclerView;
@@ -20,18 +22,31 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 
 import sk.cestaplus.cestaplusapp.R;
+import sk.cestaplus.cestaplusapp.activities.ArticleActivity;
+import sk.cestaplus.cestaplusapp.activities.BaterkaActivity;
 import sk.cestaplus.cestaplusapp.activities.MainActivity;
 import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter_All;
 import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter_PicturesAndTitles;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
+import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 
+import static sk.cestaplus.cestaplusapp.extras.Constants.DELAY_TO_START_ACTIVITY_MILLIS;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_ARTICLE;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_BATERKA;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.utilities.SessionManager.LIST_STYLE_ALL;
 import static sk.cestaplus.cestaplusapp.utilities.SessionManager.LIST_STYLE_PICTURES_AND_TITLES;
 
@@ -170,7 +185,9 @@ public class Util {
         return new String[] {"Zobraziť okrem nadpisov aj popisy k článkom", "Zobraziť len nadpisy"};
     }
 
-    public static ArticleRecyclerViewAdapter getCrvaType(SessionManager session, Context context, boolean hasHeader){
+    public static ArticleRecyclerViewAdapter getCrvaType(Context context, boolean hasHeader){
+        SessionManager session = new SessionManager(context);
+
         switch (session.getListStyle()){
             case LIST_STYLE_ALL:{ //LIST_STYLE_ALL = 0
                 return new ArticleRecyclerViewAdapter_All(context, hasHeader);
@@ -213,7 +230,7 @@ public class Util {
                                         ArticleRecyclerViewAdapter crva, RecyclerView recyclerView, ArrayList<ArticleObj> articleList) {
         session.setListStyle(listStyle); //save list style
 
-        crva = getCrvaType(session, context, true);
+        crva = getCrvaType(context, true);
         crva.setArticlesList(articleList);
         recyclerView.setAdapter(crva);
 
@@ -225,7 +242,7 @@ public class Util {
                                                         ArticleRecyclerViewAdapter crva, RecyclerView recyclerView,
                                                         ArrayList<ArticleObj> articleList){
 
-        crva = getCrvaType(session, context, false);
+        crva = getCrvaType(context, false);
         crva.setArticlesList(articleList);
         recyclerView.setAdapter(crva);
     } //end refreshRecyclerViewWithoutHeader()
@@ -312,5 +329,52 @@ public class Util {
         } else {
             return false;
         }
+    }
+
+    public static void startArticleOrBaterkaActivity(final Fragment fragment, String parentActivity, ArticleObj articleObj) {
+        final Intent intent;
+
+        if (articleObj.getSection().equalsIgnoreCase("baterka")) { //if baterka was clicked
+            intent = new Intent(fragment.getActivity(), BaterkaActivity.class);
+            intent.putExtra(KEY_INTENT_EXTRA_BATERKA, articleObj);
+
+        } else { // if other sections was clicked
+            intent = new Intent(fragment.getActivity(), ArticleActivity.class);
+            intent.putExtra(KEY_INTENT_EXTRA_ARTICLE, articleObj);
+        }
+        intent.putExtra(KEY_PARENT_ACTIVITY, parentActivity);
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //SOURCES: http://stackoverflow.com/a/12664620  http://stackoverflow.com/a/12319970
+
+        //region  OLD IMPLEMENTATION with header in recyler view
+        /*if (position == 0) {
+            //header view was clicked
+            intent = new Intent(getApplicationContext(), ArticleActivity.class);
+            intent.putExtra(KEY_INTENT_EXTRA_ARTICLE, headerArticle);
+            intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
+
+        } else {
+            // row view was clicked (but not footer)
+            if (articlesAll.get(position-1).getSection().equalsIgnoreCase("baterka")) { //if baterka was clicked
+                intent = new Intent(getApplicationContext(), BaterkaActivity.class);
+                intent.putExtra(KEY_INTENT_EXTRA_BATERKA, articlesAll.get(position-1));
+                intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
+
+            } else { // if other sections was clicked
+                intent = new Intent(getApplicationContext(), ArticleActivity.class);
+                intent.putExtra(KEY_INTENT_EXTRA_ARTICLE, articlesAll.get(position-1));
+                intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
+            }
+        }*/
+        // endregion
+
+        // delay the start of ArticleActivity because of onClick animation
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fragment.startActivity(intent);
+            }
+        }, DELAY_TO_START_ACTIVITY_MILLIS);
     }
 }//end Util class
