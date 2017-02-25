@@ -15,7 +15,6 @@ import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
 /**
  * Created by matth on 17.02.2017.
  */
-
 public class ActivityStarter
     implements IAction{
 

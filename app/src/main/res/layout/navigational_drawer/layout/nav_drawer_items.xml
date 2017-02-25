@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
@@ -8,18 +9,17 @@
 
     <include layout="@layout/navigational_header"/>
 
+    <!-- Change background color on click:
+         SOURCE: http://stackoverflow.com/questions/10318642/highlight-for-selected-item-in-expandable-list
+         Take a look at first comment on accepted answer. -->
     <sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView
         android:id="@+id/navDrListViewSections"
         android:groupIndicator="@android:color/transparent"
 
+        android:choiceMode="singleChoice"
+        android:listSelector="@drawable/selector_nav_dr_list_item_bg"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <!--
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:text="Redakcia"/>
-     -->
 </LinearLayout>

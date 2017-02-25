@@ -1,4 +1,4 @@
-package sk.cestaplus.cestaplusapp.utilities.utilClasses;
+package sk.cestaplus.cestaplusapp.listeners;
 
 import android.content.Intent;
 import android.os.Handler;
@@ -15,9 +15,8 @@ import java.util.ArrayList;
 
 import sk.cestaplus.cestaplusapp.activities.ArticleActivity;
 import sk.cestaplus.cestaplusapp.activities.BaterkaActivity;
-import sk.cestaplus.cestaplusapp.activities.MainActivity;
 import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
-import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
+import sk.cestaplus.cestaplusapp.extras.Constants;
 import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
@@ -35,7 +34,6 @@ public class CustomRecyclerViewClickHandler
     implements RecyclerTouchListener.ClickListener {
 
     private Fragment fragment;
-    private int pagesNum;  // number of loaded pages
 
     private CustomRecyclerViewClickHandlerDataProvider dataProvider;
 
@@ -48,7 +46,6 @@ public class CustomRecyclerViewClickHandler
             CustomRecyclerViewClickHandlerDataProvider dataProvider,
             String parentActivity) {
         this.fragment = fragment;
-        this.pagesNum = 1;
         this.dataProvider = dataProvider;
 
         this.parentActivity = parentActivity;
@@ -87,9 +84,13 @@ public class CustomRecyclerViewClickHandler
         final ArrayList<ArticleObj> articlesAll = dataProvider.getArticles();
         final ArticleRecyclerViewAdapter arvaAll = dataProvider.getAdapter();
 
+        int pagesNumTmp = dataProvider.getPagesNum();
+        pagesNumTmp++;  // !!! zvysenie poctu nacitanych stran !!!
+        dataProvider.setPagesNum(pagesNumTmp);
+        final int pagesNum = pagesNumTmp;
+
         arvaAll.startAnim();
 
-        pagesNum++;  // !!! zvysenie poctu nacitanych stran !!!
         //nacitanie dalsej stranky
         Response.Listener<JSONArray> responseLis = new Response.Listener<JSONArray>() {
             @Override
@@ -99,13 +100,13 @@ public class CustomRecyclerViewClickHandler
                     articlesAll.clear();
                     articlesAll.addAll(Parser.parseJsonArrayResponse(response));
 
-                    if (articlesAll.size() < MainActivity.ART_NUM) {
+                    if (articlesAll.size() < Constants.ART_NUM) {
                         arvaAll.setNoMoreArticles();
                     }
 
-                } else {            // ak ide o stranky nasledujuce, nove rubriky su pridane k existujucemu zoznamu
+                } else {            // ak ide o stranky nasledujuce, loaded articles are added to existing list of articles
                     ArrayList<ArticleObj> moreArticles = Parser.parseJsonArrayResponse(response);
-                    if (moreArticles.size() < MainActivity.ART_NUM) {
+                    if (moreArticles.size() < Constants.ART_NUM) {
                         arvaAll.setNoMoreArticles();
                     }
                     articlesAll.addAll(Parser.parseJsonArrayResponse(response));
@@ -120,12 +121,13 @@ public class CustomRecyclerViewClickHandler
             @Override
             public void onErrorResponse(VolleyError error) {
                 arvaAll.setError();
-                pagesNum--;  // !!!  reducing of loaded pages number - because page was not loaded !!!
+                //pagesNum--;  // !!!  reducing of loaded pages number - because page was not loaded !!!
+                dataProvider.setPagesNum(pagesNum - 1);
                 Toast.makeText(fragment.getActivity().getApplicationContext(), "Chyba pri načítavaní ďalších článkov", Toast.LENGTH_SHORT).show();
             } //end of onErrorResponse
         };
 
-        volleySingleton.createGetClankyArrayRequestGET("all", 20, pagesNum, responseLis, errorLis);
+        volleySingleton.createGetArticlesArrayRequestGET("all", Constants.ART_NUM, pagesNum, responseLis, errorLis);
     }
 
     private void startArticleOrBaterkaActivity(ArticleObj articleObj) {
@@ -175,15 +177,12 @@ public class CustomRecyclerViewClickHandler
         }, DELAY_TO_START_ACTIVITY_MILLIS);
     }
 
-    public int getPagesNum() {
-        return pagesNum;
-    }
-
-    public void setPagesNum(int pagesNum) {
-        this.pagesNum = pagesNum;
-    }
 
     public interface CustomRecyclerViewClickHandlerDataProvider {
+
+        int getPagesNum();
+
+        void setPagesNum(int pagesNum);
 
         ArrayList<ArticleObj> getArticles();
 

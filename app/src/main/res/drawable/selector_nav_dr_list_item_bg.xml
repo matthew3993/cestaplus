@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SOURCE: http://stackoverflow.com/questions/10318642/highlight-for-selected-item-in-expandable-list
+     Take a look at first comment on accepted answer. -->
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:exitFadeDuration="@android:integer/config_mediumAnimTime">
+
+    <item android:drawable="@color/dayInWeekAndDate" android:state_pressed="true"/>
+    <item android:drawable="@color/nav_dr_item_state_activated" android:state_activated="true"/>
+
+    <!--
+    source values:
+    <item android:drawable="@android:color/holo_blue_bright" android:state_pressed="true"/>
+    <item android:drawable="@android:color/holo_blue_light" android:state_selected="true"/>
+    <item android:drawable="@android:color/holo_blue_dark" android:state_activated="true"/>
+    -->
+</selector>

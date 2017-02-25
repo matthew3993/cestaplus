@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
@@ -24,16 +23,16 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 
 import sk.cestaplus.cestaplusapp.R;
-import sk.cestaplus.cestaplusapp.activities.MainActivity;
 import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.SimpleDividerItemDecoration;
+import sk.cestaplus.cestaplusapp.extras.Constants;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
 import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
 import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
-import sk.cestaplus.cestaplusapp.utilities.utilClasses.CustomRecyclerViewClickHandler;
+import sk.cestaplus.cestaplusapp.listeners.CustomRecyclerViewClickHandler;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.Util;
 
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
@@ -55,14 +54,14 @@ public class SectionFragment
     private int pagesNum;                            // number of loaded pages
 
     //passed by arguments
-    private String sectionID;
     private String sectionName;
+    private String sectionID;
 
     // utils
     private VolleySingleton volleySingleton; //networking
     private SessionManager session;
-    private CustomRecyclerViewClickHandler recyclerViewClickHandler;
 
+    private CustomRecyclerViewClickHandler recyclerViewClickHandler;
     private SectionFragmentInteractionListener listener;
 
     // UI components
@@ -84,11 +83,11 @@ public class SectionFragment
         // Required empty public constructor
     }
 
-    public static SectionFragment newInstance(String sectionID, String sectionName) {
+    public static SectionFragment newInstance(String sectionName, String sectionID) {
         SectionFragment fragment = new SectionFragment();
         Bundle args = new Bundle();
-        args.putString(KEY_SECTION_ID, sectionID);
         args.putString(KEY_SECTION_NAME, sectionName);
+        args.putString(KEY_SECTION_ID, sectionID);
 
         fragment.setArguments(args);
         return fragment;
@@ -100,13 +99,14 @@ public class SectionFragment
 
         // get parameters from Arguments
         if (getArguments() != null) {
-            sectionID = getArguments().getString(KEY_SECTION_ID);
             sectionName = getArguments().getString(KEY_SECTION_NAME);
+            sectionID = getArguments().getString(KEY_SECTION_ID);
         }
 
         // init data & utils
         // initialisations
         articlesOfSection = new ArrayList<>();
+        pagesNum = 1; //!!
         volleySingleton = VolleySingleton.getInstance(getActivity().getApplicationContext());
         session = new SessionManager(getActivity().getApplicationContext());
     }
@@ -117,6 +117,7 @@ public class SectionFragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_section, container, false);
 
+        // title is changed in SectionsFragmentSwapper
         initDataViews(view);
         initLoadingAndErrorViews(view);
 
@@ -192,7 +193,7 @@ public class SectionFragment
 
     // region LOAD & SHOW ARTICLES of selected section
 
-    private void tryLoadArticles(){
+    public void tryLoadArticles(){
         tvVolleyErrorSection.setVisibility(View.GONE);
         ivRefresh.setVisibility(View.GONE);
 
@@ -202,7 +203,7 @@ public class SectionFragment
     }
 
     private void loadArticles() {
-        recyclerViewClickHandler.setPagesNum(1); // set the default page number
+        pagesNum = 1; // set the default page number
 
         // create listeners
         Response.Listener<JSONArray> responseLis = new Response.Listener<JSONArray>() {
@@ -225,71 +226,24 @@ public class SectionFragment
         };
 
         //send the request
-        volleySingleton.createGetClankyArrayRequestGET(sectionID, 20, 1, responseLis, errorLis);
+        volleySingleton.createGetArticlesArrayRequestGET(sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
     }
 
     private void onResponse(JSONArray response) {
         //make UI changes
         hideErrorAndLoadingViews();
+        listener.stopRefreshingAnimation();
         recyclerViewSection.setVisibility(View.VISIBLE);
 
         // logic
         articlesOfSection = Parser.parseJsonArrayResponse(response);
-        if (articlesOfSection.size() < MainActivity.ART_NUM){
+        if (articlesOfSection.size() < Constants.ART_NUM){
             arvaSection.setNoMoreArticles();
         }
         arvaSection.setArticlesList(articlesOfSection);
     }
 
     // endregion
-
-    private void handleClick(View view, int position) {
-        if (position == articlesOfSection.size()) { // ak bolo kliknute na button nacitaj viac
-
-            arvaSection.startAnim();
-
-            pagesNum++;                                // !!! zvysenie poctu nacitanych stran !!!
-            //nacitanie dalsej stranky
-            Response.Listener<JSONArray> responseLis = new Response.Listener<JSONArray>() {
-                @Override
-                public void onResponse(JSONArray response) {
-
-                    tvVolleyErrorSection.setVisibility(View.GONE); //ak sa vyskytne chyba tak sa toto TextView zobrazi, teraz ho teda treba schovat
-                    //page-ovanie
-                    if (pagesNum == 1) {  // ak ide o prvu stranku, zoznam je prepisany
-                        articlesOfSection = Parser.parseJsonArrayResponse(response);
-                        if (articlesOfSection.size() < MainActivity.ART_NUM){
-                            arvaSection.setNoMoreArticles();
-                        }
-
-                    } else {            // ak ide o stranky nasledujuce, nove rubriky su pridane k existujucemu zoznamu
-                        ArrayList<ArticleObj> moreArticles = Parser.parseJsonArrayResponse(response);
-                        if (moreArticles.size() < MainActivity.ART_NUM){
-                            arvaSection.setNoMoreArticles();
-                        }
-                        articlesOfSection.addAll(moreArticles);
-                    }
-                    arvaSection.setArticlesList(articlesOfSection);
-                }
-
-            };
-
-            Response.ErrorListener errorLis = new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    arvaSection.setError();
-                    pagesNum--;                                // !!!  reducing of loaded pages number - because page was not loaded !!!
-                    Toast.makeText(getActivity().getApplicationContext(), "Chyba pri načítavaní ďalších článkov", Toast.LENGTH_SHORT).show();
-                } //end of onErrorResponse
-            };
-
-            volleySingleton.createGetClankyArrayRequestGET(sectionID, 20, pagesNum, responseLis, errorLis);
-            //Toast.makeText(CustomApplication.getCustomAppContext(), "Načítavam stránku číslo " + pagesNum, Toast.LENGTH_SHORT).show();
-
-        } else { // ak bolo kliknute na clanok
-            Util.startArticleOrBaterkaActivity(this, KEY_MAIN_ACTIVITY, articlesOfSection.get(position));
-        }
-    } //end handleClick()
 
     // region SUPPORT METHODS
 
@@ -332,6 +286,10 @@ public class SectionFragment
         // if used in ACTIVITY:
         //      first parameter - context MUST be 'this' (as activity), and not getApplicationContext()
         //      - because Calligraphy wraps around ACTIVITY and not APPLICATION
+    }
+
+    public String getSectionID() {
+        return sectionID;
     }
 
     // region SAVE & RESTORE STATE
@@ -377,6 +335,10 @@ public class SectionFragment
         return pagesNum;
     }
 
+    public void setPagesNum(int pagesNum) {
+        this.pagesNum = pagesNum;
+    }
+
     @Override
     public ArrayList<ArticleObj> getArticles() {
         return articlesOfSection;
@@ -390,6 +352,6 @@ public class SectionFragment
     // endregion
 
     public interface SectionFragmentInteractionListener {
-
+        void stopRefreshingAnimation();
     }
 }

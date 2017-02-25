@@ -25,14 +25,13 @@ import sk.cestaplus.cestaplusapp.adapters.SimpleDividerItemDecoration;
 import sk.cestaplus.cestaplusapp.listeners.ArticlesLoadedListener;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
 import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
-import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.tasks.UpdateTask;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.MyApplication;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
-import sk.cestaplus.cestaplusapp.utilities.utilClasses.CustomRecyclerViewClickHandler;
+import sk.cestaplus.cestaplusapp.listeners.CustomRecyclerViewClickHandler;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.Util;
 
 import static java.lang.System.currentTimeMillis;
@@ -54,14 +53,13 @@ public class AllFragment
 
     // data
     private ArrayList<ArticleObj> articlesAll;
-    //private int pagesNum;                        // number of loaded pages
-    private CustomRecyclerViewClickHandler recyclerViewClickHandler;
+    private int pagesNum;                        // number of loaded pages
 
     // utils
-    private VolleySingleton volleySingleton; //networking
     private SessionManager session; // session manager
     private int role;
 
+    private CustomRecyclerViewClickHandler recyclerViewClickHandler;
     private AllFragmentInteractionListener listener;
 
     // recyclerView
@@ -84,12 +82,8 @@ public class AllFragment
      * this fragment using the provided parameters.
      * @return A new instance of fragment AllFragment.
     */
-    public static AllFragment newInstance(int role) {
+    public static AllFragment newInstance() {
         AllFragment fragment = new AllFragment();
-        Bundle args = new Bundle();
-        args.putInt(KEY_ROLE, role);
-
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -104,7 +98,7 @@ public class AllFragment
 
         // init data & utils
         articlesAll = new ArrayList<>();
-        volleySingleton = VolleySingleton.getInstance(getActivity().getApplicationContext());
+        pagesNum = 1; //!!
         session = new SessionManager(getActivity().getApplicationContext());
     }
 
@@ -193,23 +187,6 @@ public class AllFragment
         });*/
         // endregion
 
-        /*
-        // ======= RecyclerView Touch Listener ====================================================================
-        recyclerViewAll.addOnItemTouchListener(
-                new RecyclerTouchListener(getActivity().getApplicationContext(), recyclerViewAll,
-                        new RecyclerTouchListener.ClickListener() {
-                            @Override
-                            public void onClick(View view, int position) {
-                                handleClick(view, position);
-                            }
-
-                            @Override
-                            public void onLongClick(View view, int position) {
-                                //onLongClick code
-                            }
-                        }));
-        */
-
         recyclerViewClickHandler = new CustomRecyclerViewClickHandler(
                 this, this, KEY_MAIN_ACTIVITY);
 
@@ -256,7 +233,7 @@ public class AllFragment
     }
 
     private void loadArticles() {
-        recyclerViewClickHandler.setPagesNum(1); // set the page number
+        pagesNum = 1; // set the page number
         startLoadingAnimation();
 
         //start the update task - will trigger onArticlesLoaded
@@ -295,7 +272,7 @@ public class AllFragment
         }
 
         arvaAll.setArticlesList(listArticles);
-        recyclerViewClickHandler.setPagesNum(1); // !!
+        pagesNum = 1; // !!
         recyclerViewAll.setVisibility(View.VISIBLE);
     }//end onArticlesLoaded
 
@@ -363,7 +340,7 @@ public class AllFragment
         Log.i("LIFECYCLE", "MainActivity.onSaveInstanceState() was called");
 
         outState.putParcelableArrayList(KEY_SAVED_STATE_ARTICLES_ALL, articlesAll); // Save the current state of articlesAll
-        outState.putInt(KEY_SAVED_STATE_PAGES_NUM, recyclerViewClickHandler.getPagesNum()); //save actual nubmer of actually loaded pages
+        outState.putInt(KEY_SAVED_STATE_PAGES_NUM, pagesNum); //save actual nubmer of actually loaded pages
 
         // !!! Always call the superclass so it can save the view hierarchy state !!
         super.onSaveInstanceState(outState);
@@ -377,7 +354,7 @@ public class AllFragment
         //articlesAll.clear();
         //articlesAll.addAll(articlesList);
 
-        recyclerViewClickHandler.setPagesNum(savedInstanceState.getInt(KEY_SAVED_STATE_PAGES_NUM, 1));
+        pagesNum = savedInstanceState.getInt(KEY_SAVED_STATE_PAGES_NUM, 1);
     }
 
     // endregion
@@ -416,6 +393,14 @@ public class AllFragment
             recyclerViewAll.setAdapter(arvaAll);
         }
     }//end onSharedPreferenceChanged
+
+    public int getPagesNum() {
+        return pagesNum;
+    }
+
+    public void setPagesNum(int pagesNum) {
+        this.pagesNum = pagesNum;
+    }
 
     @Override
     public ArrayList<ArticleObj> getArticles() {

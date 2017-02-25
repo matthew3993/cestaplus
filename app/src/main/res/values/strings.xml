@@ -99,7 +99,76 @@
     <string name="hello_world">Tu sa zobrazí vybraný článok</string>
     <string name="test_author">Tu bude autor</string>
     <string name="title_here">Martin Kramara o exhortácií Radosť lásky: Tí čo sa modlia, zostanú spolu</string>
-    <string name="description_here">Synodu o rodine sledovalo množstvo pozorných a zvedacých očí od bežného sveta až po množstvo
-    manželov aj tých, ktorá zažili bolesť z nevydareného vzťahu. </string>
+    <string name="description_here">Synodu o rodine sledovalo množstvo pozorných a zvedacých očí od bežného sveta až po množstvo manželov aj tých, ktorá zažili bolesť z nevydareného vzťahu.</string>
+
+    <!-- Navigational drawer START ***************************** -->
+    <string name="home">Domov</string>
+    <string name="account_nav_dr">Konto</string>
+    <string name="baterka_on_today">Baterka na dnes</string>
+
+    <!-- SECTIONS -->
+    <!-- family -->
+    <string name="family_group_item_title">Rodina</string>
+    <string name="milovat_a_ctit_title">Milovať a ctiť</string>
+    <string name="milovat_a_ctit_id">milovatactit</string>
+    <string name="a_nikdy_ta_neopustim_title">A nikdy Ťa neopustím</string>
+    <string name="a_nikdy_ta_neopustim_id">anikdytaneopustim</string>
+    <string name="rodicovske_skratky_title">Rodičovské skratky</string>
+    <string name="rodicovske_skratky_id">rodicovskeskratky</string>
+    <string name="dvaja_v_jednom_title">Dvaja v jednom</string>
+    <string name="dvaja_v_jednom_id">dvajavjednom</string>
+
+    <!-- world -->
+    <string name="world_group_item_title">Svet</string>
+
+    <string name="krestan_v_politike_title">Kresťan v politike</string>
+    <string name="krestan_v_politike_id">krestanvpolitike</string>
+    <string name="z_parlamentu_title">Z parlamentu</string>
+    <string name="z_parlamentu_id">zparlamentu</string>
+    <string name="recenzia_title">Recenzia</string>
+    <string name="recenzia_id">recenzia</string>
+    <string name="na_pulze_title">Na pulze</string>
+    <string name="na_pulze_id">napulze</string>
+    <string name="aktualne_title">Aktuálne</string>
+    <string name="aktualne_id">aktualne</string>
+
+    <!-- faith -->
+    <string name="faith_group_item_title">Viera</string>
+
+    <string name="bozia_zona_title">Božia zóna</string>
+    <string name="bozia_zona_id">boziazona</string>
+    <string name="kuchynska_teologia_title">Kuchynská teológia</string>
+    <string name="kuchynska_teologia_id">kuchynskateologia</string>
+    <string name="prenasledovani_title">Prenasledovaní</string>
+    <string name="prenasledovani_id">prenasledovani</string>
+
+    <!-- plus -->
+    <string name="plus_group_item_title">Plus</string>
+
+    <string name="rozhovor_title">Rozhovor</string>
+    <string name="rozhovor_id">rozhovor</string>
+    <string name="xxl_clanky_title">XXL články</string>
+    <string name="xxl_clanky_id">xxlclanky</string>
+    <string name="psyche_title">Psyché</string>
+    <string name="psyche_id">psyche</string>
+    <string name="poviedky_title">Poviedky</string>
+    <string name="poviedky_id">poviedky</string>
+
+    <!-- other  -->
+    <string name="other_group_item_title">Iné</string>
+
+    <string name="slovoplus_title">Slovo+</string>
+    <string name="slovoplus_id">slovoplus</string>
+    <string name="preklady_title">Preklady</string>
+    <string name="preklady_id">preklady</string>
+    <string name="editorial_title">Editoriál</string>
+    <string name="editorial_id">editorial</string>
+    <string name="gauc_title">Gauč</string>
+    <string name="gauc_id">gauc</string>
+
+    <string name="o_portali_nav_dr">O portáli cesta+</string>
+
+
+    <!-- Navigational drawer END ***************************** -->
 
 </resources>

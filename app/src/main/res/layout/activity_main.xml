@@ -154,7 +154,7 @@
 
                 <!-- title is disabled in CollapsingToolbarLayout and set here -->
                 <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
+                    android:id="@+id/mainActivityToolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
 
@@ -195,9 +195,8 @@
     <!-- LAYOUT OF DRAWER START *****************************************
     app:headerLayout="@layout/nav_header"
 
-    app:headerLayout="@layout/navigational_header"
+    app:headerLayout="@layout/navigational_header" - DO NOT worked as expected
     app:menu="@layout/nav_drawer_items"
-
 
     -->
     <android.support.design.widget.NavigationView

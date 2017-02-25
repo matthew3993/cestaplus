@@ -57,10 +57,39 @@
     <dimen name="li_pat_title_margin_top">6dp</dimen>
 
     <!-- PICTURES AND TITLES ONLY END *********************** -->
+    <!-- RECYCLER VIEW LIST ITEMS END ******************************* -->
 
-    <!-- RECYCLER VIEW LIST ITEMS END ********************* -->
+    <!-- NAVIGATIONAL DRAWER START ****************************************************** -->
+    <!-- NAV. DR. HEADER ***** -->
+    <dimen name="nav_dr_header_layout_height">140dp</dimen>
 
-<!-- ===================== MAIN ACTIVITY END ======================================================================================== -->
+    <!-- NAV. DR. HEADER IMAGE -->
+    <dimen name="nav_dr_header_image_height">60dp</dimen>
+
+    <!-- GROUP ITEM -->
+    <dimen name="nav_dr_group_item_layout_height">48dp</dimen>
+
+    <!-- GROUP ICON -->
+    <dimen name="nav_dr_group_item_icon_size">22dp</dimen>
+    <dimen name="nav_dr_group_item_icon_left_right_margin">16dp</dimen>
+
+    <!-- GROUP TITLE -->
+    <dimen name="nav_dr_group_item_title_text_size">12sp</dimen> <!-- should be 14sp  -->
+
+    <dimen name="nav_dr_group_item_title_margin_left">16dp</dimen>
+    <dimen name="nav_dr_group_item_title_margin_right">10dp</dimen>
+    <dimen name="nav_dr_group_item_title_margin_top_bottom">15dp</dimen>
+
+    <!-- CHILD ITEM TITLE -->
+    <dimen name="nav_dr_list_item_text_size">13sp</dimen> <!-- 17sp  -->
+
+    <dimen name="nav_dr_child_item_title_margin_left">100dp</dimen>
+    <dimen name="nav_dr_child_item_title_margin_right">10dp</dimen>
+    <dimen name="nav_dr_child_item_title_margin_top_bottom">10dp</dimen>
+    <!-- NAVIGATIONAL DRAWER END ******************************************************* -->
+
+
+    <!-- ===================== MAIN ACTIVITY END ======================================================================================== -->
 
 <!-- ===================== ARTICLE ACTIVITY START =================================================================================== -->
     <dimen name="linear_layout_padding">3dp</dimen>
