@@ -9,6 +9,8 @@ import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.fragments.AllFragment;
 import sk.cestaplus.cestaplusapp.fragments.SectionFragment;
 
+import static sk.cestaplus.cestaplusapp.extras.IKeys.TAG_ALL_FRAGMENT;
+
 /**
  * Created by matth on 24.02.2017.
  */
@@ -34,8 +36,16 @@ public class AllFragmentSwapper
 
         // Insert the fragment by replacing any existing fragment
         fragmentManager.beginTransaction()
-                .replace(R.id.mainActivityMainFragmentContainer, newFragment)
+                .replace(R.id.mainActivityMainFragmentContainer, newFragment, TAG_ALL_FRAGMENT)
                 .commit();
+
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            // clear the back stack
+            // SOURCE: http://stackoverflow.com/a/20591748
+            FragmentManager manager = activity.getSupportFragmentManager();
+            FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
+            manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
 
         // set title
         Toolbar toolbar = (Toolbar) activity.findViewById(R.id.mainActivityToolbar);

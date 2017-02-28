@@ -9,11 +9,13 @@
             android:id="@+id/rvAll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
             android:visibility="gone"
             >
         </android.support.v7.widget.RecyclerView>
 
     <!-- OTHER VIEWS START ********************************************************* -->
+    <!-- LOADING & ERROR VIEWS are different from other activities and fragments -->
     <ProgressBar
         android:id="@+id/progressBarFragmentAll"
         android:layout_width="wrap_content"

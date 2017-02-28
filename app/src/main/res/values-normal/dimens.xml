@@ -61,10 +61,17 @@
 
     <!-- NAVIGATIONAL DRAWER START ****************************************************** -->
     <!-- NAV. DR. HEADER ***** -->
-    <dimen name="nav_dr_header_layout_height">140dp</dimen>
+    <dimen name="nav_dr_header_layout_height">120dp</dimen>
 
     <!-- NAV. DR. HEADER IMAGE -->
     <dimen name="nav_dr_header_image_height">60dp</dimen>
+
+    <!-- NAV. DR. LOGIN STATUS -->
+    <dimen name="nav_dr_header_login_status_text_size">13sp</dimen>
+    <dimen name="nav_dr_header_login_status_margin_bottom">8dp</dimen>
+
+    <!-- DIVIDER between nav. dr. header and AnimatedExpandableListView -->
+    <dimen name="nav_dr_divider_margin_top">8dp</dimen>
 
     <!-- GROUP ITEM -->
     <dimen name="nav_dr_group_item_layout_height">48dp</dimen>
@@ -74,7 +81,7 @@
     <dimen name="nav_dr_group_item_icon_left_right_margin">16dp</dimen>
 
     <!-- GROUP TITLE -->
-    <dimen name="nav_dr_group_item_title_text_size">12sp</dimen> <!-- should be 14sp  -->
+    <dimen name="nav_dr_group_item_title_text_size">13sp</dimen> <!-- should be 14sp  -->
 
     <dimen name="nav_dr_group_item_title_margin_left">16dp</dimen>
     <dimen name="nav_dr_group_item_title_margin_right">10dp</dimen>
@@ -127,8 +134,6 @@
     <dimen name="baterka_title_margin_bottom">15dp</dimen>
 
     <!-- BATERKA BODY START ******** -->
-
-
     <!-- COORDINATES -->
     <dimen name="coordinates_margin_top">30dp</dimen>
     <dimen name="coordinates_margin_botton">15dp</dimen>
@@ -155,5 +160,6 @@
 
     <!-- TIP TITLE -->
     <dimen name="tip_title_text_size">17sp</dimen>
-<!-- ===================== BATERKA ACTIVITY START =================================================================================== -->
+
+    <!-- ===================== BATERKA ACTIVITY START =================================================================================== -->
 </resources>

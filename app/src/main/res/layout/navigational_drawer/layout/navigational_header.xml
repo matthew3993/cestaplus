@@ -2,19 +2,43 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_dr_header_layout_height"
+    android:layout_height="wrap_content"
+
     android:background="@color/coordinatesAndScriptureBackground">
-    
-    <ImageView
+
+    <RelativeLayout
+        android:id="@+id/navDrHeaderLogoRelativeLayout"
+
         android:layout_width="match_parent"
-        android:layout_height="@dimen/nav_dr_header_image_height"
+        android:layout_height="@dimen/nav_dr_header_layout_height"
+        >
 
-        android:src="@drawable/cestaplus"
+        <ImageView
+            android:id="@+id/ivNavDrHeaderLogo"
 
-        android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/nav_dr_header_image_height"
 
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+            android:src="@drawable/cestaplus"
+
+            android:layout_centerVertical="true"
+
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+        />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvNavDrLoginStatus"
+        style="@style/nav_dr_header_login_status"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@id/navDrHeaderLogoRelativeLayout"
+
+        android:text="@string/not_logged_user"
         />
 
 </RelativeLayout>

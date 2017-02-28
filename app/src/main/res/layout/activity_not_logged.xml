@@ -22,8 +22,8 @@
             android:gravity="center"
             android:padding="10dp"
             android:textColor="@color/lbl_name"
-            android:textSize="24dp"
-            android:text="Neprihlásený používateľ" />
+            android:textSize="24sp"
+            android:text="@string/not_logged_user" />
 
         <!-- Login Button -->
         <Button
@@ -35,7 +35,7 @@
             android:text="@string/btn_login_big"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
     </LinearLayout>
 
 </RelativeLayout>

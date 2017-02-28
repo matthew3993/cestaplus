@@ -2,7 +2,6 @@ package sk.cestaplus.cestaplusapp.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,10 +32,9 @@ import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.listeners.CustomRecyclerViewClickHandler;
-import sk.cestaplus.cestaplusapp.utilities.utilClasses.Util;
+import sk.cestaplus.cestaplusapp.utilities.Util;
 
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_LIST_STYLE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_SECTION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SECTION_ID;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SECTION_NAME;
@@ -44,14 +42,14 @@ import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SECTION_NAME;
 public class SectionFragment
     extends Fragment
     implements
-        SharedPreferences.OnSharedPreferenceChangeListener,
         ListStyleChangeListener,
         CustomRecyclerViewClickHandler.CustomRecyclerViewClickHandlerDataProvider{
 
     // ======================================= ATTRIBUTES ================================================================================
     // data
     private ArrayList<ArticleObj> articlesOfSection;
-    private int pagesNum;                            // number of loaded pages
+    private int pagesNum;           // number of loaded pages
+    private int overallYScroll = 0; // actual Y scroll position - updated manually by RecyclerView.OnScrollListener!!
 
     //passed by arguments
     private String sectionName;
@@ -93,6 +91,8 @@ public class SectionFragment
         return fragment;
     }
 
+    //region LIFECYCLE METHODS
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); // Always call the superclass first
@@ -117,7 +117,7 @@ public class SectionFragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_section, container, false);
 
-        // title is changed in SectionsFragmentSwapper
+        // title is changed in SectionFragmentSwapper
         initDataViews(view);
         initLoadingAndErrorViews(view);
 
@@ -140,8 +140,6 @@ public class SectionFragment
 
         return view;
     }
-
-    //region LIFECYCLE METHODS
 
     @Override
     public void onAttach(Context context) {
@@ -177,7 +175,34 @@ public class SectionFragment
                 new RecyclerTouchListener(getActivity().getApplicationContext(),
                         recyclerViewSection, recyclerViewClickHandler));
 
-        getRecyclerViewAdapterType();
+        setRecyclerViewAdapterType();
+
+        //SOURCE: http://stackoverflow.com/a/27546142
+        recyclerViewSection.setOnScrollListener(new RecyclerView.OnScrollListener(){
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                // dy = change in scroll - NOT actual scroll position
+                // overallYScroll = is actual Y scroll position
+
+                overallYScroll += dy; // update actual Y scroll position
+
+                if (overallYScroll < 0) {
+                    overallYScroll = 0;
+                }
+
+                //Log.i("scrolling","Scroll Y  = " + dy);
+                //Log.i("scrolling","Overall scroll Y  = " + overallYScroll);
+
+                if (overallYScroll == 0) {
+                    listener.setSwipeRefreshLayoutEnabled(true);
+                } else {
+                    listener.setSwipeRefreshLayoutEnabled(false);
+                }
+            }
+        });
+
     }
 
     private void initLoadingAndErrorViews(View view) {
@@ -278,7 +303,7 @@ public class SectionFragment
 
     // endregion
 
-    private void getRecyclerViewAdapterType() {
+    private void setRecyclerViewAdapterType() {
         // in FRAGMENT (here): first parameter - context MUST be only getACTIVITY, and not getActivity().getAPPLICATIONContext()
         // - because Calligraphy wraps around ACTIVITY and not APPLICATION
         arvaSection = Util.getCrvaType(getActivity(), false); // false = doesn't have header
@@ -290,6 +315,10 @@ public class SectionFragment
 
     public String getSectionID() {
         return sectionID;
+    }
+
+    public int getRecyclerViewScroll(){
+        return overallYScroll;
     }
 
     // region SAVE & RESTORE STATE
@@ -312,20 +341,18 @@ public class SectionFragment
 
     // region LISTENERS METHODS
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equalsIgnoreCase(KEY_PREF_LIST_STYLE)) {
-            Util.refreshRecyclerViewWithoutHeader(session, getActivity().getApplicationContext(), arvaSection, recyclerViewSection, articlesOfSection);
-        }
+
+    public void recyclerViewAdapterTypeChanged() {
+        setRecyclerViewAdapterType();
+        arvaSection.setArticlesList(articlesOfSection);
+        recyclerViewSection.setAdapter(arvaSection);;
     }//end onSharedPreferenceChanged
 
     @Override
     public void handleListStyleSelection(DialogInterface dialog, int listStyle) {
         session.setListStyle(listStyle); //save list style
 
-        getRecyclerViewAdapterType();
-        arvaSection.setArticlesList(articlesOfSection);
-        recyclerViewSection.setAdapter(arvaSection);
+        recyclerViewAdapterTypeChanged();
 
         dialog.dismiss(); //dismiss the dialog
     }
@@ -353,5 +380,7 @@ public class SectionFragment
 
     public interface SectionFragmentInteractionListener {
         void stopRefreshingAnimation();
+
+        void setSwipeRefreshLayoutEnabled(boolean enabled);
     }
 }

@@ -295,7 +295,7 @@ public abstract class ArticleRecyclerViewAdapter
 
         public ProgressViewHolder(View view) {
             super(view);
-            progressBar = (ProgressBar) view.findViewById(R.id.progressBar1);
+            progressBar = (ProgressBar) view.findViewById(R.id.progressBarRecyclerViewLoadMore);
         }
     }//end of ProgressViewHolder class
 

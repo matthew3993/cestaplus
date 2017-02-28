@@ -11,6 +11,7 @@
         android:id="@+id/baterkaAppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <!--
@@ -25,28 +26,31 @@
             android:id="@+id/baterkaCollapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
 
             app:statusBarScrim="@null">
 
+            <!-- android:visibility="gone" here
+                 if it is set, show collapsing toolbar layout title ONLY when collapsed
+                 is not working
+            -->
             <RelativeLayout
+                android:id="@+id/collapsingToolbarRelativeLayoutBaterka"
+
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:weightSum="1"
                 android:background="@drawable/custom_bg"
                 android:clickable="true"
-                android:orientation="horizontal"
 
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="@dimen/baterka_title_image_collapseParallaxMultiplier"
                 >
+
                 <!--
-                <com.android.volley.toolbox.NetworkImageView
-                android:scaleType="centerCrop"
-                android:layout_height="400dp"
-                347
                 TODO: ako to bude s obrázkom baterky??
                 -->
                 <com.android.volley.toolbox.NetworkImageView
@@ -107,8 +111,11 @@
 
     <!-- ACTIVITY BODY START ******************************************************* -->
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nestedScrollViewBaterka"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
+        android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
         android:background="@color/white"
@@ -365,37 +372,7 @@
     <!-- ACTIVITY BODY END ********************************************************* -->
 
     <!-- OTHER VIEWS START ********************************************************* -->
-    <ProgressBar
-        android:id="@+id/progressBarBaterka"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone"
-        />
-
-    <TextView
-        android:id="@+id/tvVolleyErrorBaterka"
-        android:text="@string/connection_error_msg"
-        android:textColor="#000000"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/ivRefreshBaterka"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone"
-        />
-
-    <ImageView
-        android:id="@+id/ivRefreshBaterka"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_refresh_black_48dp"
-        android:visibility="gone"
-        />
+    <include layout="@layout/loading_and_error_views"/>
     <!-- OTHER VIEWS END *********************************************************** -->
 
 </android.support.design.widget.CoordinatorLayout>

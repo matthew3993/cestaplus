@@ -7,10 +7,17 @@ android {
         applicationId "sk.cestaplus.cestaplusapp"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 7
-        versionName "alpha 1.41"
+        versionCode 8
+        versionName "alpha 1.42"
 
-        //vectorDrawables.useSupportLibrary = true
+        //https://developer.android.com/studio/build/multidex.html
+        //multiDexEnabled true
+    }
+
+    dexOptions {
+        // raise heap limit - because of 'java.lang.OutOfMemoryError: GC overhead limit exceeded'
+        // SOURCE: http://stackoverflow.com/questions/25013638/android-studio-google-jar-file-causing-gc-overhead-limit-exceeded-error
+        javaMaxHeapSize "4g" // maybe it's a bit overkill, 2g should be ok
     }
 
     // subdirectories in layouts folder
@@ -20,13 +27,16 @@ android {
         main {
             res.srcDirs = [
                     'src/main/res',
-                    'src/main/res/layout/new_design',
+                    'src/main/res/layout/article_recycler_view',
                     'src/main/res/layout/old_design',
                     'src/main/res/layout/navigational_drawer'
             ]
         }
     }
     buildTypes {
+        // about shrinking: https://developer.android.com/studio/build/shrink-code.html
+        // debug / tests - false
+        // production APK build - true
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -37,8 +47,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/jsoup-1.8.1.jar')
+    //compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    compile 'org.jsoup:jsoup:1.10.2'
 
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.mcxiaoke.volley:library:1.0.19'
@@ -54,13 +65,13 @@ dependencies {
     //          https://github.com/nuuneoi/Lab-Android-DesignLibrary
     compile 'com.android.support:design:23.4.0'
 
-    //Text wiew with transparent text and plain color back ground
+    // Text wiew with transparent text and plain color back ground
     // SOURCE: http://stackoverflow.com/questions/19974078/android-transparent-text
     compile 'it.gilvegliach.android:transparent-text-textview:1.0.3'
 
     // for comparing dates without time
-    //SOURCE: http://www.joda.org/joda-time/dependency-info.html
-    compile 'joda-time:joda-time:2.9.7'
+    // SOURCE: http://www.joda.org/joda-time/dependency-info.html
+    //compile 'joda-time:joda-time:2.9.7'
 
     // for DEBUGGING - SQLite database, network inspection, ...
     // SOURCES:
@@ -70,6 +81,10 @@ dependencies {
     //      http://stackoverflow.com/a/32173974
     //      http://stackoverflow.com/a/31465301
     // Look also: http://stackoverflow.com/questions/19194576/how-do-i-view-the-sqlite-database-on-an-android-device
-    compile 'com.facebook.stetho:stetho:1.4.2' // Stetho core
-    compile 'com.facebook.stetho:stetho-okhttp3:1.4.2' //If you want to add a network helper
+    //compile 'com.facebook.stetho:stetho:1.4.2' // Stetho core
+    //compile 'com.facebook.stetho:stetho-okhttp3:1.4.2' //If you want to add a network helper
+
+    // because of multidex
+    // https://developer.android.com/studio/build/multidex.html
+    compile 'com.android.support:multidex:1.0.1'
 }

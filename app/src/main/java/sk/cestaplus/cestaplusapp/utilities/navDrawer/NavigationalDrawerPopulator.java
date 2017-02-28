@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,10 +19,10 @@ import java.util.List;
 
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.BaterkaActivity;
-import sk.cestaplus.cestaplusapp.activities.OPortaliActivity;
-import sk.cestaplus.cestaplusapp.activities.SettingsActivity;
-import sk.cestaplus.cestaplusapp.activities.konto_activities.LoggedActivity;
-import sk.cestaplus.cestaplusapp.activities.konto_activities.NotLoggedActivity;
+import sk.cestaplus.cestaplusapp.activities.other_activities.OPortaliActivity;
+import sk.cestaplus.cestaplusapp.activities.other_activities.SettingsActivity;
+import sk.cestaplus.cestaplusapp.activities.account_activities.LoggedActivity;
+import sk.cestaplus.cestaplusapp.activities.account_activities.NotLoggedActivity;
 import sk.cestaplus.cestaplusapp.extras.Constants;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView;
@@ -54,6 +55,18 @@ public class NavigationalDrawerPopulator {
     public void populateSectionsExpandableList(){
         SessionManager session = new SessionManager(context);
 
+    // init login status text view
+        TextView tvLoginStatus = (TextView) activity.findViewById(R.id.tvNavDrLoginStatus);
+        String text;
+
+        if (session.isLoggedIn()){
+            text = session.getEmail();
+        } else {
+            text = context.getString(R.string.not_logged_user);
+        }
+        tvLoginStatus.setText(text);
+
+    // POPULATE LIST
         final List<GroupItem> groupItems = new ArrayList<>();
 
         // init class that have to be started for account activity
@@ -163,40 +176,46 @@ public class NavigationalDrawerPopulator {
 
         listView = (AnimatedExpandableListView) activity.findViewById(R.id.navDrListViewSections);
         listView.setAdapter(adapter);
+        setListViewHeight(listView, 0); // init expandable list view height !!
 
         // In order to show animations, we need to use a custom click handler
         // for our ExpandableListView.
         listView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView expandableListView, View view, int groupPosition, long l) {
-            /*  Change background color on click:
-                SOURCE: http://stackoverflow.com/questions/10318642/highlight-for-selected-item-in-expandable-list
-                Take a look at first comment on accepted answer. */
-            int index = expandableListView.getFlatListPosition(ExpandableListView.getPackedPositionForGroup(groupPosition));
-            if (index == 0){
-                expandableListView.setItemChecked(index, true); // check only if 'home' was clicked
-            }
 
-            if (adapter.getChildrenCount(groupPosition) == 0){
+                setListViewHeight(expandableListView, groupPosition); // adjust expandable list view height
 
-                GroupItem groupItem = adapter.getGroup(groupPosition);
-                groupItem.action.execute();
-
-                closeDrawer();
-
-                return true;
-
-            } else { // group has some children
-                // We call collapseGroupWithAnimation(int) and
-                // expandGroupWithAnimation(int) to animate group
-                // expansion/collapse.
-                if (listView.isGroupExpanded(groupPosition)) {
-                    listView.collapseGroupWithAnimation(groupPosition);
-                } else {
-                    listView.expandGroupWithAnimation(groupPosition);
+                /*  Change background color on click:
+                    SOURCE: http://stackoverflow.com/questions/10318642/highlight-for-selected-item-in-expandable-list
+                    Take a look at first comment on accepted answer. */
+                int index = expandableListView.getFlatListPosition(ExpandableListView.getPackedPositionForGroup(groupPosition));
+                if (index == 0){
+                    expandableListView.setItemChecked(index, true); // check only if 'home' was clicked
                 }
-                return true;
-            }
+
+                if (adapter.getChildrenCount(groupPosition) == 0){
+
+                    GroupItem groupItem = adapter.getGroup(groupPosition);
+                    groupItem.action.execute();
+
+                    closeDrawer();
+
+                    return true;
+
+                } else { // group has some children
+                    // We call collapseGroupWithAnimation(int) and
+                    // expandGroupWithAnimation(int) to animate group
+                    // expansion/collapse.
+                    if (listView.isGroupExpanded(groupPosition)) {
+                        listView.collapseGroupWithAnimation(groupPosition);
+                    } else {
+                        listView.expandGroupWithAnimation(groupPosition);
+                    }
+
+
+                    return true;
+                }
             }
         });
 
@@ -220,6 +239,46 @@ public class NavigationalDrawerPopulator {
         });
 
         listView.setItemChecked(0, true); //set home as checked
+    }
+
+    /**
+     * Adjust height of expandable list view
+     * SOURCE: http://stackoverflow.com/a/36544003
+     */
+    private void setListViewHeight(ExpandableListView listView, int group) {
+
+        ExpandableListAdapter listAdapter = (ExpandableListAdapter) listView.getExpandableListAdapter();
+        int totalHeight = 0;
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(),
+                View.MeasureSpec.EXACTLY);
+
+        for (int i = 0; i < listAdapter.getGroupCount(); i++) {
+            View groupItem = listAdapter.getGroupView(i, false, null, listView);
+            groupItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+
+            totalHeight += groupItem.getMeasuredHeight();
+
+            if (((listView.isGroupExpanded(i)) && (i != group))
+                    || ((!listView.isGroupExpanded(i)) && (i == group))) {
+                for (int j = 0; j < listAdapter.getChildrenCount(i); j++) {
+                    View listItem = listAdapter.getChildView(i, j, false, null,
+                            listView);
+                    listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+
+                    totalHeight += listItem.getMeasuredHeight();
+                }
+
+                totalHeight += (listView.getDividerHeight() * (listAdapter.getChildrenCount(group) - 1));
+            }
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        int height = totalHeight + (listView.getDividerHeight() * (listAdapter.getGroupCount() - 1));
+        if (height < 10)
+            height = 200;
+        params.height = height;
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 
     private void closeDrawer() {
@@ -263,7 +322,7 @@ public class NavigationalDrawerPopulator {
 
         public ChildItemSection(AppCompatActivity activity, String title, String sectionId) {
             this.title = title;
-            this.action = new SectionsFragmentSwapper(activity, title, sectionId);
+            this.action = new SectionFragmentSwapper(activity, title, sectionId);
         }
     }
 

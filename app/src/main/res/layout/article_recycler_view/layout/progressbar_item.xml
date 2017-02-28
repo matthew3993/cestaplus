@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- This layout is used in recycler view as loading when loading more articles -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,7 +7,7 @@
     android:background="@color/white">
 
     <ProgressBar
-        android:id="@+id/progressBar1"
+        android:id="@+id/progressBarRecyclerViewLoadMore"
 
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"

@@ -15,6 +15,24 @@ import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 public class DateUtil {
 
     /**
+     * SOURCE: http://stackoverflow.com/a/7784110
+     */
+    public static Date getZeroTimeDate(Date inputDate) {
+        Date res;
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime( inputDate );
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        res = calendar.getTime();
+
+        return res;
+    }
+
+    /**
      * SOURCES:
      *      http://stackoverflow.com/questions/5574673/what-is-the-easiest-way-to-get-the-current-day-of-the-week-in-android
      *      http://stackoverflow.com/questions/18600257/how-to-get-the-weekday-of-a-date
@@ -74,9 +92,6 @@ public class DateUtil {
 
     /**
      * SOURCE: http://stackoverflow.com/questions/7182996/java-get-month-integer-from-date
-     * @param context
-     * @param date
-     * @return
      */
     private static String getMonthStringFromDate(Context context, Date date) {
 

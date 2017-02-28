@@ -1,4 +1,4 @@
-package sk.cestaplus.cestaplusapp.utilities.utilClasses;
+package sk.cestaplus.cestaplusapp.utilities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,41 +12,21 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
-import org.json.JSONArray;
-
-import java.util.ArrayList;
-
 import sk.cestaplus.cestaplusapp.R;
-import sk.cestaplus.cestaplusapp.activities.ArticleActivity;
-import sk.cestaplus.cestaplusapp.activities.BaterkaActivity;
 import sk.cestaplus.cestaplusapp.activities.MainActivity;
 import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter_All;
 import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter_PicturesAndTitles;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
-import sk.cestaplus.cestaplusapp.network.Parser;
-import sk.cestaplus.cestaplusapp.objects.ArticleObj;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
-import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 
-import static sk.cestaplus.cestaplusapp.extras.Constants.DELAY_TO_START_ACTIVITY_MILLIS;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_ARTICLE;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_BATERKA;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_FROM_NOTIFICATION;
 import static sk.cestaplus.cestaplusapp.utilities.SessionManager.LIST_STYLE_ALL;
 import static sk.cestaplus.cestaplusapp.utilities.SessionManager.LIST_STYLE_PICTURES_AND_TITLES;
 
@@ -70,7 +50,7 @@ public class Util {
         builder.setColor(Color.parseColor("#9cddf1")); //conversion from hex string to argb int
 
         Intent notificationIntent = new Intent(CustomApplication.getCustomAppContext(), MainActivity.class);
-        notificationIntent.putExtra("fromNotification", true);
+        notificationIntent.putExtra(KEY_FROM_NOTIFICATION, true);
         /*
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                 Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -181,7 +161,7 @@ public class Util {
         Toast.makeText(context.getApplicationContext(), toastMsg, Toast.LENGTH_LONG).show();
     }//end check screensize()
 
-    public static String[] getListStyles() {
+    private static String[] getListStyles() {
         return new String[] {"Zobraziť okrem nadpisov aj popisy k článkom", "Zobraziť len nadpisy"};
     }
 
@@ -226,27 +206,6 @@ public class Util {
                 .show();
     }//end showListStyleDialog()
 
-    private static void handleSelection(DialogInterface dialog, int listStyle, SessionManager session, Context context,
-                                        ArticleRecyclerViewAdapter crva, RecyclerView recyclerView, ArrayList<ArticleObj> articleList) {
-        session.setListStyle(listStyle); //save list style
-
-        crva = getCrvaType(context, true);
-        crva.setArticlesList(articleList);
-        recyclerView.setAdapter(crva);
-
-        dialog.dismiss(); //dismiss the dialog
-
-    } //end handleListStyleSelection()
-
-    public static void refreshRecyclerViewWithoutHeader(SessionManager session, Context context,
-                                                        ArticleRecyclerViewAdapter crva, RecyclerView recyclerView,
-                                                        ArrayList<ArticleObj> articleList){
-
-        crva = getCrvaType(context, false);
-        crva.setArticlesList(articleList);
-        recyclerView.setAdapter(crva);
-    } //end refreshRecyclerViewWithoutHeader()
-
     public static boolean isNetworkAvailable(final Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
@@ -255,8 +214,6 @@ public class Util {
     /**
      * Removes HTML tags from input string
      * SOURCE: http://stackoverflow.com/questions/6502759/how-to-strip-or-escape-html-tags-in-android
-     * @param html
-     * @return
      */
     public static String stripHtml(String html) {
         return Html.fromHtml(html).toString();
@@ -267,7 +224,6 @@ public class Util {
      *          http://stackoverflow.com/questions/13719103/how-to-retrieve-style-attributes-programatically-from-styles-xml
      *          http://stackoverflow.com/questions/17277618/get-color-value-programmatically-when-its-a-reference-theme
      *          http://stackoverflow.com/questions/9398610/how-to-get-the-attr-reference-in-code
-     * @return
      */
     public static int getActionBarSize(Context context){
         int[] attrs = new int[] { android.R.attr.actionBarSize };
@@ -287,17 +243,15 @@ public class Util {
      */
     public static int getUsableScreenHeightDp(Activity activity){
         Configuration configuration = activity.getResources().getConfiguration();
-        int screenWidthDp = configuration.screenHeightDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
-        return screenWidthDp;
+        return configuration.screenHeightDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
+
     }
 
     public static int getUsableScreenHeightPixels(Context context){
         Configuration configuration = context.getResources().getConfiguration();
-        int screenWidthDp = configuration.screenHeightDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
+        int screenHeightDp = configuration.screenHeightDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
 
-        int valueInPixels = Math.round(pxFromDp(context, (float) screenWidthDp));
-
-        return valueInPixels;
+        return Math.round(pxFromDp(context, (float) screenHeightDp));
     }
 
     /**
@@ -329,52 +283,5 @@ public class Util {
         } else {
             return false;
         }
-    }
-
-    public static void startArticleOrBaterkaActivity(final Fragment fragment, String parentActivity, ArticleObj articleObj) {
-        final Intent intent;
-
-        if (articleObj.getSection().equalsIgnoreCase("baterka")) { //if baterka was clicked
-            intent = new Intent(fragment.getActivity(), BaterkaActivity.class);
-            intent.putExtra(KEY_INTENT_EXTRA_BATERKA, articleObj);
-
-        } else { // if other sections was clicked
-            intent = new Intent(fragment.getActivity(), ArticleActivity.class);
-            intent.putExtra(KEY_INTENT_EXTRA_ARTICLE, articleObj);
-        }
-        intent.putExtra(KEY_PARENT_ACTIVITY, parentActivity);
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //SOURCES: http://stackoverflow.com/a/12664620  http://stackoverflow.com/a/12319970
-
-        //region  OLD IMPLEMENTATION with header in recyler view
-        /*if (position == 0) {
-            //header view was clicked
-            intent = new Intent(getApplicationContext(), ArticleActivity.class);
-            intent.putExtra(KEY_INTENT_EXTRA_ARTICLE, headerArticle);
-            intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
-
-        } else {
-            // row view was clicked (but not footer)
-            if (articlesAll.get(position-1).getSection().equalsIgnoreCase("baterka")) { //if baterka was clicked
-                intent = new Intent(getApplicationContext(), BaterkaActivity.class);
-                intent.putExtra(KEY_INTENT_EXTRA_BATERKA, articlesAll.get(position-1));
-                intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
-
-            } else { // if other sections was clicked
-                intent = new Intent(getApplicationContext(), ArticleActivity.class);
-                intent.putExtra(KEY_INTENT_EXTRA_ARTICLE, articlesAll.get(position-1));
-                intent.putExtra(KEY_PARENT_ACTIVITY, KEY_MAIN_ACTIVITY);
-            }
-        }*/
-        // endregion
-
-        // delay the start of ArticleActivity because of onClick animation
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                fragment.startActivity(intent);
-            }
-        }, DELAY_TO_START_ACTIVITY_MILLIS);
     }
 }//end Util class

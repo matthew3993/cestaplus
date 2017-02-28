@@ -14,6 +14,7 @@
         android:id="@+id/articleAppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <!--
@@ -28,19 +29,22 @@
             android:id="@+id/articleCollapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
 
             app:statusBarScrim="@null">
 
             <RelativeLayout
+                android:id="@+id/collapsingToolbarRelativeLayoutArticle"
+
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:weightSum="1"
                 android:background="@drawable/custom_bg"
                 android:clickable="true"
-                android:orientation="horizontal"
+                android:visibility="gone"
 
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="@dimen/baterka_title_image_collapseParallaxMultiplier"
@@ -57,7 +61,20 @@
                     android:layout_alignParentTop="true"
                     />
 
-                <!-- View making gradient over image
+                <!-- View making gradient over image from TOP
+                     It must be written below image in layout code text to be visible!!
+                -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/header_image_gradient_from_top"
+
+                    android:background="@drawable/image_gradient_top"
+
+                    android:layout_alignTop="@+id/nivMainActivityHeaderImage"
+                    />
+
+                <!-- View making gradient over image from BOTTOM
+                     View making gradient over image
                         - position, width and height are same as nivMainActivityHeaderImage
                         - background is set to gradient xml file
                      Gradient is now made:
@@ -70,7 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/header_image_gradient_from_bottom"
 
-                    android:background="@drawable/image_gradient"
+                    android:background="@drawable/image_gradient_bottom"
 
                     android:layout_alignBottom="@+id/nivArticle"
                     />
@@ -100,8 +117,6 @@
 
                     android:minLines="1"
                     />
-
-                <!-- HERE can be TextView with source of photo -->
 
                 <TextView
                     android:id="@+id/tvArticleDescription"
@@ -137,10 +152,11 @@
         android:id="@+id/nestedScrollViewArticle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+        android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
-        <!-- android:paddingLeft="8dp" -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -187,39 +203,7 @@
     <!-- ACTIVITY BODY END ********************************************************* -->
 
     <!-- OTHER VIEWS START ********************************************************* -->
-    <ProgressBar
-        android:id="@+id/progressBarArticle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-
-        android:indeterminateOnly="true"
-        />
-
-    <TextView
-        android:id="@+id/tvVolleyErrorArticle"
-        android:text="@string/connection_error_msg"
-        android:textColor="#000000"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/ivRefreshArticle"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone"
-        />
-
-    <!-- icon source: https://material.io/icons/ -->
-    <ImageView
-        android:id="@+id/ivRefreshArticle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_refresh_black_48dp"
-        android:visibility="gone"
-        />
+    <include layout="@layout/loading_and_error_views"/>
     <!-- OTHER VIEWS END *********************************************************** -->
 
 </android.support.design.widget.CoordinatorLayout>

@@ -2,9 +2,7 @@ package sk.cestaplus.cestaplusapp.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,14 +30,11 @@ import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.MyApplication;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.listeners.CustomRecyclerViewClickHandler;
-import sk.cestaplus.cestaplusapp.utilities.utilClasses.Util;
+import sk.cestaplus.cestaplusapp.utilities.Util;
 
 import static java.lang.System.currentTimeMillis;
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_LAST_TRY_TIME;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_LIST_STYLE;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ROLE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLES_ALL;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_PAGES_NUM;
 
@@ -48,7 +43,6 @@ public class AllFragment
     implements
         ArticlesLoadedListener,
         ListStyleChangeListener,
-        SharedPreferences.OnSharedPreferenceChangeListener,
         CustomRecyclerViewClickHandler.CustomRecyclerViewClickHandlerDataProvider {
 
     // data
@@ -57,7 +51,6 @@ public class AllFragment
 
     // utils
     private SessionManager session; // session manager
-    private int role;
 
     private CustomRecyclerViewClickHandler recyclerViewClickHandler;
     private AllFragmentInteractionListener listener;
@@ -93,7 +86,7 @@ public class AllFragment
 
         // get parameters from Arguments
         if (getArguments() != null) {
-            role = getArguments().getInt(KEY_ROLE, ROLE_NOT_LOGGED);
+            //role = getArguments().getInt(KEY_ROLE, ROLE_NOT_LOGGED);
         }
 
         // init data & utils
@@ -123,6 +116,7 @@ public class AllFragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         if (context instanceof AllFragmentInteractionListener) {
             listener = (AllFragmentInteractionListener) context;
         } else {
@@ -134,9 +128,6 @@ public class AllFragment
     @Override
     public void onResume() {
         super.onResume();
-
-        PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
-                .registerOnSharedPreferenceChangeListener(this);
 
         //TODO: check last try time and if needed start UpdateTask - probably isn't working
         long defaultVal = 0;
@@ -332,6 +323,16 @@ public class AllFragment
         //      - because Calligraphy wraps around ACTIVITY and not APPLICATION
     }
 
+    public void recyclerViewAdapterTypeChanged(){
+        if (getActivity() != null){
+            setRecyclerViewAdapterType();
+        } else {
+            arvaAll = Util.getCrvaType(CustomApplication.getCustomAppContext(), false); // doesn't have header
+        }
+        arvaAll.setArticlesList(articlesAll);
+        recyclerViewAll.setAdapter(arvaAll);
+    }
+
     // region SAVE & RESTORE STATE
 
     // SOURCE: https://developer.android.com/guide/components/activities/activity-lifecycle.html#saras
@@ -380,20 +381,6 @@ public class AllFragment
         dialog.dismiss(); //dismiss the dialog
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
-        if (key.equalsIgnoreCase(KEY_PREF_LIST_STYLE)) {
-            if (getActivity().getApplicationContext() != null){
-                setRecyclerViewAdapterType();
-            } else {
-                arvaAll = Util.getCrvaType(CustomApplication.getCustomAppContext(), false); // doesn't have header
-            }
-            arvaAll.setArticlesList(articlesAll);
-            recyclerViewAll.setAdapter(arvaAll);
-        }
-    }//end onSharedPreferenceChanged
-
     public int getPagesNum() {
         return pagesNum;
     }
@@ -411,7 +398,6 @@ public class AllFragment
     public ArticleRecyclerViewAdapter getAdapter() {
         return arvaAll;
     }
-
 
     // endregion
 

@@ -22,7 +22,7 @@
     <!-- ACTIVITY TITLES -->
     <string name="title_activity_article">ArticleActivity</string>
     <string name="title_activity_section">SectionActivity</string>
-    <string name="title_activity_oportali">OPortaliActivity</string>
+    <string name="title_activity_oportali">O portáli</string>
     <string name="title_activity_not_logged">NotLoggedActivity</string>
     <string name="title_activity_logged">LoggedActivity</string>
 
@@ -36,8 +36,9 @@
 
     <!-- LOGIN -->
     <string name="enter_credentials_msg">Zadajte potrebné prihlasovacie údaje!</string>
-    <string name="login_successful_msg">Prihlásenie úspešné!</string>
+    <string name="login_connection_error">CHYBA pripojenia na server!\nSkontrolujte pripojenie na internet!</string>
     <string name="login_loading_dialog_msg">Logging in …</string>
+    <string name="login_successful_msg">Prihlásenie úspešné!</string>
 
     <string name="hint_email">Email</string>
     <string name="hint_password">Heslo</string>
@@ -52,6 +53,8 @@
     <string name="name">Fullname</string>
     <string name="account">Konto</string>
     <string name="tryAgain">Skúsiť znova</string>
+
+    <string name="not_logged_user">Neprihlásený používateľ</string>
 
     <!-- BATERKA TITLES -->
     <string name="meditationTitle">zamyslenie</string>
@@ -167,8 +170,6 @@
     <string name="gauc_id">gauc</string>
 
     <string name="o_portali_nav_dr">O portáli cesta+</string>
-
-
     <!-- Navigational drawer END ***************************** -->
 
 </resources>
