@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-
     <color name="divider_line_new">#f2f3f3</color>
 
     <!-- ITEM COLORS -->
     <color name="articleItemTitle">#1d1c21</color>     <!-- primary color of dark theme -->
     <color name="articleItemShortText">#333333</color>
+
+    <!-- NAVIGATIONAL DRAWER START ****************************** -->
+    <!-- <color name="nav_dr_item_state_pressed">#889ba6</color> -->    <!-- same as dayInWeekAndDate -->
+    <color name="nav_dr_item_state_activated">#d2dae0</color>
+    <!-- NAVIGATIONAL DRAWER END ******************************** -->
 
     <!-- ARTICLE COLORS START ************************************************* -->
     <color name="articleDateBackground">#e5eaed</color>

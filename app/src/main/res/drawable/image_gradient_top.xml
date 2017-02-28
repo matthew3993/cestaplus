@@ -1,0 +1,28 @@
+<!--
+    This is layout file for gradient over title image (in MainActivity and ArticleActivity)
+    SOURCE: http://stackoverflow.com/questions/23991395/add-gradient-to-imageview
+-->
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" >
+
+    <!--
+        original values
+        android:endColor="#00ffffff"
+        android:startColor="#dc000000"
+        dc = 220 - http://www.binaryhexconverter.com/decimal-to-hex-converter
+    -->
+    <gradient
+        android:angle="270"
+
+        android:endColor="#00ffffff"
+        android:startColor="#b41a1a1a"
+        />
+
+    <corners android:radius="0dp" />
+</shape>
+<!-- take look:
+    - http://stackoverflow.com/questions/14345824/alpha-gradient-on-android
+    - http://www.singhajit.com/gradient-color-in-android/
+    programmatically: http://stackoverflow.com/questions/6115715/how-do-i-programmatically-set-the-background-color-gradient-on-a-custom-title-ba
+-->

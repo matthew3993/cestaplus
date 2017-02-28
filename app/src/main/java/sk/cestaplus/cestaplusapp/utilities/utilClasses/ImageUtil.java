@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.widget.ImageView;
 
+import sk.cestaplus.cestaplusapp.utilities.Util;
+
 /**
  * Created by matth on 21.02.2017.
  */
@@ -16,6 +18,16 @@ public class ImageUtil {
 
         // no in landscape
         if (Util.getScreenSize(context) == Configuration.SCREENLAYOUT_SIZE_NORMAL){
+            adjustImageHeightToScreenHeight(context, imageView);
+            return;
+        }
+    }
+
+    /**
+     * This method is used ONLY for baterka images
+     */
+    public static void resolveBaterkaAdjustImageHeightToScreenHeight(Context context, ImageView imageView){
+        if(Util.inLandscapeOrientation(context)){
             adjustImageHeightToScreenHeight(context, imageView);
             return;
         }

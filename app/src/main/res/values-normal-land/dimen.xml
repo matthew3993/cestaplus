@@ -2,7 +2,7 @@
 <resources>
     <!-- MainActivity -->
     <dimen name="header_image_height">336dp</dimen>
-    <dimen name="header_image_gradient_from_bottom">127dp</dimen> <!-- now 37.79%, 1/2 = 168dp -->
+    <dimen name="header_image_gradient_from_bottom">160dp</dimen> <!-- 127dp = 37.79%, 1/2 = 168dp -->
 
     <!-- BATERKA TITLE IMAGE -->
     <!-- SOURCE: http://stackoverflow.com/questions/3282390/add-floating-point-value-to-android-resources-values -->

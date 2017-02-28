@@ -1,4 +1,4 @@
-package sk.cestaplus.cestaplusapp.activities.konto_activities;
+package sk.cestaplus.cestaplusapp.activities.account_activities;
 
 /**
  * Created by Matej on 22. 4. 2015.
@@ -145,7 +145,7 @@ public class LoginActivity extends Activity {
                     launchMainActivity();
 
                 } else { //error_code != 0
-                    Parser.handleLoginErrorCode(error_code);
+                    Parser.handleLoginError(error_code);
                 }
 
             }//end onResponse
@@ -154,8 +154,9 @@ public class LoginActivity extends Activity {
         Response.ErrorListener errorLis = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                // volley error means problem with internet connection
                 Toast.makeText(getApplicationContext(),
-                        "CHYBA PRIHLASOVANIA " + error.getMessage(), Toast.LENGTH_LONG).show();
+                        R.string.login_connection_error, Toast.LENGTH_LONG).show();
                 hideDialog();
             }
         };

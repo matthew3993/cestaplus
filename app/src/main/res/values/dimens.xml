@@ -1,14 +1,14 @@
+<!-- These dimension values are DEFAULT values -->
+<!-- !@ == overrided other screen sizes config files -->
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
-
-    <!-- !@ == overrided other screen sizes config files -->
-
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="expanded_toolbar_title_margin_start">64dp</dimen>
 
 <!-- ===================== MAIN ACTIVITY START ======================================================================================== -->
     <!-- HEADER IMAGE -->
+    <dimen name="header_image_gradient_from_top">60dp</dimen>
     <dimen name="header_image_height">600dp</dimen>
     <dimen name="header_image_gradient_from_bottom">300dp</dimen> <!-- !@ -->
 
@@ -39,15 +39,102 @@
     <!-- HEADER END *************************************** -->
 
     <!-- RECYCLER VIEW LIST ITEMS START ******************* -->
-    <dimen name="li_image_width">240dp</dimen> <!-- !@ -->
-    <dimen name="li_image_height">160dp</dimen> <!-- !@ -->
+    <dimen name="li_all_margin_left_right">5dp</dimen>
 
+    <!-- article IMAGE -->
+    <dimen name="li_image_width">180dp</dimen> <!-- !@ -->
+    <dimen name="li_image_height">120dp</dimen> <!-- !@ -->
+    <dimen name="li_image_layout_margin">5dp</dimen>
+
+    <!-- AUTHOR -->
+    <dimen name="li_author_text_size">10sp</dimen>
+    <dimen name="li_author_layout_margin_top">5dp</dimen>
+
+    <!-- TITLE -->
+    <dimen name="li_title_text_size">16sp</dimen>
+    <item name="li_title_max_lines" format="string" type="dimen">3</item>
+
+    <dimen name="li_title_margin_top">6dp</dimen>
+    <dimen name="li_title_margin_bottom">6dp</dimen>
+
+    <!-- SHORT TEXT -->
+    <dimen name="li_short_text_size">15sp</dimen>
+    <item name="li_short_text_max_lines" format="string" type="dimen">4</item>
+    <dimen name="li_short_text_margin_bottom">7dp</dimen> <!-- 10dp -->
+
+    <!-- LOCK image -->
+    <dimen name="li_lock_image_height_width">40dp</dimen>
+    <dimen name="li_lock_image_margin_top">40dp</dimen>
+    <dimen name="li_lock_image_margin_left">70dp</dimen>
+
+    <!-- PICTURES AND TITLES ONLY START ********************* -->
+
+    <!-- AUTHOR -->
+    <dimen name="li_pat_author_text_size">15sp</dimen>
+
+    <!-- TITLE -->
+    <dimen name="li_pat_title_text_size">20sp</dimen>
+    <item name="li_pat_title_max_lines" format="string" type="dimen">5</item>
+
+    <dimen name="li_pat_title_margin_top">8dp</dimen>
+
+    <!-- PICTURES AND TITLES ONLY END *********************** -->
     <!-- RECYCLER VIEW LIST ITEMS END ********************* -->
+
+    <!-- NAVIGATIONAL DRAWER START ****************************************************** -->
+    <!-- NAV. DR. HEADER ***** -->
+    <dimen name="nav_dr_header_layout_height">160dp</dimen>
+
+    <!-- NAV. DR. HEADER IMAGE -->
+    <dimen name="nav_dr_header_image_height">80dp</dimen>
+
+    <!-- NAV. DR. LOGIN STATUS -->
+    <dimen name="nav_dr_header_login_status_text_size">14sp</dimen>
+    <dimen name="nav_dr_header_login_status_margin_bottom">8dp</dimen>
+
+    <!-- DIVIDER between nav. dr. header and AnimatedExpandableListView -->
+    <dimen name="nav_dr_divider_margin_top">8dp</dimen>
+
+    <!-- GROUP ITEM -->
+    <dimen name="nav_dr_group_item_layout_height">48dp</dimen>
+
+    <!-- GROUP ICON -->
+    <dimen name="nav_dr_group_item_icon_size">24dp</dimen>
+    <dimen name="nav_dr_group_item_icon_left_right_margin">16dp</dimen>
+
+    <!-- GROUP TITLE -->
+    <dimen name="nav_dr_group_item_title_text_size">13sp</dimen> <!-- 14  20sp -->
+
+    <dimen name="nav_dr_group_item_title_margin_left">16dp</dimen>
+    <dimen name="nav_dr_group_item_title_margin_right">10dp</dimen>
+    <dimen name="nav_dr_group_item_title_margin_top_bottom">15dp</dimen>
+
+    <!-- CHILD ITEM TITLE -->
+    <dimen name="nav_dr_list_item_text_size">14sp</dimen> <!-- 17sp  -->
+
+    <dimen name="nav_dr_child_item_title_margin_left">100dp</dimen> <!-- 55dp -->
+    <dimen name="nav_dr_child_item_title_margin_right">10dp</dimen>
+    <dimen name="nav_dr_child_item_title_margin_top_bottom">10dp</dimen>
+    <!-- NAVIGATIONAL DRAWER END ******************************************************* -->
 
 <!-- ===================== MAIN ACTIVITY END ======================================================================================== -->
 
+<!-- ===================== ARTICLE ACTIVITY START =================================================================================== -->
+    <dimen name="linear_layout_padding">8dp</dimen>
+
+    <dimen name="article_font_size_big">22px</dimen>
+    <dimen name="article_font_size_normal">18px</dimen>
+    <dimen name="article_font_size_small">14px</dimen>
+
+    <dimen name="alert_locked_layout_padding">40dp</dimen>
+    <dimen name="alert_locked_text_margin_top">10dp</dimen>
+    <dimen name="alert_locked_button_padding">15dp</dimen>
+    <dimen name="alert_locked_button_margin_top">35dp</dimen>
+<!-- ===================== ARTICLE ACTIVITY END ===================================================================================== -->
+
 <!-- ===================== BATERKA START ======================================================================================== -->
     <!-- BATERKA TITLE IMAGE -->
+    <!-- SOURCE: http://stackoverflow.com/questions/3282390/add-floating-point-value-to-android-resources-values -->
     <item  name="baterka_title_image_collapseParallaxMultiplier" format="float" type="dimen">0.7</item>
     <dimen name="baterka_title_image_height">347dp</dimen>
 
@@ -67,5 +154,33 @@
     <dimen name="baterka_title_margin_top">0dp</dimen>
     <dimen name="baterka_title_margin_bottom">20dp</dimen>
 
-<!-- ===================== BATERKA END ========================================================================================== -->
+    <!-- BATERKA BODY START ******** -->
+    <!-- COORDINATES -->
+    <dimen name="coordinates_margin_top">40dp</dimen>
+    <dimen name="coordinates_margin_botton">25dp</dimen>
+
+    <!-- SCRIPTURE-->
+    <dimen name="scripture_margin_bottom">40dp</dimen>
+
+    <!-- MEDITATION TITLE -->
+    <dimen name="meditation_title_text_size">25sp</dimen>
+
+    <!-- QUOTATION TEXT -->
+    <!-- This is margin of text view, not box-->
+    <dimen name="quotation_text_margin_left">40dp</dimen>
+    <dimen name="quotation_text_margin_right">40dp</dimen>
+    <dimen name="quotation_text_margin_top">40dp</dimen>
+    <dimen name="quotation_text_margin_botton">20dp</dimen>
+
+    <!-- QUOTATION AUTHOR -->
+    <!-- This is margin of text view, not box-->
+    <dimen name="quotation_author_margin_left">40dp</dimen>
+    <dimen name="quotation_author_margin_right">40dp</dimen>
+    <dimen name="quotation_author_margin_top">0dp</dimen>
+    <dimen name="quotation_author_margin_bottom">40dp</dimen>
+
+    <!-- TIP TITLE -->
+    <dimen name="tip_title_text_size">20sp</dimen>
+
+    <!-- ===================== BATERKA ACTIVITY START =================================================================================== -->
 </resources>

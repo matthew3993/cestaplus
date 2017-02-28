@@ -1,4 +1,4 @@
-package sk.cestaplus.cestaplusapp.utilities.utilClasses;
+package sk.cestaplus.cestaplusapp.utilities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,13 +14,10 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.MainActivity;
@@ -28,10 +25,8 @@ import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter_All;
 import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter_PicturesAndTitles;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
-import sk.cestaplus.cestaplusapp.objects.ArticleObj;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
-import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_FROM_NOTIFICATION;
 import static sk.cestaplus.cestaplusapp.utilities.SessionManager.LIST_STYLE_ALL;
 import static sk.cestaplus.cestaplusapp.utilities.SessionManager.LIST_STYLE_PICTURES_AND_TITLES;
 
@@ -55,7 +50,7 @@ public class Util {
         builder.setColor(Color.parseColor("#9cddf1")); //conversion from hex string to argb int
 
         Intent notificationIntent = new Intent(CustomApplication.getCustomAppContext(), MainActivity.class);
-        notificationIntent.putExtra("fromNotification", true);
+        notificationIntent.putExtra(KEY_FROM_NOTIFICATION, true);
         /*
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                 Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -166,11 +161,13 @@ public class Util {
         Toast.makeText(context.getApplicationContext(), toastMsg, Toast.LENGTH_LONG).show();
     }//end check screensize()
 
-    public static String[] getListStyles() {
+    private static String[] getListStyles() {
         return new String[] {"Zobraziť okrem nadpisov aj popisy k článkom", "Zobraziť len nadpisy"};
     }
 
-    public static ArticleRecyclerViewAdapter getCrvaType(SessionManager session, Context context, boolean hasHeader){
+    public static ArticleRecyclerViewAdapter getCrvaType(Context context, boolean hasHeader){
+        SessionManager session = new SessionManager(context);
+
         switch (session.getListStyle()){
             case LIST_STYLE_ALL:{ //LIST_STYLE_ALL = 0
                 return new ArticleRecyclerViewAdapter_All(context, hasHeader);
@@ -209,27 +206,6 @@ public class Util {
                 .show();
     }//end showListStyleDialog()
 
-    private static void handleSelection(DialogInterface dialog, int listStyle, SessionManager session, Context context,
-                                        ArticleRecyclerViewAdapter crva, RecyclerView recyclerView, ArrayList<ArticleObj> articleList) {
-        session.setListStyle(listStyle); //save list style
-
-        crva = getCrvaType(session, context, true);
-        crva.setArticlesList(articleList);
-        recyclerView.setAdapter(crva);
-
-        dialog.dismiss(); //dismiss the dialog
-
-    } //end handleListStyleSelection()
-
-    public static void refreshRecyclerViewWithoutHeader(SessionManager session, Context context,
-                                                        ArticleRecyclerViewAdapter crva, RecyclerView recyclerView,
-                                                        ArrayList<ArticleObj> articleList){
-
-        crva = getCrvaType(session, context, false);
-        crva.setArticlesList(articleList);
-        recyclerView.setAdapter(crva);
-    } //end refreshRecyclerViewWithoutHeader()
-
     public static boolean isNetworkAvailable(final Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
@@ -238,8 +214,6 @@ public class Util {
     /**
      * Removes HTML tags from input string
      * SOURCE: http://stackoverflow.com/questions/6502759/how-to-strip-or-escape-html-tags-in-android
-     * @param html
-     * @return
      */
     public static String stripHtml(String html) {
         return Html.fromHtml(html).toString();
@@ -250,7 +224,6 @@ public class Util {
      *          http://stackoverflow.com/questions/13719103/how-to-retrieve-style-attributes-programatically-from-styles-xml
      *          http://stackoverflow.com/questions/17277618/get-color-value-programmatically-when-its-a-reference-theme
      *          http://stackoverflow.com/questions/9398610/how-to-get-the-attr-reference-in-code
-     * @return
      */
     public static int getActionBarSize(Context context){
         int[] attrs = new int[] { android.R.attr.actionBarSize };
@@ -270,17 +243,15 @@ public class Util {
      */
     public static int getUsableScreenHeightDp(Activity activity){
         Configuration configuration = activity.getResources().getConfiguration();
-        int screenWidthDp = configuration.screenHeightDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
-        return screenWidthDp;
+        return configuration.screenHeightDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
+
     }
 
     public static int getUsableScreenHeightPixels(Context context){
         Configuration configuration = context.getResources().getConfiguration();
-        int screenWidthDp = configuration.screenHeightDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
+        int screenHeightDp = configuration.screenHeightDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
 
-        int valueInPixels = Math.round(pxFromDp(context, (float) screenWidthDp));
-
-        return valueInPixels;
+        return Math.round(pxFromDp(context, (float) screenHeightDp));
     }
 
     /**

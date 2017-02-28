@@ -2,50 +2,41 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="sk.cestaplus.cestaplusapp.fragments.AllFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvAll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:visibility="gone"
+            >
+        </android.support.v7.widget.RecyclerView>
 
-            android:id="@+id/tvVolleyErrorFragmentAll"
-            android:text="@string/no_connection_err_msg"
-            android:gravity="center"
-
-            android:textColor="@color/black"
-            android:background="@color/red"
-
-            android:visibility="gone"/>
-
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRecyclerViewMain"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rvAll"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:visibility="gone"
-                >
-
-            </android.support.v7.widget.RecyclerView>
-
-        </android.support.v4.widget.SwipeRefreshLayout>
-
-    </LinearLayout>
-
+    <!-- OTHER VIEWS START ********************************************************* -->
+    <!-- LOADING & ERROR VIEWS are different from other activities and fragments -->
     <ProgressBar
         android:id="@+id/progressBarFragmentAll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="visible"
+
+        android:indeterminateOnly="true"
         />
+
+    <!-- SOURCE of icon: https://material.io/icons/ -->
+    <ImageView
+        android:id="@+id/ivNoConnectionMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_cloud_off_black_48dp"
+        android:visibility="gone"
+        />
+    <!-- OTHER VIEWS END *********************************************************** -->
 
 </FrameLayout>

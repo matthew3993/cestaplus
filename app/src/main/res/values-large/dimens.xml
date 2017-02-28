@@ -57,11 +57,31 @@
     <dimen name="li_pat_title_margin_top">8dp</dimen>
 
     <!-- PICTURES AND TITLES ONLY END *********************** -->
-    <!-- RECYCLER VIEW LIST ITEMS END ********************* -->
+    <!-- RECYCLER VIEW LIST ITEMS END ******************************* -->
 
-    <!-- NAVIGATIONAL DRAWER START ************************ -->
+    <!-- NAVIGATIONAL DRAWER START ****************************************************** -->
+    <!-- NAV. DR. HEADER ***** -->
+    <dimen name="nav_dr_header_layout_height">160dp</dimen>
+
+    <!-- NAV. DR. HEADER IMAGE -->
+    <dimen name="nav_dr_header_image_height">80dp</dimen>
+
+    <!-- NAV. DR. LOGIN STATUS -->
+    <dimen name="nav_dr_header_login_status_text_size">14sp</dimen>
+    <dimen name="nav_dr_header_login_status_margin_bottom">8dp</dimen>
+
+    <!-- DIVIDER between nav. dr. header and AnimatedExpandableListView -->
+    <dimen name="nav_dr_divider_margin_top">8dp</dimen>
+
+    <!-- GROUP ITEM -->
+    <dimen name="nav_dr_group_item_layout_height">48dp</dimen>
+
+    <!-- GROUP ICON -->
+    <dimen name="nav_dr_group_item_icon_size">24dp</dimen>
+    <dimen name="nav_dr_group_item_icon_left_right_margin">16dp</dimen>
+
     <!-- GROUP TITLE -->
-    <dimen name="nav_dr_group_item_title_text_size">16sp</dimen> <!-- 14  20sp -->
+    <dimen name="nav_dr_group_item_title_text_size">13sp</dimen> <!-- 14  20sp -->
 
     <dimen name="nav_dr_group_item_title_margin_left">16dp</dimen>
     <dimen name="nav_dr_group_item_title_margin_right">10dp</dimen>
@@ -70,10 +90,10 @@
     <!-- CHILD ITEM TITLE -->
     <dimen name="nav_dr_list_item_text_size">14sp</dimen> <!-- 17sp  -->
 
-    <dimen name="nav_dr_child_item_title_margin_left">55dp</dimen>
+    <dimen name="nav_dr_child_item_title_margin_left">100dp</dimen> <!-- 55dp -->
     <dimen name="nav_dr_child_item_title_margin_right">10dp</dimen>
     <dimen name="nav_dr_child_item_title_margin_top_bottom">10dp</dimen>
-    <!-- NAVIGATIONAL DRAWER END ************************** -->
+    <!-- NAVIGATIONAL DRAWER END ******************************************************* -->
 
     <!-- ===================== MAIN ACTIVITY END ======================================================================================== -->
 
@@ -141,5 +161,4 @@
     <dimen name="tip_title_text_size">20sp</dimen>
 
     <!-- ===================== BATERKA ACTIVITY START =================================================================================== -->
-
 </resources>

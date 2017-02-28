@@ -1,59 +1,12 @@
-package sk.cestaplus.cestaplusapp.utilities;
+package sk.cestaplus.cestaplusapp.utilities.utilClasses;
 
 /**
  * Created by Matej on 26. 10. 2015.
  */
-public class SectionsUtil_old {
-
-    public static String [] getSectionsList(){
-        String [] sections = {"Téma mesiaca",           //id =  0
-                              "180 stupňov",            //id =  1
-                              "Na ceste",               //id =  2
-                              "Rodičovské skratky",     //id =  3
-                              "Na pulze",               //id =  4
-                              "U Matúša",               //id =  5
-                              "Evanjelium podľa lotra", //id =  6
-                              "Editoriál",              //id =  7
-                              "Normálna rodinka",       //id =  8
-                              "Kuchynská teológia",     //id =  9
-                              "Tabule",                 //id =  10
-                              "Anima Mea",              //id =  11
-                              "Kazateľnica život",      //id =  12
-                              "Za hranicami",           //id =  13
-                              "Fejtón",                 //id =  14
-                              "P.O.BOX Nebo",           //id =  15
-                              "Z parlamentu",           //id =  16
-                              "Baterka"};               //id =  17
-
-        return sections;
-    }//end getSectionsList(){
-
-    public static String translateSectionId(int sectionId){
-        switch (sectionId){
-            case  0: return "tema";
-            case  1: return "180stupnov";
-            case  2: return "naceste";
-            case  3: return "rodicovskeskratky"; // NEW
-            case  4: return "napulze";           // NEW
-            case  5: return "umatusa";
-            case  6: return "evanjeliumpodlalotra";
-            case  7: return "editorial";          // NEW
-            case  8: return "normalnarodinka";
-            case  9: return "kuchynskateologia";  // NEW
-            case 10: return "tabule";
-            case 11: return "animamea";
-            case 12: return "kazatelnicazivot";
-            case 13: return "zahranicami";
-            case 14: return "fejton";
-            case 15: return "poboxnebo";
-            case 16: return "zparlamentu";     // NEW
-            case 17: return "baterka";         // NEW
-            default: return "all"; //in case of some error will return all articles
-        } //end switch
-    }//end translateSectionId
+public class SectionsUtil {
 
     public static String getSectionTitle(String sectionId) {
-        String title = "";
+        String title = " ";
 
         switch (sectionId) {
             case "clanok": {
@@ -170,4 +123,4 @@ public class SectionsUtil_old {
 
         }//end switch
     }//end needsShortTemplate()
-}//end class SectionsUtil_old
+}//end class SectionsUtil

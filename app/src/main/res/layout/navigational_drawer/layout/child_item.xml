@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Change background color on click:
+     SOURCE: http://stackoverflow.com/questions/10318642/highlight-for-selected-item-in-expandable-list
+     Take a look at first comment on accepted answer. -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+
+    android:background="@drawable/selector_nav_dr_list_item_bg"
     >
 
     <TextView
         android:id="@+id/textTitle"
-        style="@style/nav_drawer_list_item_title"
+        style="@style/nav_dr_child_item_title"
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
