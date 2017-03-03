@@ -17,7 +17,7 @@ import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
-import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -30,6 +30,7 @@ import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
 import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
+import sk.cestaplus.cestaplusapp.utilities.ResponseCrate;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.listeners.CustomRecyclerViewClickHandler;
 import sk.cestaplus.cestaplusapp.utilities.Util;
@@ -195,10 +196,12 @@ public class SectionFragment
                 //Log.i("scrolling","Scroll Y  = " + dy);
                 //Log.i("scrolling","Overall scroll Y  = " + overallYScroll);
 
-                if (overallYScroll == 0) {
-                    listener.setSwipeRefreshLayoutEnabled(true);
-                } else {
-                    listener.setSwipeRefreshLayoutEnabled(false);
+                if (listener != null) {
+                    if (overallYScroll == 0) {
+                        listener.setSwipeRefreshLayoutEnabled(true);
+                    } else {
+                        listener.setSwipeRefreshLayoutEnabled(false);
+                    }
                 }
             }
         });
@@ -231,9 +234,18 @@ public class SectionFragment
         pagesNum = 1; // set the default page number
 
         // create listeners
+        /*
         Response.Listener<JSONArray> responseLis = new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
+                SectionFragment.this.onResponse(response);
+            }
+
+        };
+        */
+        Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
                 SectionFragment.this.onResponse(response);
             }
 
@@ -251,17 +263,23 @@ public class SectionFragment
         };
 
         //send the request
-        volleySingleton.createGetArticlesArrayRequestGET(sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
+        //volleySingleton.createGetArticlesArrayRequestGET(sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
+        volleySingleton.createGetArticlesObjectRequestGET(sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
     }
 
-    private void onResponse(JSONArray response) {
+    private void onResponse(JSONObject response) {
         //make UI changes
         hideErrorAndLoadingViews();
-        listener.stopRefreshingAnimation();
+        if (listener != null) {
+            listener.stopRefreshingAnimation();
+        }
         recyclerViewSection.setVisibility(View.VISIBLE);
 
         // logic
-        articlesOfSection = Parser.parseJsonArrayResponse(response);
+        ResponseCrate responseCrate = Parser.parseJsonObjectResponse(response);
+
+        articlesOfSection = responseCrate.getArticles();
+
         if (articlesOfSection.size() < Constants.ART_NUM){
             arvaSection.setNoMoreArticles();
         }

@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/nav_dr_header_image_height"
 
-            android:src="@drawable/cestaplus"
+            android:src="@drawable/cestaplus_full_logo"
 
             android:layout_centerVertical="true"
 

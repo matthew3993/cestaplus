@@ -25,6 +25,7 @@ import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
 import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.tasks.UpdateTask;
+import sk.cestaplus.cestaplusapp.utilities.ResponseCrate;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.MyApplication;
@@ -246,28 +247,37 @@ public class AllFragment
      * And if network is ok, it shows updated list of articles.
      */
     @Override
-    public void onArticlesLoaded(ArrayList<ArticleObj> listArticles) {
+    public void onArticlesLoaded(ResponseCrate responseCrate) {
         // !!!!!!!!! TODO: solve memory problem with paging !!!
 
         //stop refreshing or loading animation -- important!
         stopLoadingOrRefreshingAnimation();
 
-        articlesAll = listArticles;
+        articlesAll = responseCrate.getArticles();
         // if we don't want to change the reference
         //articlesAll.clear();
         //articlesAll.addAll(listArticles);
 
-        ArticleObj headerArticle = getTestHeaderArticle(); //TODO: change this to real header article
+        ArticleObj headerArticle = getHeaderArticle(responseCrate.getHeaderArticleId());
         if (listener != null) {
             listener.showHeaderArticle(headerArticle);
         }
 
-        arvaAll.setArticlesList(listArticles);
+        arvaAll.setArticlesList(responseCrate.getArticles());
         pagesNum = 1; // !!
         recyclerViewAll.setVisibility(View.VISIBLE);
     }//end onArticlesLoaded
 
-    public ArticleObj getTestHeaderArticle() {
+    public ArticleObj getHeaderArticle(String headerArticleId){
+        for (ArticleObj article : articlesAll) {
+            if (article.getID().equalsIgnoreCase(headerArticleId)){
+                return article;
+            }
+        }
+        return getFirtsNonBaterkaArticleObj();
+    }
+
+    public ArticleObj getFirtsNonBaterkaArticleObj() {
 
         for (ArticleObj article : articlesAll) {
             if (!article.getSection().equalsIgnoreCase("baterka")){
@@ -280,17 +290,21 @@ public class AllFragment
     @Override
     public void onLoadingError() {
         //stopLoadingOrRefreshingAnimation(); // this is called in onArticlesLoaded()
-        listener.showNoConnection(getResources().getString(R.string.connection_error_msg));
+        if (listener != null) {
+            listener.showNoConnection(getResources().getString(R.string.connection_error_msg));
+        }
     }
 
     @Override
     public void numNewArticles(int count) {
-        Context context = getActivity().getApplicationContext();
+        if(getActivity() != null) {
+            Context context = getActivity().getApplicationContext();
 
-        if (count == 0) {
-            Toast.makeText(context, R.string.no_new_articles, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(context, getString(R.string.num_of_new_articles) + count, Toast.LENGTH_SHORT).show();
+            if (count == 0) {
+                Toast.makeText(context, R.string.no_new_articles, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, getString(R.string.num_of_new_articles) + count, Toast.LENGTH_SHORT).show();
+            }
         }
     } // end numNewArticles
 
