@@ -5,8 +5,9 @@ package sk.cestaplus.cestaplusapp.extras;
  */
 public interface Constants {
     // job constants
-    int UPDATE_JOB_ID = 55;
-    int UPDATE_PERIOD_MIN = 60; // time between automatic updates of articles list
+    String UPDATE_JOB_TAG = "update_job";
+    int UPDATE_PERIOD_MIN = 4 * 60; // 60 time between automatic updates of articles list
+    int UPDATE_PERIOD_SEC = 20; // time between automatic updates of articles list
 
     //other constants
     int ART_NUM = 20; //number of articles per page

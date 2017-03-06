@@ -34,6 +34,7 @@ import sk.cestaplus.cestaplusapp.listeners.CustomRecyclerViewClickHandler;
 import sk.cestaplus.cestaplusapp.utilities.Util;
 
 import static java.lang.System.currentTimeMillis;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_BATERKA_SECTION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_LAST_TRY_TIME;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLES_ALL;
@@ -259,7 +260,7 @@ public class AllFragment
         //articlesAll.addAll(listArticles);
 
         ArticleObj headerArticle = getHeaderArticle(responseCrate.getHeaderArticleId());
-        if (listener != null) {
+        if (listener != null & headerArticle != null) {
             listener.showHeaderArticle(headerArticle);
         }
 
@@ -280,11 +281,16 @@ public class AllFragment
     public ArticleObj getFirtsNonBaterkaArticleObj() {
 
         for (ArticleObj article : articlesAll) {
-            if (!article.getSection().equalsIgnoreCase("baterka")){
+            if (!article.getSection().equalsIgnoreCase(KEY_BATERKA_SECTION)){
                 return article;
             }
         }
-        return articlesAll.get(0);
+
+        if (!articlesAll.isEmpty()){
+            return articlesAll.get(0);
+        }
+
+        return null;
     }
 
     @Override

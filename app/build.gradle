@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "sk.cestaplus.cestaplusapp"
         minSdkVersion 14
@@ -37,7 +37,7 @@ android {
         // about shrinking: https://developer.android.com/studio/build/shrink-code.html
         // debug / tests - false
         // production APK build - true
-        // Enabling proguard can cause  exception in initializer error
+        // Enabling proguard can cause exception in initializer error
         // http://stackoverflow.com/questions/3375810/exception-in-initializer-error
         // - so keep it OFF for now
         release {
@@ -50,15 +50,23 @@ android {
 }
 
 dependencies {
-    //compile fileTree(include: ['*.jar'], dir: 'libs')
-
     compile 'org.jsoup:jsoup:1.10.2'
 
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.mcxiaoke.volley:library:1.0.19'
-    compile 'me.tatarka.support:jobscheduler:0.1.1'
+    //compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.android.volley:volley:1.0.0'
+
+    //for job scheduling - automatic updates
+    compile 'com.firebase:firebase-jobdispatcher:0.5.2'
+    /*compile ('com.firebase:firebase-jobdispatcher:0.5.2'){
+        exclude module: 'com.android.support'
+    }*/
+
+    //compile 'me.tatarka.support:jobscheduler:0.1.1'
     //compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.google.android.gms:play-services:10.2.0'
+
+    // for ADS
+    compile 'com.google.android.gms:play-services-ads:10.2.0'
+    //compile 'com.google.firebase:firebase-ads:10.2.0'
 
     // for using custom fonts
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
@@ -67,6 +75,7 @@ dependencies {
     // SOURCES: https://inthecheesefactory.com/blog/android-design-support-library-codelab/en
     //          https://github.com/nuuneoi/Lab-Android-DesignLibrary
     compile 'com.android.support:design:23.4.0'
+    //compile 'com.android.support:appcompat-v7:23.4.0'
 
     // Text wiew with transparent text and plain color back ground
     // SOURCE: http://stackoverflow.com/questions/19974078/android-transparent-text
@@ -91,3 +100,5 @@ dependencies {
     // https://developer.android.com/studio/build/multidex.html
     compile 'com.android.support:multidex:1.0.1'
 }
+
+//apply plugin: 'com.google.gms.google-services'
