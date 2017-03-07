@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -60,8 +61,11 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 //static imports
+import static sk.cestaplus.cestaplusapp.extras.Constants.DELAY_TO_START_ACTIVITY_MILLIS;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.AEC_OK;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_ARTICLE_URL;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_BATERKA;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_TEXT_SIZE;
@@ -69,8 +73,6 @@ import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_ARTICLE_ERROR_COD
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_SCROLL_PERC;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_OBJ;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_TEXT;
-
-
 
 /**
  * Created by Matej on 19. 3. 2015.
@@ -113,6 +115,7 @@ public class ArticleActivity
     private NestedScrollView nestedScrollView;
     private TextView tvDate;
     private WebView webView;
+    private Button btnShowComments;
 
     // alert locked
     private LinearLayout llAlertLocked;
@@ -276,6 +279,24 @@ public class ArticleActivity
         nestedScrollView = (NestedScrollView) findViewById(R.id.nestedScrollViewArticle);
         tvDate = (TextView) findViewById(R.id.tvDateArticle);
         webView = (WebView) findViewById(R.id.webViewArticle);
+        btnShowComments = (Button) findViewById(R.id.btnShowCommentsArticle);
+
+        btnShowComments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Intent intent = new Intent(getApplicationContext(), FacebookCommentsActivity.class);
+                intent.putExtra(KEY_INTENT_ARTICLE_URL, articleText.getUrl());
+
+                // delay the start of ArticleActivity because of onClick animation
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(intent);
+                    }
+                }, DELAY_TO_START_ACTIVITY_MILLIS);
+            }
+        });
 
         // alert locked
         llAlertLocked = (LinearLayout) findViewById(R.id.alert_locked_layout);

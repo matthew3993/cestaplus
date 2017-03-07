@@ -12,16 +12,19 @@ import com.firebase.jobdispatcher.Trigger;
 import sk.cestaplus.cestaplusapp.services.UpdateService;
 import sk.cestaplus.cestaplusapp.utilities.CustomNotificationManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
-import sk.cestaplus.cestaplusapp.utilities.Util;
 
+import static sk.cestaplus.cestaplusapp.extras.Constants.EXECUTION_WINDOW_WIDTH_SEC;
 import static sk.cestaplus.cestaplusapp.extras.Constants.UPDATE_JOB_TAG;
-import static sk.cestaplus.cestaplusapp.extras.Constants.UPDATE_PERIOD_MIN;
 import static sk.cestaplus.cestaplusapp.extras.Constants.UPDATE_PERIOD_SEC;
 
 /**
  * Created by matth on 06.03.2017.
+ *
  * Problem with context SOURCE:
  * http://stackoverflow.com/questions/36817412/singleton-with-context-as-a-variable-memory-leaks
+ *
+ * Firebase JobDispatcher SOURCE:
+ * https://github.com/firebase/firebase-jobdispatcher-android#user-content-firebase-jobdispatcher-
  */
 public class CustomJobManager {
 
@@ -42,7 +45,7 @@ public class CustomJobManager {
         return instance;
     }
 
-    public void constructUpdateJob(){
+    public void constructAndSheduleUpdateJob(){
 
         // check is needed also here, due to delay of Handler in onCreate()
         if (session.getPostNotificationStatus()) { //if notifications are on
@@ -50,30 +53,24 @@ public class CustomJobManager {
             //  1 - Create a new dispatcher using the Google Play driver.
             FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
 
+            // 2 - set job properties
             Job updateJob = dispatcher.newJobBuilder()
                     .setService(UpdateService.class) // the JobService that will be called
-                    .setTag(UPDATE_JOB_TAG)        // uniquely identifies the job
+                    .setTag(UPDATE_JOB_TAG)          // uniquely identifies the job
                     .setRecurring(true)
-                    .setTrigger(Trigger.executionWindow(Math.round((float) UPDATE_PERIOD_MIN / 2), UPDATE_PERIOD_MIN)) // in seconds
-                    //.setPeriodic(UPDATE_PERIOD_MIN * 60 * 1000); // in miliseconds
-                    .setLifetime(Lifetime.FOREVER)
+                    .setTrigger(Trigger.executionWindow(UPDATE_PERIOD_SEC - EXECUTION_WINDOW_WIDTH_SEC, UPDATE_PERIOD_SEC)) // in seconds
+                    .setLifetime(Lifetime.FOREVER)   // job WILL persist past a device reboot
                     .setConstraints(
-                            Constraint.ON_ANY_NETWORK
+                            Constraint.ON_ANY_NETWORK // run only if there is network connection (of any type)
                     )
                     .setReplaceCurrent(true) // overwrite an existing job with the same tag
                     .build();
 
-            //2 - nastavenie vlastností Jobu
-            //builder.setPeriodic(UPDATE_PERIOD_MIN * 60 * 1000); // in miliseconds
-            //builder.setPeriodic(60*1000); //1 min
-            //builder.setPersisted(true);
-            //builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-
-            //3 - schedule Job
+            // 3 - schedule Job
             dispatcher.mustSchedule(updateJob);
 
-            //4 - (optional) info notification
-            CustomNotificationManager.issueNotification("Job scheduled", 3); // naplánovanie id = 3
+            // 4 - (optional) post info notification
+            CustomNotificationManager.issueNotification("Job scheduled", 3); // scheduling id = 3
         }
     }
 
@@ -84,8 +81,9 @@ public class CustomJobManager {
     }
 
     /*
-    OLD CODE
+    OLD IMPLEMENTANTION
     USING: //compile 'me.tatarka.support:jobscheduler:0.1.1'
+    DON'T forget changes in AndroidManifest
 
     private void constructJob(){
 

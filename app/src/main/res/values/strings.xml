@@ -25,6 +25,8 @@
     <string name="title_activity_oportali">O portáli</string>
     <string name="title_activity_not_logged">NotLoggedActivity</string>
     <string name="title_activity_logged">LoggedActivity</string>
+    <string name="title_facebook_comments">Komentáre</string>
+
 
     <!-- VOLLEY & NETWORK ERROR MESSAGES -->
     <string name="no_connection_err_msg">Nie ste pripojený k sieti!</string>
@@ -55,6 +57,9 @@
     <string name="tryAgain">Skúsiť znova</string>
 
     <string name="not_logged_user">Neprihlásený používateľ</string>
+
+    <!-- ARTICLE ACTIVITY -->
+    <string name="show_comments">Zobraziť komentáre</string>
 
     <!-- BATERKA TITLES -->
     <string name="meditationTitle">zamyslenie</string>

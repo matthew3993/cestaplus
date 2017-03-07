@@ -23,6 +23,7 @@ import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.EMAIL_OR_PASSWORD_MIS
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.JSON_ERROR;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.SERVER_INTERNAL_ERROR;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.WRONG_EMAIL_OR_PASSWORD;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.DEFAULT_URL;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_APY_KEY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARRAY_ARTICLE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_AUTOR_OBJ;
@@ -45,6 +46,7 @@ import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SECTION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SHORT_TEXT;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_TEXT;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_TITLE;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_URL;
 
 /**
  * Created by Matej on 26. 5. 2015.
@@ -323,6 +325,7 @@ public class Parser {
             String short_text;
             String autor;
             String text;
+            String url;
 
             try {
                 // kontrola short_text
@@ -346,7 +349,14 @@ public class Parser {
                     text = "<p>Chyba txt<p>"; // ak JSON feed nie je v poriadku, nastavi sa tato hodnota
                 }
 
-                articleTextTemp = new ArticleText(short_text, autor, text);
+                //kontrola text
+                if (contains(response, KEY_URL)) {
+                    url = response.getString(KEY_URL);
+                } else {
+                    url = DEFAULT_URL; // ak JSON feed nie je v poriadku, nastavi sa tato hodnota
+                }
+
+                articleTextTemp = new ArticleText(short_text, autor, text, url);
 
             } catch (JSONException jsonEx) {
                 Toast.makeText(CustomApplication.getCustomAppContext(), "CHYBA JSON PARSOVANIA" + jsonEx.getMessage(), Toast.LENGTH_LONG).show();
@@ -359,7 +369,7 @@ public class Parser {
         }
 
         if (articleTextTemp == null) { //osetrenie, aby sa nikdy nevratilo null
-            return new ArticleText("Chyba short_textu", "Chyba autora", "<p>Chyba textu<p>");
+            return new ArticleText("Chyba short_textu", "Chyba autora", "<p>Chyba textu<p>", DEFAULT_URL);
         } else {
             return articleTextTemp;
         }

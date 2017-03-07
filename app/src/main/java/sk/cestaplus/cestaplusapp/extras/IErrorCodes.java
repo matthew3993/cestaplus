@@ -3,12 +3,12 @@ package sk.cestaplus.cestaplusapp.extras;
 /**
  * Created by matth on 18.02.2017.
  */
-
 public interface IErrorCodes {
     //ROLE CODES
     int ROLE_DEFAULT_VALUE = 50;
     int ROLE_NOT_LOGGED = 0;
-    int ROLE_LOGGED = 1;    // we CAN use role > 0 check to see if user is logged in
+    int ROLE_LOGGED = 1;    // we CAN use role > 0 check to see if user is logged in //RENAME TO: ROLE_LOGGED_SUBSCRIPTION_OK
+    int ROLE_LOGGED_SUBSCRIPTION_EXPIRED = 2; // not use for now
 
     // LOGIN error codes
     int LOGIN_SUCCESSFUL = 0;

@@ -31,6 +31,7 @@ public interface IKeys {
     String KEY_INTENT_EXTRA_BATERKA = "baterka_intent";
     String KEY_INTENT_LOAD_BATERKA_ON_TODAY = "baterka_intent";
     String KEY_INTENT_FROM_NOTIFICATION = "fromNotification";
+    String KEY_INTENT_ARTICLE_URL = "article_url";
 
     //fragment parameters
     String KEY_ROLE = "role";
@@ -56,6 +57,8 @@ public interface IKeys {
     //articleText
     String KEY_AUTOR_TEXT = "author";
     String KEY_TEXT = "text";
+    String KEY_URL = "url";
+    String DEFAULT_URL = "http://www.cestaplus.sk/cestaplus/clanok/2017-03-06-ako-si-upevnit-vztah-so-straznym-anjelom";
 
     //baterka
     String KEY_COORDINATES = "coordinates";

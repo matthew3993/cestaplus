@@ -104,7 +104,7 @@ public class UpdateTask
         String retID;
 
         try {
-            CustomNotificationManager.issueNotification("Try to update...", 1); // test notification
+            CustomNotificationManager.issueNotification("Try to update... - " + issueNotification, 1); // test notification
 
             JSONObject response = Requestor.sendUpdateRequest(requestQueue); // 1 - send request - this method throws exceptions
 

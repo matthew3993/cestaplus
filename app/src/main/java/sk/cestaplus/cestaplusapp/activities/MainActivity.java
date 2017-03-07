@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -47,7 +46,6 @@ import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
-import sk.cestaplus.cestaplusapp.utilities.Util;
 import sk.cestaplus.cestaplusapp.utilities.navDrawer.NavigationalDrawerPopulator;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.CustomJobManager;
@@ -56,7 +54,6 @@ import sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static sk.cestaplus.cestaplusapp.extras.Constants.UPDATE_PERIOD_MIN;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_DEFAULT_VALUE;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_FROM_NOTIFICATION;
@@ -140,14 +137,19 @@ public class MainActivity
         } else {
             //new start of application
             if (session.getPostNotificationStatus()){ //if notifications are on
-                //create a job
+                // create an update job
+                // now using FirebaseJobDispatcher it is not needed to delay the scheduling of job,
+                // because in time when job is built, job is not executed - only scheduled to be executed in future
+                customJobManager.constructAndSheduleUpdateJob();
+                /*
                 new Handler().postDelayed(new Runnable() {
                                               @Override
-                                              public void run() { customJobManager.constructUpdateJob(); }
+                                              public void run() { customJobManager.constructAndSheduleUpdateJob(); }
                                           },
                         //DELAY
                         //(UPDATE_PERIOD_MIN/2)*60*1000); //half from update period
-                        20*1000); //30 seconds
+                        CREATE_JOB_DELAY_SEC*1000); //30 seconds
+                */
             }
 
         } //end else savedInstanceState
@@ -564,7 +566,7 @@ public class MainActivity
 
             if (session.getPostNotificationStatus()){
                 // notifications are now allowed - construct JOB
-                customJobManager.constructUpdateJob();
+                customJobManager.constructAndSheduleUpdateJob();
                 Toast.makeText(this, R.string.notifications_allowed, Toast.LENGTH_SHORT).show();
 
             } else {
