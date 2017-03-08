@@ -7,8 +7,8 @@ android {
         applicationId "sk.cestaplus.cestaplusapp"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 9
-        versionName "alpha 1.43"
+        versionCode 10
+        versionName "alpha 1.44"
 
         //https://developer.android.com/studio/build/multidex.html
         multiDexEnabled true
@@ -27,9 +27,13 @@ android {
         main {
             res.srcDirs = [
                     'src/main/res',
+                    'src/main/res/layout/activities_layout',
                     'src/main/res/layout/article_recycler_view',
+                    'src/main/res/layout/fragments_layout',
+                    'src/main/res/layout/navigational_drawer',
                     'src/main/res/layout/old_design',
-                    'src/main/res/layout/navigational_drawer'
+                    'src/main/res/values/strings',
+                    'src/main/res/values/styles'
             ]
         }
     }

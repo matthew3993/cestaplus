@@ -40,7 +40,8 @@ public class FacebookCommentsActivity
     private FrameLayout mContainer;
     private ProgressBar progressBar;
     boolean isLoading;
-    private WebView mWebviewPop;
+
+    private WebView mWebviewPop; //login webview
 
     //private String postUrl = "https://www.zilinak.sk/prispevky/5951/neodohrate-derby-v-martine-skontumovali-50-v-prospech-mshk-zilina";
     private String postUrl;// = "http://www.cestaplus.sk/cestaplus/clanok/2017-03-06-ako-si-upevnit-vztah-so-straznym-anjelom";
