@@ -1,0 +1,22 @@
+/*SOURCE: http://stackoverflow.com/questions/3900658/how-to-change-font-face-of-webview-in-android */
+@font-face {
+    font-family: 'LatoLatinWeb';
+    src: url("file:///android_asset/fonts/LatoLatin-Regular.ttf")
+}
+
+@font-face {
+    font-family: 'LatoLatinWebBlack';
+    src: url("file:///android_asset/fonts/LatoLatin-Black.ttf")
+}
+
+/*font-size specified programatically acording to actual settings (small, normal, big text size)*/
+p {
+	font-family: "LatoLatinWeb"; 
+	color: #3b454a;
+	line-height: 1.42857143;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
