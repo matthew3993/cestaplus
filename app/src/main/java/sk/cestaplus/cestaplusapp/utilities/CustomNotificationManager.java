@@ -28,7 +28,7 @@ public class CustomNotificationManager {
         builder.setAutoCancel(true);
         builder.setContentTitle("cesta+");
         builder.setContentText(text);
-        builder.setSmallIcon(R.drawable.notif_icon_5);
+        builder.setSmallIcon(R.drawable.notification_icon);
         //builder.setLargeIcon(BitmapFactory.decodeFile("new_icon.png"));
         /*builder.setLargeIcon(BitmapFactory.decodeResource(Context.getResources(),
                 R.drawable.new_icon));*/
