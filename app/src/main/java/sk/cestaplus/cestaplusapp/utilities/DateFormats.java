@@ -19,6 +19,5 @@ public class DateFormats {
     public static DateFormat dateFormatDay = new SimpleDateFormat("d.");
     public static DateFormat dateFormatYear = new SimpleDateFormat("yyyy");
 
-    //public static DateFormat dateFormatAPP = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static DateFormat dateFormatAPI = new SimpleDateFormat("yyyy-MM-dd%HH:mm:ss");
 }

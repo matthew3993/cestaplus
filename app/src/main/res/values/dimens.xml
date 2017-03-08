@@ -126,6 +126,10 @@
     <dimen name="article_font_size_normal">18px</dimen>
     <dimen name="article_font_size_small">14px</dimen>
 
+    <dimen name="btn_show_comments_heigth">70dp</dimen>
+    <dimen name="btn_show_comments_text_size">17sp</dimen>
+    <dimen name="btn_show_comments_margin">5dp</dimen>
+
     <dimen name="alert_locked_layout_padding">40dp</dimen>
     <dimen name="alert_locked_text_margin_top">10dp</dimen>
     <dimen name="alert_locked_button_padding">15dp</dimen>

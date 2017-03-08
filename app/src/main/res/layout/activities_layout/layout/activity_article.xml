@@ -185,6 +185,17 @@
 
             <include layout="@layout/alert_locked" />
 
+
+            <Button
+                android:id="@+id/btnShowCommentsArticle"
+                style="@style/btn_show_comments_style"
+
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/btn_show_comments_heigth"
+
+                android:visibility="gone"
+                />
+
             <com.google.android.gms.ads.AdView
                 ads:adSize="BANNER"
                 ads:adUnitId="ca-app-pub-1436124006395902/9227313475"
