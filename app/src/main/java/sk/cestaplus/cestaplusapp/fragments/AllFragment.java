@@ -251,9 +251,10 @@ public class AllFragment
     public void onArticlesLoaded(ResponseCrate responseCrate) {
         // !!!!!!!!! TODO: solve memory problem with paging !!!
 
-        //stop refreshing or loading animation -- important!
+        // 1. make UI changes = stop refreshing or loading animation -- important!
         stopLoadingOrRefreshingAnimation();
 
+        // 2. logic
         articlesAll = responseCrate.getArticles();
         // if we don't want to change the reference
         //articlesAll.clear();
@@ -323,11 +324,12 @@ public class AllFragment
     }
 
     private void stopLoadingOrRefreshingAnimation() {
-        //stop refreshing or loading animation -- important!
+        //stop refreshing animation
         if (listener != null) {
             listener.stopRefreshingAnimation();
         }
 
+        //stop loading animation
         progressBar.setVisibility(View.GONE); //this should automatically stop animation (based on visibility state of the progress bar)
     }
 

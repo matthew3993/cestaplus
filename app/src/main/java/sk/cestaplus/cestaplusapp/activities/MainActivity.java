@@ -395,7 +395,7 @@ public class MainActivity
         }
 
         if (fragment instanceof SectionFragment){
-            ((SectionFragment) fragment).tryLoadArticles();
+            ((SectionFragment) fragment).tryLoadArticles(true); // true = yes, show loading animation (indeterminate progress bar)
         }
     }
 
@@ -433,8 +433,11 @@ public class MainActivity
 
         if(fragment instanceof AllFragment){
             ((AllFragment) fragment).startRefresh();
+
         } else if (fragment instanceof SectionFragment){
-            ((SectionFragment) fragment).tryLoadArticles();
+            // false = do NOT show loading animation (indeterminate progress bar) - because of refresh// animation
+            ((SectionFragment) fragment).tryLoadArticles(false);
+
         } else {
             stopRefreshingAnimation();
         }

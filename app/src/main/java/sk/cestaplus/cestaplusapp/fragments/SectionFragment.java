@@ -128,7 +128,7 @@ public class SectionFragment
 
         } else {
             //new start of activity
-            tryLoadArticles();
+            tryLoadArticles(true); // true = yes, show loading animation (indeterminate progress bar)
         } //end else savedInstanceState
 
         recyclerViewSection.setAdapter(arvaSection); //set adapter
@@ -223,11 +223,13 @@ public class SectionFragment
 
     // region LOAD & SHOW ARTICLES of selected section
 
-    public void tryLoadArticles(){
+    public void tryLoadArticles(boolean showLoadingAnimation){
         tvVolleyErrorSection.setVisibility(View.GONE);
         ivRefresh.setVisibility(View.GONE);
 
-        startLoadingAnimation();
+        if (showLoadingAnimation) {
+            startLoadingAnimation();
+        }
 
         loadArticles(); //creates listeners and sends the request
     }
@@ -269,14 +271,10 @@ public class SectionFragment
     }
 
     private void onResponse(JSONObject response) {
-        //make UI changes
-        hideErrorAndLoadingViews();
-        if (listener != null) {
-            listener.stopRefreshingAnimation();
-        }
-        recyclerViewSection.setVisibility(View.VISIBLE);
+        // 1. make UI changes = stop refreshing or loading animation and hide error views
+        makeUIChangesAfterLoadingArticles(); //similar to 'stopLoadingOrRefreshingAnimation()' in AllFragment
 
-        // logic
+        // 2. logic
         ResponseCrate responseCrate = Parser.parseJsonObjectResponse(response);
 
         articlesOfSection = responseCrate.getArticles();
@@ -295,6 +293,20 @@ public class SectionFragment
         progressBar.setVisibility(View.VISIBLE);
         //progressBar.setIndeterminate(true); // we don't need this, because we set indeterminateOnly="true" in layout
     }
+
+    private void makeUIChangesAfterLoadingArticles() {
+        // stop loading animation and hide error views
+        hideErrorAndLoadingViews();
+
+        //stop refreshing animation
+        if (listener != null) {
+            listener.stopRefreshingAnimation();
+        }
+
+        //show recycle view
+        recyclerViewSection.setVisibility(View.VISIBLE);
+    }
+
 
     private void hideErrorAndLoadingViews() {
         progressBar.setVisibility(View.GONE); //this should automatically stop animation (based on visibility state of the progress bar)
@@ -315,7 +327,7 @@ public class SectionFragment
         ivRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tryLoadArticles();
+                tryLoadArticles(true); // true = yes, show loading animation (indeterminate progress bar)
             }
         });
     }
