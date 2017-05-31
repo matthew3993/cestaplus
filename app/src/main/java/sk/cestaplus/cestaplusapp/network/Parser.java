@@ -10,10 +10,13 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 
+import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.objects.ArticleText;
 import sk.cestaplus.cestaplusapp.objects.BaterkaText;
+import sk.cestaplus.cestaplusapp.objects.UserInfo;
 import sk.cestaplus.cestaplusapp.utilities.ResponseCrate;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.DateFormats;
@@ -24,7 +27,7 @@ import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.JSON_ERROR;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.SERVER_INTERNAL_ERROR;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.WRONG_EMAIL_OR_PASSWORD;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.DEFAULT_URL;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_APY_KEY;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_API_KEY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARRAY_ARTICLE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_AUTOR_OBJ;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_AUTOR_TEXT;
@@ -38,12 +41,17 @@ import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_HINT;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ID;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_IMAGE_URL;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_LOCKED;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_NAME;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PUB_DATE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_QUOTE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_QUOTE_AUTHOR;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SCRIPTURE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SECTION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SHORT_TEXT;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SUBSCRIPTION_END;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SUBSCRIPTION_NAME;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SUBSCRIPTION_START;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SURNAME;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_TEXT;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_TITLE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_URL;
@@ -396,9 +404,9 @@ public class Parser {
     public static String parseAPI_key(JSONObject response) {
         String API_key = "NA";
         try {
-            //kontrola API_key
-            if (response.has(KEY_APY_KEY) && !response.isNull(KEY_APY_KEY)) {
-                API_key = response.getString(KEY_APY_KEY);
+            //parse API_key
+            if (response.has(KEY_API_KEY) && !response.isNull(KEY_API_KEY)) {
+                API_key = response.getString(KEY_API_KEY);
             }
 
         } catch (JSONException e) {
@@ -407,26 +415,74 @@ public class Parser {
         return API_key;
     }
 
+    public static UserInfo parseUserInfo(JSONObject response) {
+        String name = "name";
+        String surname = "surname";
+        String subscription_start_string = "subscription_start";
+        String subscription_end_string = "subscription_end";
+        String subscription_name = "subscription_name";
+
+        Date subscription_start = new Date();
+        Date subscription_end = new Date();
+
+        try {
+            //parse name
+            if (contains(response, KEY_NAME)) {
+                name = response.getString(KEY_NAME);
+            }
+
+            //parse surname
+            if (contains(response, KEY_SURNAME)) {
+                surname = response.getString(KEY_SURNAME);
+            }
+
+            //parse subscription_start String
+            if (contains(response, KEY_SUBSCRIPTION_START)) {
+                subscription_start_string = response.getString(KEY_SUBSCRIPTION_START);
+            }
+
+            //parse subscription_end String
+            if (contains(response, KEY_SUBSCRIPTION_END)) {
+                subscription_end_string = response.getString(KEY_SUBSCRIPTION_END);
+            }
+
+            //parse subscription_name
+            if (contains(response, KEY_SUBSCRIPTION_NAME)) {
+                subscription_name = response.getString(KEY_SUBSCRIPTION_NAME);
+            }
+
+            subscription_start = DateFormats.dateFormatJSON.parse(subscription_start_string);
+            subscription_end = DateFormats.dateFormatJSON.parse(subscription_end_string);
+
+        } catch (JSONException e) {
+            Toast.makeText(CustomApplication.getCustomAppContext(), "Chyba parsovania UserInfo!", Toast.LENGTH_LONG).show();
+        } catch (ParseException pEx){
+            Log.e("error", "CHYBA PARSOVANIA DATUMU" + pEx.getMessage());
+        }
+
+        return new UserInfo(name, surname, subscription_start, subscription_end, subscription_name);
+    }
+
     public static void handleLoginError(int errorCode){
         switch (errorCode){
-            case EMAIL_OR_PASSWORD_MISSING:{ // 0
-                Toast.makeText(CustomApplication.getCustomAppContext(), "Chýba email alebo heslo!", Toast.LENGTH_LONG).show();
+            case EMAIL_OR_PASSWORD_MISSING:{ // 11
+                Toast.makeText(CustomApplication.getCustomAppContext(), R.string.email_or_password_missing_error, Toast.LENGTH_LONG).show();
                 break;
             }
-            case WRONG_EMAIL_OR_PASSWORD:{ //
-                Toast.makeText(CustomApplication.getCustomAppContext(), "Nesprávny email alebo heslo!", Toast.LENGTH_LONG).show();
+            case WRONG_EMAIL_OR_PASSWORD:{ //12
+                Toast.makeText(CustomApplication.getCustomAppContext(), R.string.wrong_email_or_password_error, Toast.LENGTH_LONG).show();
                 break;
             }
-            case SERVER_INTERNAL_ERROR:{
-                Toast.makeText(CustomApplication.getCustomAppContext(), "Chyba na strane servera! Skúste sa, prosím, prihlásiť neskôr.", Toast.LENGTH_LONG).show();
+            case SERVER_INTERNAL_ERROR:{ //13
+                Toast.makeText(CustomApplication.getCustomAppContext(), R.string.server_internal_error, Toast.LENGTH_LONG).show();
                 break;
             }
             case JSON_ERROR:{
-                Toast.makeText(CustomApplication.getCustomAppContext(), "Chyba parsovania!", Toast.LENGTH_LONG).show();
+                Toast.makeText(CustomApplication.getCustomAppContext(), R.string.json_parsing_error, Toast.LENGTH_LONG).show();
                 break;
             }
             default: {
-                Toast.makeText(CustomApplication.getCustomAppContext(), "Chyba parsovania!", Toast.LENGTH_LONG).show();
+                Toast.makeText(CustomApplication.getCustomAppContext(), R.string.parsing_error, Toast.LENGTH_LONG).show();
                 break;
             }
         } // end switch

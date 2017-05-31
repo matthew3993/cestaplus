@@ -22,6 +22,7 @@ import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.Requestor;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.CustomNotificationManager;
+import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.ResponseCrate;
 import sk.cestaplus.cestaplusapp.utilities.MyApplication;
 import sk.cestaplus.cestaplusapp.listeners.ArticlesLoadedListener;
@@ -46,7 +47,6 @@ public class UpdateTask
 
     //data
     private ArrayList<ArticleObj> newArticles;
-    private DateFormat dateFormatAPP = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //dates format
     private boolean loadingError = false;
 
     //networking
@@ -104,7 +104,7 @@ public class UpdateTask
         String retID;
 
         try {
-            CustomNotificationManager.issueNotification("Try to update... - " + issueNotification, 1); // test notification
+            //CustomNotificationManager.issueNotification("Try to update... - " + issueNotification, 1); // test notification
 
             JSONObject response = Requestor.sendUpdateRequest(requestQueue); // 1 - send request - this method throws exceptions
 
@@ -126,7 +126,7 @@ public class UpdateTask
             loadingError = true;
 
         } finally {
-            retArticles = MyApplication.getWritableDatabase().getAllArticles(); //nacitanie clankov z databazy
+            retArticles = MyApplication.getWritableDatabase().getAllArticles(); //load articles from database
             retID = session.getLastHeaderArticleId();
 
             if(!newArticles.isEmpty()){ // if new articles are not empty
@@ -255,7 +255,7 @@ public class UpdateTask
 
         long defaultVal = 0;
         try {
-            defaultVal = dateFormatAPP.parse("2010-01-01 00:00:00").getTime();
+            defaultVal = DateFormats.dateFormatJSON.parse("2010-01-01 00:00:00").getTime();
 
         } catch (ParseException e) {
             e.printStackTrace();

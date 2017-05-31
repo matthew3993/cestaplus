@@ -195,7 +195,7 @@ public class BaterkaActivity
 
     private void initLayoutViews() {
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.baterkaCollapsingToolbarLayout);
-        collapsingToolbarLayout.setTitle(" ");
+        collapsingToolbarLayout.setTitle(" "); // ! empty space !
 
         appBarLayout = (AppBarLayout) findViewById(R.id.baterkaAppBarLayout);
         attrActionBarSize = Util.getActionBarSize(getApplicationContext());
@@ -340,7 +340,7 @@ public class BaterkaActivity
 
 // ======================================== OWN METHODS =====================================================================================
 
-    // region LOAD & SHOW BATERKA
+    // region LOAD & SHOW BATERKA TEXT
 
     /**
      * Starts loading animation and calls method to load baterka

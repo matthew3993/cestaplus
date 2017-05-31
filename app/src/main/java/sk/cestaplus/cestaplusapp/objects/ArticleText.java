@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 /**
  * Created by Matej on 27. 3. 2015.
+ * Naming according to API.
  */
 public class ArticleText
     implements Parcelable{

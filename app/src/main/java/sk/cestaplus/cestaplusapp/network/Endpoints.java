@@ -6,6 +6,8 @@ import java.util.Date;
 import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.MyApplication;
 
+import static sk.cestaplus.cestaplusapp.extras.Constants.ART_NUM;
+
 /**
  * Created by Matej on 27. 5. 2015.
  */
@@ -26,16 +28,16 @@ public class Endpoints {
     }
 
     /**
-     * Metóda vyskladá URL adresu update requestu.
-     * @return
+     * Builds up URL address of update request
      */
     public static String getUpdateRequestUrl(){
         Date date = MyApplication.getWritableDatabase().getFirstArticleDate();
         String lastUpdateTime = DateFormats.dateFormatAPI.format(date);
 
-        return URL_CESTA_PLUS_ANDROID + GET_NEW_ARTICLES + "?date=" + lastUpdateTime + "&limit="+20 + "&page="+1;
+        return URL_CESTA_PLUS_ANDROID + GET_NEW_ARTICLES + "?date=" + lastUpdateTime + "&limit="+ART_NUM + "&page="+1;
     }
 
+    //TODO: APIKEY in URL - WTH?!?!?!
     public static String getConcreteArticleRequestUrl(String id, boolean withPictures, String API_key) {
         int wp = 1;
         if (!withPictures){

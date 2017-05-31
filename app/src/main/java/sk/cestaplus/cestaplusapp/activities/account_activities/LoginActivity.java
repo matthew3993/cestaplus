@@ -6,16 +6,10 @@ package sk.cestaplus.cestaplusapp.activities.account_activities;
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.MainActivity;
 import sk.cestaplus.cestaplusapp.network.Parser;
-import sk.cestaplus.cestaplusapp.network.VolleySingleton;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -27,17 +21,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
+import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
+import sk.cestaplus.cestaplusapp.utilities.Util;
 
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.LOGIN_SUCCESSFUL;
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 
 
-public class LoginActivity extends Activity {
+public class LoginActivity
+    extends Activity
+    implements LoginManager.LoginManagerInteractionListener{
 
     private Button btnLogin;
     private Button btnUseAsNotLoggedIn;
@@ -46,14 +39,14 @@ public class LoginActivity extends Activity {
     private ProgressDialog pDialog;
     private SessionManager session;
 
-    private VolleySingleton volleySingleton;
+    private LoginManager loginManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //volleySingleton initialisation !!!
+        loginManager = LoginManager.getInstance(getApplicationContext()); //login manager initialisation !!
 
         // init views
         inputEmail = (EditText) findViewById(R.id.txtvNotLoggedIn);
@@ -69,7 +62,7 @@ public class LoginActivity extends Activity {
         session = new SessionManager(getApplicationContext());
 
         // Check if user is already logged in or not
-        if (session.isLoggedIn()) {
+        if (Util.isLoggedIn()) {
             launchMainActivity();            // User is already logged in. Take him to main activity
         }
 
@@ -86,7 +79,7 @@ public class LoginActivity extends Activity {
         btnUseAsNotLoggedIn.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                setUseAsNotLoggedIn();
+            setUseAsNotLoggedIn();
             }
         });
 
@@ -107,8 +100,10 @@ public class LoginActivity extends Activity {
 
         // Check for empty data in the form
         if (email.trim().length() > 0 && password.trim().length() > 0) {
-            // try to login
-            tryLogin(email, password, true); // true = remember password
+            showDialog();
+
+            // try to login - will trigger one of LoginManagerInteractionListener methods
+            loginManager.tryLogin(email, password, true, this); // true = remember password
 
         } else {
             // Prompt user to enter credentials
@@ -117,56 +112,6 @@ public class LoginActivity extends Activity {
                     .show();
         }
     }//end checkForm
-
-    private void tryLogin(final String email, final String password, final boolean remember) {
-        pDialog.setMessage(getString(R.string.login_loading_dialog_msg));
-        showDialog();
-
-        Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response){
-
-                int error_code = Parser.parseErrorCode(response);
-                hideDialog();
-
-                if (error_code == LOGIN_SUCCESSFUL){
-                    String API_key = Parser.parseAPI_key(response);
-
-                    //if (remember) {
-                        session.loginAndRememberPassword(API_key, email, password);
-                        session.setRole(ROLE_LOGGED); //app is used in LOGGED mode
-                    //} else {
-                        //session.login(API_key);
-                    //}
-
-                    //inform the user
-                    Toast.makeText(CustomApplication.getCustomAppContext(), R.string.login_successful_msg, Toast.LENGTH_LONG).show();
-
-                    launchMainActivity();
-
-                } else { //error_code != 0
-                    Parser.handleLoginError(error_code);
-                }
-
-            }//end onResponse
-        };
-
-        Response.ErrorListener errorLis = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // volley error means problem with internet connection
-                Toast.makeText(getApplicationContext(),
-                        R.string.login_connection_error, Toast.LENGTH_LONG).show();
-                hideDialog();
-            }
-        };
-
-        Map<String, String> params = new HashMap<>();
-        params.put("email", email);
-        params.put("password", password);
-
-        volleySingleton.createLoginRequestPOST(params, responseLis, errorLis);
-    }
 
     private void setUseAsNotLoggedIn() {
         session.setRole(ROLE_NOT_LOGGED); //we use app in NOT logged mode
@@ -200,5 +145,31 @@ public class LoginActivity extends Activity {
             sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
         }
         return sb.toString();
+    }
+
+    @Override
+    public void onLoginSuccessful() {
+        hideDialog();
+        launchMainActivity();
+    }
+
+    @Override
+    public void onLoginPartiallySuccessful() {
+        hideDialog();
+        launchMainActivity();
+    }
+
+    @Override
+    public void onLoginError(int error_code) {
+        hideDialog();
+        Parser.handleLoginError(error_code);
+    }
+
+    @Override
+    public void onLoginNetworkError() {
+        hideDialog();
+        // volley error means problem with internet connection
+        Toast.makeText(getApplicationContext(),
+                R.string.login_network_error, Toast.LENGTH_LONG).show();
     }
 }// end Login Activity

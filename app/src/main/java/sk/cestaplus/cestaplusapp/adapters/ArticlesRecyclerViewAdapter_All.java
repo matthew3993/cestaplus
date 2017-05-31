@@ -17,14 +17,14 @@ import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 /**
  * Created by Matej on 4.3.2015.
  */
-public class ArticleRecyclerViewAdapter_All
-    extends ArticleRecyclerViewAdapter {
+public class ArticlesRecyclerViewAdapter_All
+    extends ArticlesRecyclerViewAdapter {
 
     /**
      * Konstruktor
      * @param context
      */
-    public ArticleRecyclerViewAdapter_All(Context context, boolean hasHeader){
+    public ArticlesRecyclerViewAdapter_All(Context context, boolean hasHeader){
         super(context, hasHeader);
     }
 
@@ -148,7 +148,7 @@ public class ArticleRecyclerViewAdapter_All
         TextView author;
         TextView title;
         TextView description;
-        //ImageView image; //in abstract ArticleViewHolder in ArticleRecyclerViewAdapter
+        //ImageView image; //in abstract ArticleViewHolder in ArticlesRecyclerViewAdapter
         ImageView lockImage;
 
             public ArticleViewHolder_All(View itemView) {
@@ -168,4 +168,4 @@ public class ArticleRecyclerViewAdapter_All
             }
         } // end ArticleViewHolder
 
-}//end ArticleRecyclerViewAdapter
+}//end ArticlesRecyclerViewAdapter

@@ -27,7 +27,7 @@ import sk.cestaplus.cestaplusapp.utilities.SessionManager;
  *      http://stackoverflow.com/questions/26530685/is-there-an-addheaderview-equivalent-for-recyclerview/26573338#26573338
  *      http://takeoffandroid.com/android-customview/header-and-footer-layout-for-recylerview/
  */
-public abstract class ArticleRecyclerViewAdapter
+public abstract class ArticlesRecyclerViewAdapter
     extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     protected static final int TYPE_HEADER = 50;        // arbitrary value
@@ -50,7 +50,7 @@ public abstract class ArticleRecyclerViewAdapter
     private boolean loading; //if we are loading more data at the specified moment
     private boolean noMoreArticles; //if there are NOT more article to load
 
-    public ArticleRecyclerViewAdapter(Context context, boolean hasHeader){
+    public ArticlesRecyclerViewAdapter(Context context, boolean hasHeader){
         inflater = LayoutInflater.from(context);
         volleySingleton = VolleySingleton.getInstance(CustomApplication.getCustomAppContext());
         imageLoader = volleySingleton.getImageLoader();
@@ -227,7 +227,7 @@ public abstract class ArticleRecyclerViewAdapter
 
     /**
      * ViewHolder sa vytvori raz a drží jednotlive Views z item_view, takze ich potom netreba hladat
-     * This class is extended in ArticleRecyclerViewAdapter_All & ArticleRecyclerViewAdapter_PicturesAndTitles classes
+     * This class is extended in ArticlesRecyclerViewAdapter_All & ArticlesRecyclerViewAdapter_PicturesAndTitles classes
      */
     protected abstract class ArticleViewHolder
         extends RecyclerView.ViewHolder
@@ -299,4 +299,4 @@ public abstract class ArticleRecyclerViewAdapter
         }
     }//end of ProgressViewHolder class
 
-}//end ArticleRecyclerViewAdapter
+}//end ArticlesRecyclerViewAdapter

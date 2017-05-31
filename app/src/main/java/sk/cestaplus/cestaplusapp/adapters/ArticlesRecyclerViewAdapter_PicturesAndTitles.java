@@ -15,10 +15,10 @@ import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 /**
  * Created by Matej on 4.3.2015.
  */
-public class ArticleRecyclerViewAdapter_PicturesAndTitles
-    extends ArticleRecyclerViewAdapter {
+public class ArticlesRecyclerViewAdapter_PicturesAndTitles
+    extends ArticlesRecyclerViewAdapter {
 
-    public ArticleRecyclerViewAdapter_PicturesAndTitles(Context context, boolean hasHeader){
+    public ArticlesRecyclerViewAdapter_PicturesAndTitles(Context context, boolean hasHeader){
         super(context, hasHeader);
     }
 
@@ -127,4 +127,4 @@ public class ArticleRecyclerViewAdapter_PicturesAndTitles
 
         } // end ArticleViewHolder
 
-}//end ArticleRecyclerViewAdapter
+}//end ArticlesRecyclerViewAdapter

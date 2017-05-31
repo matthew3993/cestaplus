@@ -18,7 +18,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import sk.cestaplus.cestaplusapp.R;
-import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
+import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.SimpleDividerItemDecoration;
 import sk.cestaplus.cestaplusapp.listeners.ArticlesLoadedListener;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
@@ -45,7 +45,7 @@ public class AllFragment
     implements
         ArticlesLoadedListener,
         ListStyleChangeListener,
-        CustomRecyclerViewClickHandler.CustomRecyclerViewClickHandlerDataProvider {
+        CustomRecyclerViewClickHandler.ICustomRecyclerViewClickHandlerDataProvider {
 
     // data
     private ArrayList<ArticleObj> articlesAll;
@@ -59,7 +59,7 @@ public class AllFragment
 
     // recyclerView
     private RecyclerView recyclerViewAll;
-    private ArticleRecyclerViewAdapter arvaAll;
+    private ArticlesRecyclerViewAdapter arvaAll;
 
     // loading & error views
     private ProgressBar progressBar; //loading animation in activity, NOT in load more btn
@@ -415,7 +415,7 @@ public class AllFragment
     }
 
     @Override
-    public ArticleRecyclerViewAdapter getAdapter() {
+    public ArticlesRecyclerViewAdapter getAdapter() {
         return arvaAll;
     }
 

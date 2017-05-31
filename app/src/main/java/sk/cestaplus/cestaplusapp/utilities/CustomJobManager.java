@@ -1,4 +1,4 @@
-package sk.cestaplus.cestaplusapp.utilities.utilClasses;
+package sk.cestaplus.cestaplusapp.utilities;
 
 import android.content.Context;
 
@@ -10,8 +10,6 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 
 import sk.cestaplus.cestaplusapp.services.UpdateService;
-import sk.cestaplus.cestaplusapp.utilities.CustomNotificationManager;
-import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 
 import static sk.cestaplus.cestaplusapp.extras.Constants.EXECUTION_WINDOW_WIDTH_SEC;
 import static sk.cestaplus.cestaplusapp.extras.Constants.UPDATE_JOB_TAG;
@@ -38,6 +36,9 @@ public class CustomJobManager {
         session = new SessionManager(context);
     }
 
+    /**
+     *  About Context - check class comment.
+     */
     public static CustomJobManager getInstance(Context context){
         if (instance == null){
             instance = new CustomJobManager(context);
@@ -70,7 +71,7 @@ public class CustomJobManager {
             dispatcher.mustSchedule(updateJob);
 
             // 4 - (optional) post info notification
-            CustomNotificationManager.issueNotification("Job scheduled", 3); // scheduling id = 3
+            //CustomNotificationManager.issueNotification("Job scheduled", 3); // scheduling id = 3
         }
     }
 

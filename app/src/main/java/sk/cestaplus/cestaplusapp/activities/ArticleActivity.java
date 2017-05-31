@@ -1,6 +1,7 @@
 package sk.cestaplus.cestaplusapp.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -11,7 +12,9 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -40,7 +43,6 @@ import org.json.JSONObject;
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.account_activities.LoggedActivity;
 import sk.cestaplus.cestaplusapp.activities.account_activities.LoginActivity;
-import sk.cestaplus.cestaplusapp.activities.account_activities.NotLoggedActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.OPortaliActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.SettingsActivity;
 import sk.cestaplus.cestaplusapp.extras.IKeys;
@@ -48,7 +50,8 @@ import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.objects.ArticleText;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.utilities.CustomNotificationManager;
+import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.SectionsUtil;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.Templator;
@@ -63,9 +66,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 //static imports
 import static sk.cestaplus.cestaplusapp.extras.Constants.DELAY_TO_START_ACTIVITY_MILLIS;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.AEC_OK;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.NOTIFICATION_API_KEY_TEST;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_ARTICLE_URL;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_BATERKA;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_TEXT_SIZE;
@@ -76,10 +80,17 @@ import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_TEX
 
 /**
  * Created by Matej on 19. 3. 2015.
+ *
+ * AlertDialogs SOURCES:
+ *      Simple: http://stackoverflow.com/questions/26097513/android-simple-alert-dialog
+ *      Theme.AppCompat Exception: http://stackoverflow.com/a/30181104
+ *      TwoButtons: http://stackoverflow.com/a/8228190
  */
 public class ArticleActivity
     extends AppCompatActivity
-    implements SharedPreferences.OnSharedPreferenceChangeListener {
+    implements
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        LoginManager.LoginManagerInteractionListener {
 
     //data
     private ArticleObj articleObj;
@@ -94,7 +105,8 @@ public class ArticleActivity
 
     // utils
     private VolleySingleton volleySingleton; // networking
-    private SessionManager session;          // Session manager
+    private LoginManager loginManager;
+    private SessionManager session;
     private int role;
 
     // UI components
@@ -135,11 +147,11 @@ public class ArticleActivity
 
         // initialisations
         volleySingleton = VolleySingleton.getInstance(getApplicationContext());
+        loginManager = LoginManager.getInstance(getApplicationContext());
         articleObj = getIntent().getParcelableExtra(IKeys.KEY_INTENT_EXTRA_ARTICLE);
         parentActivity = getIntent().getExtras().getString(KEY_PARENT_ACTIVITY);
 
         session = new SessionManager(getApplicationContext());
-        role = session.getRole();
         sectionName = SectionsUtil.getSectionTitle(articleObj.getSection());
 
         initToolbar();
@@ -273,6 +285,7 @@ public class ArticleActivity
             }
         });
 
+        // adjust image height to screen height
         ImageUtil.resolveAdjustImageHeightToScreenHeight(this, nivArticleImage);
 
         // body
@@ -341,15 +354,7 @@ public class ArticleActivity
             }
 
             case R.id.account: {
-                // Session manager
-                final SessionManager session = new SessionManager(CustomApplication.getCustomAppContext());
-
-                Class classToStart;
-                if (session.isLoggedIn()) {
-                    classToStart = LoggedActivity.class;
-                } else {
-                    classToStart = NotLoggedActivity.class;
-                }
+                Class classToStart = Util.getAccountActivityToStart();
 
                 Intent intent = new Intent(getApplicationContext(), classToStart);
                 intent.putExtra(KEY_PARENT_ACTIVITY, KEY_ARTICLE_ACTIVITY);
@@ -459,7 +464,9 @@ public class ArticleActivity
     }//end loadArticle()
 
     private void onResponse(JSONObject response) {
-                // get articleErrorCode
+        role = session.getRole();
+
+        // get articleErrorCode - AEC
         if (articleObj.isLocked()){
             //in case of locked articleObj, get error code from response
             articleErrorCode = Parser.parseErrorCode(response);
@@ -469,14 +476,17 @@ public class ArticleActivity
             articleErrorCode = AEC_OK;
         }
 
-        if ((articleErrorCode > AEC_OK) && (role > 0)){
-            //user is logged in, but there is a problem with api key
-            tryRelogin(1);
+        articleText = Parser.parseArticleTextResponse(response); //parse response to articleText
 
-        } else {
-            //user is logged and there is no problem, or user is not logged
-            articleText = Parser.parseArticleTextResponse(response); //parse response to articleText
+        if ( (role == ROLE_LOGGED_SUBSCRIPTION_OK) && (articleErrorCode != AEC_OK) ){
+            // role is "subscription ok", but there is a problem with api key
+            // this means, that API_key is not valid => refresh API_key
 
+            CustomNotificationManager.issueNotification("Problem with API key: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST+1); // debug notification
+
+            loginManager.tryRelogin(1, this);
+
+        } else { //role is "subscription ok" and there is no problem, or subscription is invalid
             showArticleText();
 
             loadAd();
@@ -582,73 +592,6 @@ public class ArticleActivity
         }
     }//end loadAd()
 
-    private void tryRelogin(final int count) {
-
-        Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response){
-
-                int error_code = Parser.parseErrorCode(response);
-
-                if (error_code == 0){ //relogin succesfull
-                    //inform the user
-                    //Toast.makeText(CustomApplication.getCustomAppContext(), "Prihlásenie úspešné!", Toast.LENGTH_LONG).show();
-
-                    //parse and save new API key
-                    String API_key = Parser.parseAPI_key(response);
-                    session.setAPI_key(API_key);
-
-                    //load articleObj
-                    tryLoadArticle();
-
-                } else { //error_code != 0
-                    //TODO: check errorcodes - ak plati aj chyba pripojenia na databazu, tak upravit tento kod, aby ak nastane chyba pripojenia na databazu urobil opat reloging
-                    //relogin NOT succesfull, propable changed password or account expired
-
-                    // inform the user - show error
-                    Parser.handleLoginError(error_code);
-
-                    //logout
-                    session.logout();
-
-                    // Launch the login activity
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-
-            }//end onResponse
-        };
-
-        Response.ErrorListener errorLis = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                if (count < 4){
-                    //try to login again
-                    tryRelogin(count + 1);
-
-                } else {
-                    //unable to login for 3 times = logout and show login activity
-
-                    // inform the user - show error
-                    Toast.makeText(getApplicationContext(),
-                        "CHYBA PRIHLASOVANIA " + error.getMessage(), Toast.LENGTH_SHORT).show();
-
-                    //logout
-                    session.logout();
-
-                    // Launch the login activity
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            }
-        };
-
-        volleySingleton.createReLoginRequest(responseLis, errorLis);
-    }//end relogin
-
     // endregion
 
     // region SUPPORT METHODS
@@ -741,6 +684,100 @@ public class ArticleActivity
         }
     }//end onSharedPreferenceChanged
 
+    // region LoginManagerInterActionListener methods
+
+    @Override
+    public void onLoginSuccessful() {
+        // relogin successful - subscription still OK
+        // create new article request with NEW API_key
+        tryLoadArticle();
+    }
+
+    @Override
+    public void onLoginPartiallySuccessful() {
+        // relogin not successful - subscription has EXPIRED
+
+        //inform the user - show AlertDialog, after closing show LoggedActivity
+        // SOURCE: check class comment
+        AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.alertDialog)).create();
+        alertDialog.setTitle("Info");
+        alertDialog.setMessage(this.getString(R.string.login_partially_successful_msg));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+
+                    showArticleText();
+
+                    // start LoggedActivity
+                    Intent intent = new Intent(getApplicationContext(), LoggedActivity.class);
+                    intent.putExtra(KEY_PARENT_ACTIVITY, KEY_ARTICLE_ACTIVITY);
+                    startActivity(intent);
+                }
+            });
+        alertDialog.show();
+    }
+
+    @Override
+    public void onLoginError(int login_error_code) {
+        // case only if EMAIL_OR_PASSWORD_MISSING or WRONG_EMAIL_OR_PASSWORD
+        // probably changed password
+
+        // inform the user - show error toast
+        Parser.handleLoginError(login_error_code);
+
+        session.logout();
+
+        //inform the user - show AlertDialog, after closing show LoginActivity
+        // SOURCE: check class comment
+        AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.alertDialog)).create();
+        alertDialog.setTitle("Info");
+        alertDialog.setMessage(this.getString(R.string.relogin_wrong_password));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+
+                    // start LoginActivity
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        alertDialog.show();
+    }
+
+    @Override
+    public void onLoginNetworkError() {
+        //unable to login for 3 times
+
+        //inform the user - show AlertDialog, after closing show LoginActivity
+        // SOURCE: check class comment
+        AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.alertDialog)).create();
+        alertDialog.setTitle("Info");
+        alertDialog.setMessage(this.getString(R.string.relogin_network_or_server_error));
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        showArticleText();
+                    }
+                });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.load_again),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        tryLoadArticle();
+                    }
+                });
+        alertDialog.show();
+    }
+
+    //endregion
+
     // region private class MyWebViewClient
 
     /**
@@ -812,7 +849,7 @@ public class ArticleActivity
 
     // endregion
 
-    // region JavascriptInterface
+    // region JavascriptInterface - not used now
 
     // SOURCE: http://stackoverflow.com/a/26565217
     @JavascriptInterface

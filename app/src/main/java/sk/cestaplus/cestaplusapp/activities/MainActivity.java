@@ -1,5 +1,6 @@
 package sk.cestaplus.cestaplusapp.activities;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -45,10 +46,11 @@ import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.navDrawer.NavigationalDrawerPopulator;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
-import sk.cestaplus.cestaplusapp.utilities.utilClasses.CustomJobManager;
+import sk.cestaplus.cestaplusapp.utilities.CustomJobManager;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 import sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -79,9 +81,10 @@ public class MainActivity
 
     // utils
     private VolleySingleton volleySingleton; //networking
-    private SessionManager session; // session manager
+    private SessionManager session;
     private int role;
     private CustomJobManager customJobManager;
+    private LoginManager loginManager; // to check role
 
     // UI components
     //header article views
@@ -105,7 +108,6 @@ public class MainActivity
     private SwipeRefreshLayout swipeRefreshLayoutAll; // this one wraps entire activity layout, it wraps root coordinator layout, this one is really USED
     private SwipeRefreshLayout swipeRefreshLayoutRecyclerView; //this one is disabled - it only wraps recycler view
 
-    private ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +121,7 @@ public class MainActivity
         session = new SessionManager(getApplicationContext());
         role = session.getRole();
         customJobManager = CustomJobManager.getInstance(getApplicationContext());
+        loginManager = LoginManager.getInstance(getApplicationContext()); // to check role
 
         // init views
         initToolbar();
@@ -126,7 +129,7 @@ public class MainActivity
         initHeaderViews();
         initNavigationalDrawer();
 
-        checkRole();
+        loginManager.checkRole(this);
 
         initFragments(savedInstanceState);
 
@@ -270,36 +273,6 @@ public class MainActivity
 
     private void initNavigationalDrawer() {
         new NavigationalDrawerPopulator(this).populateSectionsExpandableList();
-    }
-
-    private void checkRole() {
-        //kontrola módu aplikácie
-        role = session.getRole();
-
-        if (role == ROLE_DEFAULT_VALUE){ //prve spustenie appky
-            // Launching the login activity
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
-            finish();
-
-        } else { //dalsie spustenia
-
-            if (role > ROLE_NOT_LOGGED) { //ak používame aplikáciu v prihlásenom móde
-
-                //TODO: kontrola prihlásenia
-                if (!session.isLoggedIn()) {// ak už nie sme prihlásení
-                    //pokus o opätovné prihlásenie
-                    // Progress dialog
-                    pDialog = new ProgressDialog(this);
-                    pDialog.setCancelable(false);
-
-                    loginTry(session.getEmail(), session.getPassword());
-                }
-
-            } //else { //ak používam aplikáciu v neprihlásenom móde == tak nič :D
-
-            //}
-        }
     }
 
     private void initFragments(Bundle savedInstanceState) {
@@ -493,65 +466,20 @@ public class MainActivity
 
     //region UTIL METHODS
 
+    /*
+    private void checkRole() {
+        //kontrola módu aplikácie
+        int role = session.getRole();
 
+        if (role == ROLE_DEFAULT_VALUE) { //for example: first app start
+            // Launching the login activity
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
 
-    private void loginTry(final String email, final String password) {
-        // Tag used to cancel the request
-        //String tag_string_req = "req_login";
-
-        pDialog.setMessage(getString(R.string.login_loading_dialog_msg));
-        showDialog();
-
-        Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response){
-
-                int error_code = Parser.parseErrorCode(response);
-
-                if (error_code == 0){
-                    String API_key = Parser.parseAPI_key(response);
-
-                    session.login(API_key);
-                    session.setRole(IErrorCodes.ROLE_LOGGED); //používame aplikáciu v prihlásenom móde
-
-                    //inform the user
-                    hideDialog();
-                    Toast.makeText(CustomApplication.getCustomAppContext(), "Prihlásenie s uloženými údajmi bolo úspešné!", Toast.LENGTH_LONG).show();
-
-                } else {
-                    hideDialog();
-                    Parser.handleLoginError(error_code);
-                }
-
-            }//end onResponse
-        };
-
-        Response.ErrorListener errorLis = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),
-                        "CHYBA PRIHLASOVANIA " + error.getMessage(), Toast.LENGTH_LONG).show();
-                hideDialog();
-            }
-        };
-
-        Map<String, String> params = new HashMap<>();
-        params.put("email", email);
-        params.put("password", password);
-
-        volleySingleton.createLoginRequestPOST(params, responseLis, errorLis);
+            finish(); // finish actual activity
+        }
     }
-
-    private void showDialog() {
-        if (!pDialog.isShowing())
-            pDialog.show();
-    }
-
-    private void hideDialog() {
-        if (pDialog.isShowing())
-            pDialog.dismiss();
-    }
-
+    */
     // endregion
 
     // region LISTENERS METHODS

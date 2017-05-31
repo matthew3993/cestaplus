@@ -30,8 +30,8 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/tvNavDrLoginStatus"
-        style="@style/nav_dr_header_login_status"
+        android:id="@+id/tvNavDrFullName"
+        style="@style/nav_dr_header_full_name"
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,6 +39,31 @@
         android:layout_below="@id/navDrHeaderLogoRelativeLayout"
 
         android:text="@string/not_logged_user"
+        />
+
+    <TextView
+        android:id="@+id/tvNavDrEmail"
+        style="@style/nav_dr_header_email"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@id/tvNavDrFullName"
+
+        android:text="@string/some_email"
+        />
+
+    <TextView
+        android:id="@+id/tvNavDrSubscriptionExpired"
+        style="@style/nav_dr_header_subscription_expired"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@id/tvNavDrEmail"
+
+        android:visibility="gone"
+        android:text="@string/subscription_expired"
         />
 
 </RelativeLayout>

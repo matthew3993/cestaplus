@@ -67,8 +67,8 @@
     <dimen name="nav_dr_header_image_height">80dp</dimen>
 
     <!-- NAV. DR. LOGIN STATUS -->
-    <dimen name="nav_dr_header_login_status_text_size">14sp</dimen>
-    <dimen name="nav_dr_header_login_status_margin_bottom">8dp</dimen>
+    <dimen name="nav_dr_header_full_name_text_size">14sp</dimen>
+    <dimen name="nav_dr_header_email_margin_bottom">12dp</dimen>
 
     <!-- DIVIDER between nav. dr. header and AnimatedExpandableListView -->
     <dimen name="nav_dr_divider_margin_top">8dp</dimen>

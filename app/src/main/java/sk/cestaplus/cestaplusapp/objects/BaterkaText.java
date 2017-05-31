@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 /**
  * Created by Matej on 27. 5. 2015.
+ * Naming according to API.
  */
 public class BaterkaText
     implements Parcelable {
@@ -21,6 +22,7 @@ public class BaterkaText
     private String depth2;
     private String depth3;
     private String tip;
+    //private String url;  // link on this article on web site //TODO: ??
 
     /**
      * Full constructor

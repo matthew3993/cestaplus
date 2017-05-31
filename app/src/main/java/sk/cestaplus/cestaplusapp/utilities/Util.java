@@ -12,13 +12,17 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.Toast;
 
-import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
-import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter_All;
-import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter_PicturesAndTitles;
+import sk.cestaplus.cestaplusapp.activities.account_activities.LoggedActivity;
+import sk.cestaplus.cestaplusapp.activities.account_activities.NotLoggedActivity;
+import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter;
+import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter_All;
+import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter_PicturesAndTitles;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
 
 import static sk.cestaplus.cestaplusapp.extras.Constants.LIST_STYLE_ALL;
 import static sk.cestaplus.cestaplusapp.extras.Constants.LIST_STYLE_PICTURES_AND_TITLES;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
 
 /**
  * Created by Matej on 30. 3. 2015.
@@ -77,18 +81,18 @@ public class Util {
         return new String[] {"Zobraziť okrem nadpisov aj popisy k článkom", "Zobraziť len nadpisy"};
     }
 
-    public static ArticleRecyclerViewAdapter getCrvaType(Context context, boolean hasHeader){
+    public static ArticlesRecyclerViewAdapter getCrvaType(Context context, boolean hasHeader){
         SessionManager session = new SessionManager(context);
 
         switch (session.getListStyle()){
             case LIST_STYLE_ALL:{ //LIST_STYLE_ALL = 0
-                return new ArticleRecyclerViewAdapter_All(context, hasHeader);
+                return new ArticlesRecyclerViewAdapter_All(context, hasHeader);
             }
             case LIST_STYLE_PICTURES_AND_TITLES:{ //LIST_STYLE_PICTURES_AND_TITLES = 1
-                return new ArticleRecyclerViewAdapter_PicturesAndTitles(context, hasHeader);
+                return new ArticlesRecyclerViewAdapter_PicturesAndTitles(context, hasHeader);
             }
             default:{
-                return new ArticleRecyclerViewAdapter_All(context, hasHeader);
+                return new ArticlesRecyclerViewAdapter_All(context, hasHeader);
             }
 
         } //end switch getListStyle()
@@ -191,6 +195,38 @@ public class Util {
      */
     public static boolean inLandscapeOrientation(Context context){
         if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static Class getAccountActivityToStart(){
+        if (isLoggedIn()) {
+            return LoggedActivity.class;
+        } else {
+            return NotLoggedActivity.class;
+        }
+    }
+
+    /**
+     * Should be used ONLY (!) when choosing right account activity to start.
+     * (LoginActivity check is exception)
+     * Warning: This method does not answer question: "Is subscription valid?"
+     */
+    public static boolean isLoggedIn(){
+        final SessionManager session = new SessionManager(CustomApplication.getCustomAppContext());
+        int role = session.getRole();
+
+        if ((role == ROLE_LOGGED_SUBSCRIPTION_OK) || (role == ROLE_LOGGED_SUBSCRIPTION_EXPIRED)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isSubscriptionValid(int role){
+        if ((role == ROLE_LOGGED_SUBSCRIPTION_OK)){
             return true;
         } else {
             return false;

@@ -7,8 +7,8 @@ android {
         applicationId "sk.cestaplus.cestaplusapp"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 10
-        versionName "alpha 1.44"
+        versionCode 11
+        versionName "alpha 1.45"
 
         //https://developer.android.com/studio/build/multidex.html
         multiDexEnabled true

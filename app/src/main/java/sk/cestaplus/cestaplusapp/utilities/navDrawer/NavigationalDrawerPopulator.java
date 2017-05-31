@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.Serializable;
@@ -21,12 +23,14 @@ import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.BaterkaActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.OPortaliActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.SettingsActivity;
-import sk.cestaplus.cestaplusapp.activities.account_activities.LoggedActivity;
-import sk.cestaplus.cestaplusapp.activities.account_activities.NotLoggedActivity;
 import sk.cestaplus.cestaplusapp.extras.Constants;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
+import sk.cestaplus.cestaplusapp.utilities.Util;
 import sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView;
 
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_LOAD_BATERKA_ON_TODAY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 
@@ -55,27 +59,66 @@ public class NavigationalDrawerPopulator {
     public void populateSectionsExpandableList(){
         SessionManager session = new SessionManager(context);
 
-    // init login status text view
-        TextView tvLoginStatus = (TextView) activity.findViewById(R.id.tvNavDrLoginStatus);
-        String text;
+    // init full name & email text views
+        TextView tvFullName = (TextView) activity.findViewById(R.id.tvNavDrFullName);
+        TextView tvEmail= (TextView) activity.findViewById(R.id.tvNavDrEmail);
 
-        if (session.isLoggedIn()){
-            text = session.getEmail();
-        } else {
-            text = context.getString(R.string.not_logged_user);
+        switch (session.getRole()){
+            case ROLE_NOT_LOGGED: {
+                tvFullName.setText(context.getString(R.string.not_logged_user));
+                tvEmail.setVisibility(View.GONE);
+                break;
+            }
+            case ROLE_LOGGED_SUBSCRIPTION_OK: {
+                tvFullName.setText(session.getFullName());
+                tvEmail.setText(session.getEmail());
+                break;
+            }
+            case ROLE_LOGGED_SUBSCRIPTION_EXPIRED: {
+                tvFullName.setText(session.getFullName());
+                tvEmail.setText(session.getEmail());
+
+                // show tvSubscriptionExpired
+                TextView tvSubscriptionExpired = (TextView) activity.findViewById(R.id.tvNavDrSubscriptionExpired);
+                tvSubscriptionExpired.setVisibility(View.VISIBLE);
+
+            // Adjust bottom margin of tvEmail
+                //SOURCES:
+                //  http://stackoverflow.com/questions/11121028/load-dimension-value-from-res-values-dimension-xml-from-source-code
+                //  http://stackoverflow.com/questions/3277196/can-i-set-androidlayout-below-at-runtime-programmatically
+
+                //Creating a new params
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );
+
+                // getDimension methods returns dimensions in PIXELS
+                int leftPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_left);
+                int topPx = 0;
+                int rightPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_right);
+                int bottomPx = (int) context.getResources().getDimension(R.dimen.nav_dr_header_full_name_margin_bottom); // CHANGE! - same as full name
+
+                params.setMargins(leftPx, topPx, rightPx, bottomPx); // in PIXELS (left, top, right, bottom);
+                params.addRule(RelativeLayout.BELOW, R.id.tvNavDrFullName); //!! don't forget to set all "layout_..." rules from xml, when creating new params ;-)
+
+                tvEmail.setLayoutParams(params);
+                //tvEmail.invalidate();
+                //tvEmail.requestLayout();
+
+                break;
+            }
+            default:{
+                tvFullName.setText(context.getString(R.string.not_logged_user));
+                tvEmail.setVisibility(View.GONE);
+            }
         }
-        tvLoginStatus.setText(text);
 
     // POPULATE LIST
         final List<GroupItem> groupItems = new ArrayList<>();
 
         // init class that have to be started for account activity
-        Class classToStart;
-        if (session.isLoggedIn()) {
-            classToStart = LoggedActivity.class;
-        } else {
-            classToStart = NotLoggedActivity.class;
-        }
+        Class classToStart = Util.getAccountActivityToStart();
 
         groupItems.add(new GroupItem(R.drawable.ic_home_black_48dp, context.getString(R.string.home),
                 new AllFragmentSwapper(activity)));

@@ -17,13 +17,20 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import sk.cestaplus.cestaplusapp.extras.IErrorCodes;
 import sk.cestaplus.cestaplusapp.network.custom_requests.JsonObjectCustomUtf8Request;
 import sk.cestaplus.cestaplusapp.network.custom_requests.JsonArrayCustomUtf8Request;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.utilities.CustomNotificationManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 
 // importy IKeys
 import static com.android.volley.Request.*;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.NOTIFICATION_API_KEY_TEST;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARAMS_API_KEY;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARAMS_EMAIL;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARAMS_PASSWORD;
 
 /**
  * Created by Matej on 3.3.2015.
@@ -120,58 +127,64 @@ public class VolleySingleton {
         mRequestQueue.add(request);
     } //end createGetArticlesObjectRequestGET
 
-// nacitavanie konkretneho clanku
-    public void createGetArticleRequest(String id, boolean locked,
-                                        Response.Listener<JSONObject> responseLis, Response.ErrorListener errLis, boolean withPictures){
 
-        if (!locked){ //nezamknuty = verejny clanok
+    /**
+     * Creates request for text of defined atricle
+     */
+    public void createGetArticleRequest(String articleId, boolean locked,
+                                        Response.Listener<JSONObject> responseLis, Response.ErrorListener errLis,
+                                        boolean withPictures){
+
+        if (!locked){ //not locked = public article
             JsonObjectRequest request = new JsonObjectRequest(
                     Method.GET,
-                    Endpoints.getConcreteArticleRequestUrl(id, withPictures, null),
+                    Endpoints.getConcreteArticleRequestUrl(articleId, withPictures, null),
                     (JSONObject) null,
                     responseLis,
                     errLis);
 
             mRequestQueue.add(request);
 
-        } else { //zamknuty  clanok
-            if (session.isLoggedIn()){ //sme prihlásení
-                //vytvorenie parametrov
+        } else { //locked article
+            if (session.getRole() == ROLE_LOGGED_SUBSCRIPTION_OK){
+                //init POST parameters
                 Map<String, String> params = new HashMap<>();
-                params.put("apikey", session.getAPI_key());
+                params.put(KEY_PARAMS_API_KEY, session.getAPI_key());
 
-                //vytvorenie requestu
+                CustomNotificationManager.issueNotification("Loading article, API_KEY: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST); // debug notification
+
+                //create request
                 JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
                         Method.POST,
-                        Endpoints.getConcreteArticleRequestUrl(id, withPictures, session.getAPI_key()),
+                        Endpoints.getConcreteArticleRequestUrl(articleId, withPictures, session.getAPI_key()),
                         params,
                         responseLis,
                         errLis);
 
                 mRequestQueue.add(request);
 
-            } else { // NIE sme prihlásení
+            } else { // Other roles
                 JsonObjectRequest request = new JsonObjectRequest(
                         Method.GET,
-                        Endpoints.getConcreteArticleRequestUrl(id, withPictures, null),
+                        Endpoints.getConcreteArticleRequestUrl(articleId, withPictures, null),
                         (JSONObject) null,
                         responseLis,
                         errLis);
 
                 mRequestQueue.add(request);
-            } // if isLoggedIn
+            } // if role == ROLE_LOGGED_SUBSCRIPTION_OK
         }// if !locked
 
     }//end createGetArticleRequest
 
-    public void createLoginRequestPOST(final Map<String, String> parametre,
+    public void createLoginRequestPOST(final Map<String, String> parameters,
                                        Response.Listener<JSONObject> responseList,
                                        Response.ErrorListener errList){
 
         JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
                 Method.POST,
                 Endpoints.getLoginUrl(),
-                parametre,
+                parameters,
                 responseList,
                 errList
         );
@@ -184,22 +197,13 @@ public class VolleySingleton {
     public void createReLoginRequest(Response.Listener<JSONObject> responseList,
                                      Response.ErrorListener errList){
 
-        //load the credentials from session
+        //load the credentials from session manager
         Map<String, String> params = new HashMap<>();
-        params.put("email", session.getEmail());
-        params.put("password", session.getPassword());
+        params.put(KEY_PARAMS_EMAIL, session.getEmail());
+        params.put(KEY_PARAMS_PASSWORD, session.getPassword());
 
-        JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
-                Method.POST,
-                Endpoints.getLoginUrl(),
-                params,
-                responseList,
-                errList
-        );
+        createLoginRequestPOST(params, responseList, errList);
 
-        request.setShouldCache(false); //disable caching!!!
-        mRequestQueue.add(request);
-
-    } //end createLoginRequestPOST
+    } //end createReLoginRequest
 
 } // end of class VolleySingleton

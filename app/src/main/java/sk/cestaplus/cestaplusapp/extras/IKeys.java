@@ -40,7 +40,7 @@ public interface IKeys {
 
     //login
     String KEY_ERROR_CODE = "error_code";
-    String KEY_APY_KEY = "API_key";
+    String KEY_API_KEY = "API_key";
 
     //articleObj
     String KEY_HEADER_ARTICLE_ID = "idTitleArticle";
@@ -70,6 +70,13 @@ public interface IKeys {
     String KEY_DEPTH_3 = "depth3";
     String KEY_HINT = "hint";
 
+    //user info - for API & session manager
+    String KEY_NAME = "name";
+    String KEY_SURNAME = "surname";
+    String KEY_SUBSCRIPTION_START = "subscription_start";
+    String KEY_SUBSCRIPTION_END = "subscription_end";
+    String KEY_SUBSCRIPTION_NAME = "subscription_name";
+
     //preferences keys
     String KEY_PREF_POST_NOTIFICATIONS = "pref_post_notifications";
     String KEY_PREF_LIST_STYLE = "pref_list_style";
@@ -85,5 +92,11 @@ public interface IKeys {
     String TAG_O_PORTALI_FRAGMENT = "AllFragment";
 
     //sections keys
+    String KEY_ALL_SECTION = "all";
     String KEY_BATERKA_SECTION = "baterka";
+
+    //HTTP request params - outgoing
+    String KEY_PARAMS_API_KEY = "apikey";
+    String KEY_PARAMS_EMAIL = "email";
+    String KEY_PARAMS_PASSWORD = "password";
 }

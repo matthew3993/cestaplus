@@ -7,6 +7,7 @@ import java.util.Date;
 
 /**
  * Created by Matej on 28.2.2015.
+ * Naming according to API.
  */
 public class ArticleObj
     implements Parcelable{

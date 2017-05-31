@@ -10,6 +10,12 @@ import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
 import android.widget.TextView;
 
+import sk.cestaplus.cestaplusapp.extras.IErrorCodes;
+import sk.cestaplus.cestaplusapp.utilities.Util;
+
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
+
 /**
  * Created by matth on 21.02.2017.
  */
@@ -100,7 +106,7 @@ public class TextUtil {
     }
 
     public static boolean showLock(int role, boolean isLocked){
-        return role == 0 && isLocked;
+        return !Util.isSubscriptionValid(role) && isLocked;
     }
 
     public static void setTextWithImageAtStart(Context context, String text, TextView textView, int drawableId) {

@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import sk.cestaplus.cestaplusapp.R;
-import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
+import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.SimpleDividerItemDecoration;
 import sk.cestaplus.cestaplusapp.extras.Constants;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
@@ -44,7 +44,7 @@ public class SectionFragment
     extends Fragment
     implements
         ListStyleChangeListener,
-        CustomRecyclerViewClickHandler.CustomRecyclerViewClickHandlerDataProvider{
+        CustomRecyclerViewClickHandler.ICustomRecyclerViewClickHandlerDataProvider {
 
     // ======================================= ATTRIBUTES ================================================================================
     // data
@@ -66,7 +66,7 @@ public class SectionFragment
     // UI components
     // data views
     private RecyclerView recyclerViewSection;
-    private ArticleRecyclerViewAdapter arvaSection; // arva = Article Recycler View Adapter
+    private ArticlesRecyclerViewAdapter arvaSection; // arva = Article Recycler View Adapter
 
     // loading & error views
     private TextView tvVolleyErrorSection; // network error
@@ -169,11 +169,13 @@ public class SectionFragment
         recyclerViewSection.addItemDecoration(new SimpleDividerItemDecoration(getActivity().getApplicationContext()));
 
         recyclerViewClickHandler = new CustomRecyclerViewClickHandler(
-                this, this, KEY_MAIN_ACTIVITY);
+                this, this,
+                sectionID, KEY_MAIN_ACTIVITY);
 
         // we have custom TOUCH listener and also custom CLICK HANDLER
         recyclerViewSection.addOnItemTouchListener(
-                new RecyclerTouchListener(getActivity().getApplicationContext(),
+                new RecyclerTouchListener(
+                        getActivity().getApplicationContext(),
                         recyclerViewSection, recyclerViewClickHandler));
 
         setRecyclerViewAdapterType();
@@ -263,7 +265,6 @@ public class SectionFragment
         };
 
         //send the request
-        //volleySingleton.createGetArticlesArrayRequestGET(sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
         volleySingleton.createGetArticlesObjectRequestGET(sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
     }
 
@@ -390,7 +391,7 @@ public class SectionFragment
     }
 
     @Override
-    public ArticleRecyclerViewAdapter getAdapter() {
+    public ArticlesRecyclerViewAdapter getAdapter() {
         return arvaSection;
     }
 
