@@ -79,6 +79,11 @@ public class DateUtil {
         return dayOfTheWeekString;
     }
 
+    /**
+     *
+     * @param date
+     * @return String of date in format: 5. februára 2017
+     */
     public static String getDateString(Context context, Date date) {
         StringBuilder sb = new StringBuilder();
         sb.append(DateFormats.dateFormatDay.format(date)).append(" ");

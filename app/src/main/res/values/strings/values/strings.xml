@@ -20,12 +20,12 @@
 
     <!-- ACTIVITY TITLES -->
     <string name="title_activity_article">ArticleActivity</string>
+    <string name="title_activity_baterka">Baterka</string>
     <string name="title_activity_section">SectionActivity</string>
     <string name="title_activity_oportali">O portáli</string>
     <string name="title_activity_not_logged">NotLoggedActivity</string>
-    <string name="title_activity_logged">LoggedActivity</string>
+    <string name="title_activity_logged">Moje konto - predplatné</string>
     <string name="title_facebook_comments">Komentáre</string>
-
 
     <!-- VOLLEY & NETWORK ERROR MESSAGES -->
     <string name="no_connection_err_msg">Nie ste pripojený k sieti!</string>
@@ -57,7 +57,6 @@
     <string name="btn_use_as_not_logged_in">Používať aplikáciu ako neprihlásený používateľ</string>
     <string name="btn_link_to_login">Already registred! Login Me.</string>
     <string name="logged_in_as">Prihlasený/á ako</string>
-    <string name="btn_logout">ODHLÁSIŤ</string>
     <string name="name">Fullname</string>
     <string name="account">Konto</string>
     <string name="tryAgain">Skúsiť znova</string>
@@ -73,6 +72,9 @@
     <string name="meditationTitle">zamyslenie</string>
     <string name="depth_title">poď na hlbinu</string>
     <string name="tip_for_you_title">tip pre teba</string>
+    <string name="ctv_1">01</string>
+    <string name="ctv_2">02</string>
+    <string name="ctv_3">03</string>
 
     <!-- NOTIFICATIONS-->
     <string name="notifications_allowed">Notifikácie povolené</string>
@@ -105,7 +107,9 @@
 
     <!-- ALERT LOCKED START ************************************* -->
     <string name="alert_locked_title">prepáčte,</string>
-    <string name="alert_locked_text">zvyšok článku je prístupný iba predplatiteľom.\nStaňte sa našim predplatiteľom a získajte aj iné výhody.</string>
+    <!-- do not make new line after '\n' character => making new line makes ' ' in real printed text! -->
+    <string name="alert_locked_text">
+        zvyšok článku je prístupný iba predplatiteľom.\nStaňte sa našim predplatiteľom a získajte aj iné výhody.</string>
     <string name="more_info_about_subscription">viac informácií o predplatnom      </string>
     <!-- ALERT LOCKED END *************************************** -->
 
@@ -124,9 +128,33 @@
     <string name="baterka_on_today">Baterka na dnes</string>
     <string name="o_portali_nav_dr">O portáli cesta+</string>
 
-    <!-- Navigational drawer END ***************************** -->
+    <!-- Navigational drawer END ******************************* -->
+
+    <!-- LOGGED activity START ***************************** -->
+    <string name="logged_act_header_title">Moje konto - predplatné</string>
+    <string name="logged_actual_status">aktuálne máš aktivované predplatné</string>
+    <string name="logged_full_name_title">Meno:</string>
+    <string name="logged_subscription_name_title">Typ predplatného:</string>
+    <string name="logged_subscription_start_title">Dátum aktivácie:</string>
+    <string name="logged_subscription_end_title">Koniec predplatného:</string>
+    <string name="logged_subscription_remaining_title">Zostáva:</string>
+    <string name="logged_thanks_for_your_support">Ďakujeme za tvoju podporu.</string>
+    <!-- do not make new line after '\n' character => making new line makes ' ' in real printed text! -->
+    <string name="logged_info_point_1_text">
+        V prípade, že ste si predplatili/predĺžili predplatné nedávno,\nnemusia byť údaje ihneď aktualizované\n(prevod bankou a overenie trvá určitý čas)
+    </string>
+    <string name="logged_info_point_2_text">
+        Prvopredplatiteľom (okrem predplatného cez SMS) sme darovali prvých 5 dní grátis\n(z dôvodu trvania prevodu a overenia, viď bod č.1)
+    </string>
+    <string name="logged_btn_prolong_subscription">Predĺžiť predplatné</string>
+    <string name="btn_logout">Odhlásiť</string>
+    <string name="logged_connection_err_msg">Chyba pri načítavaní aktuálnych údajov!\nZobrazujem naposledy načítané údaje!</string>
+    <!-- LOGGED activity END ***************************** -->
 
     <!-- TOAST's messages START ***************************** -->
-    <string name="loaded_page_num">Načítaná stránka číslo </string>
-    <!-- TOAST's messages START ***************************** -->
+    <string name="toast_loaded_page_num">Načítaná stránka číslo </string>
+    <string name="toast_logging_out">Odhlasujem…</string>
+    <!-- TOAST's messages END ******************************* -->
+
+
 </resources>

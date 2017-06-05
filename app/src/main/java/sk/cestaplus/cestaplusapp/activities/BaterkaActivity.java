@@ -187,7 +187,7 @@ public class BaterkaActivity
     //region INITIALISATION METHODS
 
     private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.mainActivityToolbar);
+        toolbar = (Toolbar) findViewById(R.id.baterkaActivityToolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //to show up arrow
@@ -216,7 +216,7 @@ public class BaterkaActivity
             }
         });
 
-        ImageUtil.resolveBaterkaAdjustImageHeightToScreenHeight(this, nivBaterkaImage); // BATERKA!!!
+        ImageUtil.resolveAdjustBaterkaImageHeightToScreenHeight(this, nivBaterkaImage); // BATERKA!!!
 
         // body
         nestedScrollView = (NestedScrollView) findViewById(R.id.nestedScrollViewBaterka);
@@ -255,6 +255,8 @@ public class BaterkaActivity
     }
 
     //endregion
+
+    // region MENU & NAVIGATION METHODS
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -318,6 +320,10 @@ public class BaterkaActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * This method implements what should happen when Up button is pressed
+     * @return
+     */
     @Override
     public Intent getSupportParentActivityIntent() {
         return getCustomParentActivityIntent();
@@ -337,6 +343,7 @@ public class BaterkaActivity
         return i;
     }
 
+    // endregion
 
 // ======================================== OWN METHODS =====================================================================================
 
@@ -451,7 +458,7 @@ public class BaterkaActivity
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + verticalOffset < attrActionBarSize + 1) {
-                    collapsingToolbarLayout.setTitle("Baterka");
+                    collapsingToolbarLayout.setTitle(getString(R.string.title_activity_baterka));
                     isShow = true;
 
                 } else if(isShow) {
@@ -510,7 +517,7 @@ public class BaterkaActivity
 
     // endregion
 
-    // TODO: similar method is in Util class
+    // TODO: similar method is in Util class - try to make changes to get only one
     public void showTextSizeDialog() {
         // Session manager
         final SessionManager session = new SessionManager(CustomApplication.getCustomAppContext());

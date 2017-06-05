@@ -25,6 +25,9 @@ public class ArticleText
     public ArticleText() {
     }
 
+    /**
+     * WARNING!: MUST same order as in 'writeToParcel()' method
+     */
     public ArticleText(Parcel in) {
         short_text = in.readString();
         author = in.readString();
@@ -53,6 +56,9 @@ public class ArticleText
         return 0;
     }
 
+    /**
+     * WARNING!: MUST same order as in 'ArticleText(Parcel in)' constructor
+     */
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(short_text);
@@ -72,4 +78,4 @@ public class ArticleText
             return new ArticleText[size];
         }
     };
-}// end AtricleText class
+}// end ArticleText class

@@ -19,6 +19,7 @@
         android:icon="@drawable/app_main_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
@@ -30,6 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.account_activities.LoginActivity"
             android:label="@string/app_name"
@@ -64,7 +66,8 @@
 
         <activity
             android:name=".activities.account_activities.LoggedActivity"
-            android:label="@string/title_activity_logged">
+            android:label="@string/title_activity_logged"
+            android:theme="@style/AppTheme.WithoutActionBar">
         </activity>
 
         <activity

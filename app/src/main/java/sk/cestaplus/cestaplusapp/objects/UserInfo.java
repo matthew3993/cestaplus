@@ -1,5 +1,8 @@
 package sk.cestaplus.cestaplusapp.objects;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
 /**
@@ -7,8 +10,13 @@ import java.util.Date;
  * Information about user loaded from API.
  * Naming according to API.
  */
-public class UserInfo {
-    private String name;
+public class UserInfo
+        implements Parcelable {
+
+    /**
+     * Only first name.
+     */
+    private String name; //Only first name
     private String surname;
     private Date subscription_start;
     private Date subscription_end;
@@ -22,12 +30,28 @@ public class UserInfo {
         this.subscription_name = subscription_name;
     }
 
+    /**
+     * WARNING!: MUST same order as in 'writeToParcel()' method
+     */
+    public UserInfo(Parcel in) {
+        this.name = in.readString();
+        this.surname = in.readString();
+        this.subscription_start = new Date(in.readLong());
+        this.subscription_end = new Date(in.readLong());
+        this.subscription_name = in.readString();
+
+    }
+
     public String getName() {
         return name;
     }
 
     public String getSurname() {
         return surname;
+    }
+
+    public String getFullName(){
+        return String.format("%s %s", name, surname);
     }
 
     public Date getSubscription_start() {
@@ -41,4 +65,33 @@ public class UserInfo {
     public String getSubscription_name() {
         return subscription_name;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    /**
+     * WARNING!: MUST same order as in 'UserInfo(Parcel in)' constructor
+     */
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(name);
+        parcel.writeString(surname);
+        parcel.writeLong(subscription_start.getTime());
+        parcel.writeLong(subscription_end.getTime());
+        parcel.writeString(subscription_name);
+    }
+
+    public static final Parcelable.Creator<UserInfo> CREATOR
+            = new Parcelable.Creator<UserInfo>() {
+
+        public UserInfo createFromParcel(Parcel in) {
+            return new UserInfo(in);
+        }
+
+        public UserInfo[] newArray(int size) {
+            return new UserInfo[size];
+        }
+    };
 }

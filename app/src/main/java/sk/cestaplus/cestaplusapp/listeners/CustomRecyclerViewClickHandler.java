@@ -10,7 +10,6 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -144,7 +143,7 @@ public class CustomRecyclerViewClickHandler
                         articlesRecyclerViewAdapter.setNoMoreArticles();
                     }
                     articles.addAll(moreArticles);
-                    Toast.makeText(fragment.getActivity().getApplicationContext(), context.getString(R.string.loaded_page_num) + " " + pagesNum, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(fragment.getActivity().getApplicationContext(), context.getString(R.string.toast_loaded_page_num) + " " + pagesNum, Toast.LENGTH_SHORT).show();
                 }
                 articlesRecyclerViewAdapter.setArticlesList(articles);
             }

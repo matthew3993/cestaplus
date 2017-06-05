@@ -10,6 +10,12 @@ import sk.cestaplus.cestaplusapp.utilities.Util;
  * Created by matth on 21.02.2017.
  */
 public class ImageUtil {
+
+    /**
+     * Adjust image size to size of the screen.
+     * Used for article header images when device is in landscape orientation (no matter screen size),
+     * or if size of screen is 'NORMAL' (both orientations).
+     */
     public static void resolveAdjustImageHeightToScreenHeight(Context context, ImageView imageView){
         if(Util.inLandscapeOrientation(context)){
             adjustImageHeightToScreenHeight(context, imageView);
@@ -24,9 +30,10 @@ public class ImageUtil {
     }
 
     /**
-     * This method is used ONLY for baterka images
+     * This method is used ONLY for baterka header images.
+     * Baterka header images are adjusted only in landscape orientation
      */
-    public static void resolveBaterkaAdjustImageHeightToScreenHeight(Context context, ImageView imageView){
+    public static void resolveAdjustBaterkaImageHeightToScreenHeight(Context context, ImageView imageView){
         if(Util.inLandscapeOrientation(context)){
             adjustImageHeightToScreenHeight(context, imageView);
             return;
@@ -35,8 +42,7 @@ public class ImageUtil {
 
     /**
      *
-     * @param context
-     * @param imageView which height will be adjusted
+     * @param imageView which height will be adjusted (no matter screen size)
      * Take a look:
      *      http://stackoverflow.com/questions/24523000/how-to-set-height-width-of-imageview-programmatically-in-android
      */

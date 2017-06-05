@@ -6,19 +6,21 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import sk.cestaplus.cestaplusapp.R;
+import sk.cestaplus.cestaplusapp.utilities.Util;
 
 /* SOURCES:
     original class CircularTextView: http://stackoverflow.com/a/34685568
-    changes in constructors: http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes
+    changes in constructors:
+        http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes - point 3.
  */
-public class CircularTextView extends TextView
+public class CircularTextView extends AppCompatTextView
 {
-    private float strokeWidth;
-    int strokeColor,solidColor;
+    private float strokeWidth; //in PIXELS = px
+    int strokeColor, solidColor;
 
     public CircularTextView(Context context) {
         super(context);
@@ -37,6 +39,17 @@ public class CircularTextView extends TextView
             // - in accepted answer in COMMENTS!!
             int defColorVal = ContextCompat.getColor(context, R.color.black);
             solidColor = ta.getColor(R.styleable.CircularTextView_solidColor, defColorVal);
+
+            int strokeColorFromAttrs = ta.getColor(R.styleable.CircularTextView_strokeColor, defColorVal);
+            if (strokeColorFromAttrs != defColorVal){ // check if strokeColor was set in xml
+                strokeColor = strokeColorFromAttrs; // set new value, only if strokeColor WAS set in xml
+            }
+
+            float defWidthVal = -5;
+            float strokeWidthDpFromAttrs = ta.getFloat(R.styleable.CircularTextView_strokeWidth, defWidthVal);
+            if (strokeWidthDpFromAttrs != defWidthVal) { // check if strokeWidth was set in xml
+                strokeWidth = Util.pxFromDp(context, strokeWidthDpFromAttrs); // set new value, only if strokeWidth WAS set in xml
+            }
         } finally {
             ta.recycle();
         }

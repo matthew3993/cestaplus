@@ -1,49 +1,488 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- NOTE: !! STYLES AND DIMENSIONS refer to Baterka styles and dimensions !! -->
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/loggedRootCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="${relativePackage}.${activityClass}" >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
+    <!-- APPBAR START ************************************************************* -->
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/loggedAppBarLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:gravity="center"
-        android:orientation="vertical" >
 
-        <TextView
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <!--
+        scroll flags combination: scroll|enterAlways|enterAlwaysCollapsed
+        SOURCE: http://stackoverflow.com/questions/35186639/collapsingtoolbarlayout-and-hide-toolbar-while-scrolling
+
+        For some reason, we must add app:statusBarScrim="@null" to CollapsingToolbarLayout, when used v4 fragments.
+        This solves crashing because of exception: "java.lang.NoSuchMethodError: No static method setLayoutDirection(Landroid/graphics/drawable/Drawable;I)V in class Landroid/support/v4/graphics/drawable/DrawableCompat; or its super classes (declaration of 'android.support.v4.graphics.drawable.DrawableCompat' appears in /data/data/sk.cestaplus.cestaplusapp/files/instant-run/dex/slice-com.android.support-support-v4-24.0.0_de8233fca3486557f0b1fc54e6082f58ad72ba11-classes.dex)"
+        SOURCE: http://stackoverflow.com/a/40453348
+        -->
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/loggedCollapsingToolbarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+
+            app:statusBarScrim="@null">
+
+            <!-- android:visibility="gone" here
+                 if it is set, show collapsing toolbar layout title ONLY when collapsed
+                 is not working
+            -->
+            <RelativeLayout
+                android:id="@+id/collapsingToolbarRelativeLayoutLogged"
+
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1"
+                android:background="@drawable/custom_bg"
+                android:clickable="true"
+
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="@dimen/baterka_title_image_collapseParallaxMultiplier"
+                >
+
+                <ImageView
+                    android:id="@+id/ivLoggedHeaderImg"
+
+                    android:src="@drawable/account_img_rsz_75"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/baterka_title_image_height"
+
+                    android:scaleType="centerCrop"
+
+                    android:layout_alignParentTop="true"
+                    />
+
+                <TextView
+                    android:id="@+id/tvLoggedTitle"
+                    style="@style/baterka_Title"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignLeft="@+id/ivLoggedHeaderImg"
+                    android:layout_alignBottom="@+id/ivLoggedHeaderImg"
+
+                    android:text="@string/logged_act_header_title"
+
+                    android:minLines="1"
+                    />
+
+                <!-- HERE can be TextView with source of photo -->
+            </RelativeLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/loggedToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+    <!-- APPBAR END *************************************************************** -->
+
+    <!-- ACTIVITY BODY START ******************************************************* -->
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nestedScrollViewLogged"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
+        android:background="@color/white"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- NETWORK ERROR START **************************************************** -->
+            <RelativeLayout
+                android:id="@+id/loggedNetworkErrorRelativeLayout"
+                style="@style/logged_NetworkErrorRelativeLayout"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerHorizontal="true"
+
+                    android:background="@drawable/error_msg_bg"
+                    >
+
+                    <TextView
+                        android:id="@+id/tvLoggedNetworkError"
+                        style="@style/logged_NetworkErrorText"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+
+                        android:text="@string/connection_error_msg"
+                        />
+
+                    <!-- icon source: https://material.io/icons/ -->
+                    <ImageView
+                        android:id="@+id/ivLoggedRefresh"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_toRightOf="@id/tvLoggedNetworkError"
+                        android:layout_centerVertical="true"
+
+                        android:src="@drawable/ic_refresh_black_48dp"
+                        />
+                </RelativeLayout>
+            </RelativeLayout>
+            <!-- NETWORK ERROR END ****************************************************** -->
+
+            <!-- OVERALL INFO START ==================================================================== -->
+            <!-- MAIN NAME START **************************************************** -->
+            <TextView
+                android:id="@+id/tvLoggedMainName"
+                style="@style/logged_MainName"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <!-- MAIN NAME END ****************************************************** -->
+
+            <!-- ACTUAL STATUS START **************************************************** -->
+            <TextView
+                android:id="@+id/tvActualStatus"
+                style="@style/logged_ActualStatus"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/logged_actual_status"/>
+            <!-- ACTUAL STATUS END ****************************************************** -->
+            <!-- OVERALL INFO END ==================================================================== -->
+
+            <!-- FULL NAME START **************************************************** -->
+
+            <!-- SOURCE:  http://stackoverflow.com/questions/5049852/android-drawing-separator-divider-line-in-layout -->
+            <View style="@style/logged_DividerFullWidth"/>
+
+            <TextView
+                android:id="@+id/tvFullNameTitle"
+                style="@style/logged_ItemTitle"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/logged_full_name_title"/>
+
+            <TextView
+                android:id="@+id/tvFullNameText"
+                style="@style/logged_ItemFullNameText"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                />
+            <!-- FULL NAME END ****************************************************** -->
+
+            <!-- SUBSCRIPTION NAME START **************************************************** -->
+
+            <!-- SOURCE:  http://stackoverflow.com/questions/5049852/android-drawing-separator-divider-line-in-layout -->
+            <View style="@style/logged_DividerFullWidth"/>
+
+            <TextView
+                android:id="@+id/tvSubscriptionNameTitle"
+                style="@style/logged_ItemTitle"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/logged_subscription_name_title"/>
+
+            <TextView
+                android:id="@+id/tvSubscriptionNameText"
+                style="@style/logged_ItemText"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+            <!-- SUBSCRIPTION NAME END ****************************************************** -->
+
+
+            <!-- SUBSCRIPTION START - START **************************************************** -->
+
+            <View style="@style/logged_DividerFullWidth"/>
+
+            <TextView
+                android:id="@+id/tvSubscriptionStartTitle"
+                style="@style/logged_ItemTitle"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/logged_subscription_start_title"/>
+
+            <TextView
+                android:id="@+id/tvSubscriptionStartText"
+                style="@style/logged_ItemText"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+            <!-- SUBSCRIPTION START - END ****************************************************** -->
+
+            <!-- SUBSCRIPTION END - START **************************************************** -->
+
+            <View style="@style/logged_DividerFullWidth"/>
+
+            <TextView
+                android:id="@+id/tvSubscriptionEndTitle"
+                style="@style/logged_ItemTitle"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/logged_subscription_end_title"/>
+
+            <TextView
+                android:id="@+id/tvSubscriptionEndText"
+                style="@style/logged_ItemText"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+            <!-- SUBSCRIPTION END - END ****************************************************** -->
+
+            <!-- SUBSCRIPTION REMAINING START **************************************************** -->
+
+            <View style="@style/logged_DividerFullWidth"/>
+
+            <TextView
+                android:id="@+id/tvSubscriptionRemainingTitle"
+                style="@style/logged_ItemTitle"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/logged_subscription_remaining_title"/>
+
+            <TextView
+                android:id="@+id/tvSubscriptionRemainingText"
+                style="@style/logged_ItemText"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+            <!-- SUBSCRIPTION REMAINING END ****************************************************** -->
+
+            <!-- THANK FOR YOUR SUPPORT START **************************************************** -->
+
+            <View style="@style/logged_DividerFullWidth"/>
+
+            <TextView
+                android:id="@+id/tvThanksForYourSupport"
+                style="@style/logged_ThankForYourSupport"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/logged_thanks_for_your_support"
+                />
+            <!-- THANK FOR YOUR SUPPORT END **************************************************** -->
+
+            <!-- INFO POINTS START **************************************************** -->
+
+            <View style="@style/logged_DividerBeforeInfoPoints"/>
+
+            <!-- POINT 1 -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:padding="0dp"
+                android:layout_margin="0dp"
+                >
+
+                <!-- SOURCE of app:solidColor="@color/..." :
+                     http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes
+                     Point 2. Use the attributes in your layout
+
+                     !!! DO NOT use android:background attribute - it over-paints the circle
+                     !!! android:gravity have to be "center"
+                -->
+                <sk.cestaplus.cestaplusapp.views.CircularTextView
+
+                    android:id="@+id/ctvInfoPoint1"
+                    style="@style/logged_CtvInfoPoint"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    app:solidColor="@color/white"
+                    app:strokeColor="@color/accountDataInfoPoint"
+                    app:strokeWidth="1"
+
+                    android:gravity="center"
+
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+
+                    android:text="@string/ctv_1"/>
+
+                <TextView
+                    android:id="@+id/tvInfoPoint1Text"
+                    style="@style/logged_InfoPointText"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignParentTop="true"
+
+                    android:layout_toRightOf="@+id/ctvInfoPoint1"
+                    android:layout_toEndOf="@+id/ctvInfoPoint1"
+
+                    android:text="@string/logged_info_point_1_text"/>
+
+                <View
+                    style="@style/logged_InfoPointsDivider"
+
+                    android:layout_below="@id/tvInfoPoint1Text"
+                    android:layout_alignLeft="@id/tvInfoPoint1Text"
+
+                    />
+
+            </RelativeLayout>
+
+
+
+            <!-- POINT 2 -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:padding="0dp"
+                android:layout_margin="0dp"
+                >
+
+                <!-- SOURCE of app:solidColor="@color/..." :
+                     http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes
+                     Point 2. Use the attributes in your layout
+
+                     !!! DO NOT use android:background attribute - it over-paints the circle
+                     !!! android:gravity have to be "center"
+
+                                         android:layout_toRightOf="@+id/tvInfoPoint2Text"
+                    android:layout_toEndOf="@+id/tvInfoPoint2Text"
+                -->
+                <sk.cestaplus.cestaplusapp.views.CircularTextView
+
+                    android:id="@+id/ctvInfoPoint2"
+                    style="@style/logged_CtvInfoPoint"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    app:solidColor="@color/white"
+                    app:strokeColor="@color/accountDataInfoPoint"
+                    app:strokeWidth="1"
+
+                    android:gravity="center"
+
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+
+                    android:text="@string/ctv_2"/>
+
+                <TextView
+                    android:id="@+id/tvInfoPoint2Text"
+                    style="@style/logged_InfoPointText"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignParentTop="true"
+
+                    android:layout_toRightOf="@+id/ctvInfoPoint2"
+                    android:layout_toEndOf="@+id/ctvInfoPoint2"
+
+                    android:text="@string/logged_info_point_2_text"/>
+            </RelativeLayout>
+
+            <!-- INFO POINTS START **************************************************** -->
+
+            <!-- BUTTON PROLONG SUBSCRIPTION
+                drawableRight SOURCE: http://stackoverflow.com/questions/22966143/android-button-with-icon-and-text
+            -->
+            <Button
+                android:id="@+id/btnProlongSubscription"
+                style="@style/logged_BtnProlongSubscription"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:drawableRight="@drawable/btn_more_info_about_subscription_icon"
+                android:drawablePadding="@dimen/alert_locked_button_padding"
+
+                android:text="@string/logged_btn_prolong_subscription"
+
+                />
+
+            <!-- Logout Button -->
+            <Button
+                android:id="@+id/btnLogout"
+                style="@style/logged_BtnLogout"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/btn_logout"
+                />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+    <!-- ACTIVITY BODY END ********************************************************* -->
+
+    <!-- OTHER VIEWS START ********************************************************* -->
+    <!-- loading animation -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ProgressBar
+            android:id="@+id/loggedProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/logged_in_as"
-            android:textSize="20dp" />
 
-        <!-- Email TextViev-->
-        <TextView
-            android:id="@+id/txtvEmail"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
 
-            android:padding="10dp"
-            android:textColor="@color/lbl_name"
-            android:textSize="24dp"
-            android:text="test@gmail.com" />
+            android:indeterminateOnly="true"
+            />
+    </RelativeLayout>
+    <!-- OTHER VIEWS END *********************************************************** -->
 
-        <!-- Logout Button -->
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dip"
-            android:background="@color/btn_logut_bg"
-            android:text="@string/btn_logout"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15dp" />
-            android:
-    </LinearLayout>
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

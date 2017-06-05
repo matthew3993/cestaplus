@@ -24,7 +24,7 @@
             <include layout="@layout/navigational_header"/>
 
             <View
-                android:background="@color/divider"
+                android:background="@color/baterkaDivider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
 

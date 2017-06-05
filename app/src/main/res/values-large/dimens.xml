@@ -106,7 +106,7 @@
 
     <dimen name="alert_locked_layout_padding">40dp</dimen>
     <dimen name="alert_locked_text_margin_top">10dp</dimen>
-    <dimen name="alert_locked_button_padding">15dp</dimen>
+    <dimen name="alert_locked_button_padding">15dp</dimen> <!-- 15 -->
     <dimen name="alert_locked_button_margin_top">35dp</dimen>
     <!-- ===================== ARTICLE ACTIVITY END ===================================================================================== -->
 
@@ -160,5 +160,14 @@
     <!-- TIP TITLE -->
     <dimen name="tip_title_text_size">20sp</dimen>
 
-    <!-- ===================== BATERKA ACTIVITY START =================================================================================== -->
+    <!-- ===================== BATERKA ACTIVITY END ===================================================================================== -->
+
+    <!-- ===================== LOGGED ACTIVITY START =================================================================================== -->
+    <dimen name="main_name_text_size">28sp</dimen>
+    <dimen name="actual_status_text_size">19sp</dimen>
+
+    <dimen name="item_title_text_size">17sp</dimen>
+    <dimen name="item_text_text_size">17sp</dimen>
+
+    <!-- ===================== LOGGED ACTIVITY END ===================================================================================== -->
 </resources>

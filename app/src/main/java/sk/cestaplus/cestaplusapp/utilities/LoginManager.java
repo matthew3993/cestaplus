@@ -19,6 +19,7 @@ import sk.cestaplus.cestaplusapp.activities.account_activities.LoginActivity;
 import sk.cestaplus.cestaplusapp.extras.IErrorCodes;
 import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
+import sk.cestaplus.cestaplusapp.objects.UserInfo;
 
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.LOGIN_PARTIALLY_SUCCESSFUL;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.LOGIN_SUCCESSFUL;
@@ -59,8 +60,16 @@ public class LoginManager {
         volleySingleton = VolleySingleton.getInstance(context);
     }
 
+    public void tryLoginWithSavedCredentials(final LoginManagerInteractionListener listener) {
+        String email = session.getEmail();
+        String password = session.getPassword();
+
+        tryLogin(email, password, true, listener);
+    }
+
     /**
-     * Used by LoginActivity - new login
+     * Used by:
+     *  -   LoginActivity = new login
      */
     public void tryLogin(final String email, final String password, final boolean remember, final LoginManagerInteractionListener listener) {
 
@@ -76,27 +85,23 @@ public class LoginManager {
                     //if (remember) {
                     session.saveCredentialsAndApiKey(API_key, email, password);
                     session.setRole(ROLE_LOGGED_SUBSCRIPTION_OK);
-                    session.saveUserInfo(Parser.parseUserInfo(response));
+                    UserInfo userInfo = Parser.parseUserInfo(response);
+                    session.saveUserInfo(userInfo);
                     //} else {
                     //session.login(API_key);
                     //}
 
-                    //inform the user
-                    Toast.makeText(CustomApplication.getCustomAppContext(), R.string.login_successful_msg, Toast.LENGTH_LONG).show();
-
-                    listener.onLoginSuccessful();
+                    listener.onLoginSuccessful(userInfo);
 
                 } else if (login_error_code == LOGIN_PARTIALLY_SUCCESSFUL){
                     //if (remember) {
                     session.saveCredencials(email, password);
                     session.setRole(ROLE_LOGGED_SUBSCRIPTION_EXPIRED);
-                    session.saveUserInfo(Parser.parseUserInfo(response));
+                    UserInfo userInfo = Parser.parseUserInfo(response);
+                    session.saveUserInfo(userInfo);
                     //}
 
-                    //inform the user
-                    Toast.makeText(CustomApplication.getCustomAppContext(), R.string.login_partially_successful_msg, Toast.LENGTH_LONG).show();
-
-                    listener.onLoginPartiallySuccessful();
+                    listener.onLoginPartiallySuccessful(userInfo);
 
                 } else { //login_error_code != 0
                     listener.onLoginError(login_error_code);
@@ -141,14 +146,14 @@ public class LoginManager {
 
                         CustomNotificationManager.issueNotification("New API key: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST+3); // debug notification
 
-                        listener.onLoginSuccessful();
+                        listener.onLoginSuccessful(null); // null = user info is not needed in this case
                         break;
                     }
                     case LOGIN_PARTIALLY_SUCCESSFUL: { // relogin not successful - subscription has EXPIRED
                         session.clearAPI_key();
                         session.setRole(ROLE_LOGGED_SUBSCRIPTION_EXPIRED); //change role !!
 
-                        listener.onLoginPartiallySuccessful();
+                        listener.onLoginPartiallySuccessful(null); // null = user info is not needed in this case
                         break;
                     }
                     case SERVER_INTERNAL_ERROR:{
@@ -279,12 +284,15 @@ public class LoginManager {
     }
 
     public interface LoginManagerInteractionListener{
-        void onLoginSuccessful();
+        void onLoginSuccessful(UserInfo userInfo);
 
-        void onLoginPartiallySuccessful();
+        void onLoginPartiallySuccessful(UserInfo userInfo);
 
         void onLoginError(int error_code); // errors according to error_codes (network ok)
 
-        void onLoginNetworkError(); //only network errors (e.g. no connection) - volley errors
+        /**
+         * Only network errors (e.g. no connection) - volley errors
+         */
+        void onLoginNetworkError();
     }
 }

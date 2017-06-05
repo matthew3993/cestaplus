@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import sk.cestaplus.cestaplusapp.objects.UserInfo;
+import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.Util;
@@ -30,7 +32,7 @@ import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 
 public class LoginActivity
     extends Activity
-    implements LoginManager.LoginManagerInteractionListener{
+    implements LoginManager.LoginManagerInteractionListener {
 
     private Button btnLogin;
     private Button btnUseAsNotLoggedIn;
@@ -85,18 +87,12 @@ public class LoginActivity
 
     }// end onCreate
 
+    /**
+     * This method is called after login button click.
+     */
     private void checkForm() {
         String email = inputEmail.getText().toString();
-        String password = "";
-
-        try {
-            password = computeHash( inputPassword.getText().toString() );
-
-        } catch (NoSuchAlgorithmException e1) {
-            Log.e("hash", "HASH_ERROR - NoSuchAlgorithmException: " + e1);
-        } catch (UnsupportedEncodingException e) {
-            Log.e("hash", "HASH_ERROR - UnsupportedEncodingException: " + e);
-        }
+        String password = computeHash( inputPassword.getText().toString() );
 
         // Check for empty data in the form
         if (email.trim().length() > 0 && password.trim().length() > 0) {
@@ -134,27 +130,44 @@ public class LoginActivity
             pDialog.dismiss();
     }
 
-    public String computeHash(String input) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        digest.reset();
-
-        byte[] byteData = digest.digest(input.getBytes("UTF-8"));
+    public String computeHash(String input){
         StringBuffer sb = new StringBuffer();
 
-        for (int i = 0; i < byteData.length; i++){
-            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.reset();
+
+            byte[] byteData = digest.digest(input.getBytes("UTF-8"));
+
+            for (int i = 0; i < byteData.length; i++){
+                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+            }
+
+        } catch (NoSuchAlgorithmException e1) {
+            Log.e("hash", "HASH_ERROR - NoSuchAlgorithmException: " + e1);
+        } catch (UnsupportedEncodingException e) {
+            Log.e("hash", "HASH_ERROR - UnsupportedEncodingException: " + e);
         }
+
         return sb.toString();
     }
 
+    //region LoginManagerInteractionListener methods
+
     @Override
-    public void onLoginSuccessful() {
+    public void onLoginSuccessful(UserInfo userInfo) {
+        //inform the user
+        Toast.makeText(CustomApplication.getCustomAppContext(), R.string.login_successful_msg, Toast.LENGTH_LONG).show();
+
         hideDialog();
         launchMainActivity();
     }
 
     @Override
-    public void onLoginPartiallySuccessful() {
+    public void onLoginPartiallySuccessful(UserInfo userInfo) {
+        //inform the user
+        Toast.makeText(CustomApplication.getCustomAppContext(), R.string.login_partially_successful_msg, Toast.LENGTH_LONG).show();
+
         hideDialog();
         launchMainActivity();
     }
@@ -172,4 +185,7 @@ public class LoginActivity
         Toast.makeText(getApplicationContext(),
                 R.string.login_network_error, Toast.LENGTH_LONG).show();
     }
+
+    // endregion
+
 }// end Login Activity

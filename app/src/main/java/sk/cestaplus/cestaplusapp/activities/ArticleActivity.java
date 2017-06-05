@@ -50,6 +50,7 @@ import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.objects.ArticleText;
+import sk.cestaplus.cestaplusapp.objects.UserInfo;
 import sk.cestaplus.cestaplusapp.utilities.CustomNotificationManager;
 import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.SectionsUtil;
@@ -515,7 +516,7 @@ public class ArticleActivity
     //make UI changes
         hideErrorAndLoadingViews();
         showDataViews();
-        //decideToShowAlertLocked(); // moved to --> MyWebViewClient onPageFinished
+        //decideToShowAlertLocked(); // moved to --> MyWebViewClient onPageFinished()
     }
 
     private void showDataViews() {
@@ -687,14 +688,14 @@ public class ArticleActivity
     // region LoginManagerInterActionListener methods
 
     @Override
-    public void onLoginSuccessful() {
+    public void onLoginSuccessful(UserInfo userInfo) {
         // relogin successful - subscription still OK
         // create new article request with NEW API_key
         tryLoadArticle();
     }
 
     @Override
-    public void onLoginPartiallySuccessful() {
+    public void onLoginPartiallySuccessful(UserInfo userInfo) {
         // relogin not successful - subscription has EXPIRED
 
         //inform the user - show AlertDialog, after closing show LoggedActivity
