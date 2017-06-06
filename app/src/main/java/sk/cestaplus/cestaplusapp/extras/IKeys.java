@@ -23,7 +23,7 @@ public interface IKeys {
     String KEY_SAVED_STATE_ARTICLE_OBJ = "articleObj_savedState";
     String KEY_SAVED_STATE_ARTICLE_TEXT = "articleText_savedState";
     String KEY_SAVED_STATE_USER_INFO = "userInfo_savedState";
-    String KEY_SAVED_STATE_WAS_ERROR = "wasError_savedState";
+    String KEY_SAVED_STATE_WAS_NETWORK_ERROR = "wasError_savedState";
     String KEY_SAVED_ARTICLE_ERROR_CODE = "articleErrorCode_savedState";
     String KEY_SAVED_SCROLL_PERC = "scrollPercentage_savedState";
     String KEY_SAVED_SECTION = "ulozene_rubrika";

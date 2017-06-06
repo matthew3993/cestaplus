@@ -2,10 +2,14 @@
     <string name="title_activity_settings">Nastavenia</string>
 
     <!-- Strings related to Settings -->
-    <string name="action_list_style">Možnosti zobrazenia zoznamu</string>
-    <string name="pref_title_post_notifications">Povoliť notifikácie</string>
-    <string name="pref_list_style">Štýl zoznamu</string>
+    <string name="pref_title_post_notifications_title">Povoliť notifikácie</string>
+    <string name="pref_title_post_notifications_summary">Notifikácie o nových článkoch</string>
+
+    <string name="pref_list_style">Štýl zoznamu článkov</string>
     <string name="pref_text_size">Veľkosť písma</string>
+
+    <string name="pref_category_about_app_title">O aplikácií</string>
+    <string name="pref_version_name_title">Verzia</string>
 
     <string-array name="pref_list_style_titles">
         <item>Zobraziť okrem nadpisov aj popisy k článkom</item>

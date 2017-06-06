@@ -4,7 +4,8 @@
 
     <CheckBoxPreference
         android:key="pref_post_notifications"
-        android:title="@string/pref_title_post_notifications"
+        android:title="@string/pref_title_post_notifications_title"
+        android:summary="@string/pref_title_post_notifications_summary"
         android:defaultValue="true" />
 
     <ListPreference
@@ -22,4 +23,19 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 
+    <PreferenceCategory
+        android:title="@string/pref_category_about_app_title">
+
+        <!-- SOURCES:
+                https://stackoverflow.com/questions/31874929/how-to-show-app-version-on-preferences-activity
+                https://stackoverflow.com/a/14597495
+                https://stackoverflow.com/questions/11884440/preference-screen-display-text-block
+                -->
+        <!--suppress AndroidDomInspection -->
+        <Preference
+            android:title="@string/pref_version_name_title"
+            android:key="version"
+            android:summary="@string/versionName" />
+
+    </PreferenceCategory>
 </PreferenceScreen>

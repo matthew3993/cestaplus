@@ -66,6 +66,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 //static imports
 import static sk.cestaplus.cestaplusapp.extras.Constants.DELAY_TO_START_ACTIVITY_MILLIS;
+import static sk.cestaplus.cestaplusapp.extras.Constants.URL_SUBSCRIPTION_INFO;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.AEC_OK;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.NOTIFICATION_API_KEY_TEST;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
@@ -298,6 +299,7 @@ public class ArticleActivity
         btnShowComments.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // start FacebookComments Activity
                 final Intent intent = new Intent(getApplicationContext(), FacebookCommentsActivity.class);
                 intent.putExtra(KEY_INTENT_ARTICLE_URL, articleText.getUrl());
 
@@ -568,9 +570,8 @@ public class ArticleActivity
             public void onClick(View view) {
                 //TODO: don't show url, but something like Subscription Activity
 
-                String url = "http://www.cestaplus.sk/predplatne/info";
                 view.getContext().startActivity(
-                        new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(URL_SUBSCRIPTION_INFO)));
             }
         });
     }

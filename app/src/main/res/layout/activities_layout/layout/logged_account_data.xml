@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/llAccountData"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <!-- FULL NAME START **************************************************** -->
+
+    <!-- SOURCE:  http://stackoverflow.com/questions/5049852/android-drawing-separator-divider-line-in-layout -->
+    <View style="@style/logged_DividerFullWidth"/>
+
+    <TextView
+        android:id="@+id/tvFullNameTitle"
+        style="@style/logged_ItemTitle"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="@string/logged_full_name_title"/>
+
+    <TextView
+        android:id="@+id/tvFullNameText"
+        style="@style/logged_ItemFullNameText"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        />
+    <!-- FULL NAME END ****************************************************** -->
+
+    <!-- SUBSCRIPTION NAME START **************************************************** -->
+
+    <!-- SOURCE:  http://stackoverflow.com/questions/5049852/android-drawing-separator-divider-line-in-layout -->
+    <View style="@style/logged_DividerFullWidth"/>
+
+    <TextView
+        android:id="@+id/tvSubscriptionNameTitle"
+        style="@style/logged_ItemTitle"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="@string/logged_subscription_name_title"/>
+
+    <TextView
+        android:id="@+id/tvSubscriptionNameText"
+        style="@style/logged_ItemText"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <!-- SUBSCRIPTION NAME END ****************************************************** -->
+
+    <!-- SUBSCRIPTION START - START **************************************************** -->
+
+    <View style="@style/logged_DividerFullWidth"/>
+
+    <TextView
+        android:id="@+id/tvSubscriptionStartTitle"
+        style="@style/logged_ItemTitle"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="@string/logged_subscription_start_title"/>
+
+    <TextView
+        android:id="@+id/tvSubscriptionStartText"
+        style="@style/logged_ItemText"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <!-- SUBSCRIPTION START - END ****************************************************** -->
+
+    <!-- SUBSCRIPTION END - START **************************************************** -->
+
+    <View style="@style/logged_DividerFullWidth"/>
+
+    <TextView
+        android:id="@+id/tvSubscriptionEndTitle"
+        style="@style/logged_ItemTitle"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="@string/logged_subscription_end_title"/>
+
+    <TextView
+        android:id="@+id/tvSubscriptionEndText"
+        style="@style/logged_ItemText"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <!-- SUBSCRIPTION END - END ****************************************************** -->
+
+    <!-- SUBSCRIPTION REMAINING START **************************************************** -->
+
+    <View style="@style/logged_DividerFullWidth"/>
+
+    <TextView
+        android:id="@+id/tvSubscriptionRemainingTitle"
+        style="@style/logged_ItemTitle"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="@string/logged_subscription_remaining_title"/>
+
+    <TextView
+        android:id="@+id/tvSubscriptionRemainingText"
+        style="@style/logged_ItemText"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <!-- SUBSCRIPTION REMAINING END ****************************************************** -->
+
+</LinearLayout>

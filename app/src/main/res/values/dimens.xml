@@ -187,5 +187,23 @@
     <!-- TIP TITLE -->
     <dimen name="tip_title_text_size">20sp</dimen>
 
-    <!-- ===================== BATERKA ACTIVITY START =================================================================================== -->
+    <!-- ===================== BATERKA ACTIVITY END =================================================================================== -->
+
+    <!-- ===================== LOGGED ACTIVITY START =================================================================================== -->
+    <dimen name="main_name_text_size">28sp</dimen>
+    <dimen name="actual_status_text_size">20sp</dimen> <!-- 19 -->
+
+    <dimen name="item_title_text_size">18sp</dimen> <!-- 17 -->
+    <dimen name="item_text_text_size">18sp</dimen>  <!-- 17 -->
+
+    <dimen name="thank_for_support_text_text_size">19sp</dimen>
+
+    <dimen name="info_point_number_text_size">18sp</dimen> <!-- 15 -->
+    <dimen name="info_point_text_text_size">18sp</dimen> <!-- 17 -->
+
+    <dimen name="prolong_subscription_text_text_size">16sp</dimen> <!-- 15 -->
+    <dimen name="prolong_subscription_text_padding">18dp</dimen>
+
+    <dimen name="network_error_text_text_size">18sp</dimen>
+    <!-- ===================== LOGGED ACTIVITY END ===================================================================================== -->
 </resources>

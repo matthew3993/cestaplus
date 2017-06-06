@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ===================== MAIN ACTIVITY START ======================================================================================== -->
+<!-- ===================== MAIN ACTIVITY START ======================================================================================== -->
     <!-- HEADER IMAGE -->
     <dimen name="header_image_height">600dp</dimen> <!-- 400dp -->
     <dimen name="header_image_gradient_from_bottom">300dp</dimen>
@@ -164,10 +164,19 @@
 
     <!-- ===================== LOGGED ACTIVITY START =================================================================================== -->
     <dimen name="main_name_text_size">28sp</dimen>
-    <dimen name="actual_status_text_size">19sp</dimen>
+    <dimen name="actual_status_text_size">20sp</dimen> <!-- 19 -->
 
-    <dimen name="item_title_text_size">17sp</dimen>
-    <dimen name="item_text_text_size">17sp</dimen>
+    <dimen name="item_title_text_size">18sp</dimen> <!-- 17 -->
+    <dimen name="item_text_text_size">18sp</dimen>  <!-- 17 -->
 
+    <dimen name="thank_for_support_text_text_size">19sp</dimen>
+
+    <dimen name="info_point_number_text_size">18sp</dimen> <!-- 15 -->
+    <dimen name="info_point_text_text_size">18sp</dimen> <!-- 17 -->
+
+    <dimen name="prolong_subscription_text_text_size">16sp</dimen> <!-- 15 -->
+    <dimen name="prolong_subscription_text_padding">18dp</dimen>
+
+    <dimen name="network_error_text_text_size">18sp</dimen>
     <!-- ===================== LOGGED ACTIVITY END ===================================================================================== -->
 </resources>

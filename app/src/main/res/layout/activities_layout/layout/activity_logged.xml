@@ -139,21 +139,24 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
 
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
 
                         android:text="@string/connection_error_msg"
                         />
 
-                    <!-- icon source: https://material.io/icons/ -->
+                    <!-- icon source: https://material.io/icons/
+                            android:layout_alignParentRight="true"
+                    -->
                     <ImageView
                         android:id="@+id/ivLoggedRefresh"
+                        style="@style/logged_NetworkErrorImageView"
 
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
 
-                        android:layout_toRightOf="@id/tvLoggedNetworkError"
-                        android:layout_centerVertical="true"
+                        android:layout_below="@id/tvLoggedNetworkError"
+                        android:layout_centerHorizontal="true"
 
                         android:src="@drawable/ic_refresh_black_48dp"
                         />
@@ -179,286 +182,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:text="@string/logged_actual_status"/>
+                android:text="@string/logged_actual_status_subscription_ok"/>
             <!-- ACTUAL STATUS END ****************************************************** -->
             <!-- OVERALL INFO END ==================================================================== -->
 
-            <!-- FULL NAME START **************************************************** -->
-
-            <!-- SOURCE:  http://stackoverflow.com/questions/5049852/android-drawing-separator-divider-line-in-layout -->
-            <View style="@style/logged_DividerFullWidth"/>
-
-            <TextView
-                android:id="@+id/tvFullNameTitle"
-                style="@style/logged_ItemTitle"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:text="@string/logged_full_name_title"/>
-
-            <TextView
-                android:id="@+id/tvFullNameText"
-                style="@style/logged_ItemFullNameText"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                />
-            <!-- FULL NAME END ****************************************************** -->
-
-            <!-- SUBSCRIPTION NAME START **************************************************** -->
-
-            <!-- SOURCE:  http://stackoverflow.com/questions/5049852/android-drawing-separator-divider-line-in-layout -->
-            <View style="@style/logged_DividerFullWidth"/>
-
-            <TextView
-                android:id="@+id/tvSubscriptionNameTitle"
-                style="@style/logged_ItemTitle"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:text="@string/logged_subscription_name_title"/>
-
-            <TextView
-                android:id="@+id/tvSubscriptionNameText"
-                style="@style/logged_ItemText"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-            <!-- SUBSCRIPTION NAME END ****************************************************** -->
-
-
-            <!-- SUBSCRIPTION START - START **************************************************** -->
-
-            <View style="@style/logged_DividerFullWidth"/>
-
-            <TextView
-                android:id="@+id/tvSubscriptionStartTitle"
-                style="@style/logged_ItemTitle"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:text="@string/logged_subscription_start_title"/>
-
-            <TextView
-                android:id="@+id/tvSubscriptionStartText"
-                style="@style/logged_ItemText"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-            <!-- SUBSCRIPTION START - END ****************************************************** -->
-
-            <!-- SUBSCRIPTION END - START **************************************************** -->
-
-            <View style="@style/logged_DividerFullWidth"/>
-
-            <TextView
-                android:id="@+id/tvSubscriptionEndTitle"
-                style="@style/logged_ItemTitle"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:text="@string/logged_subscription_end_title"/>
-
-            <TextView
-                android:id="@+id/tvSubscriptionEndText"
-                style="@style/logged_ItemText"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-            <!-- SUBSCRIPTION END - END ****************************************************** -->
-
-            <!-- SUBSCRIPTION REMAINING START **************************************************** -->
-
-            <View style="@style/logged_DividerFullWidth"/>
-
-            <TextView
-                android:id="@+id/tvSubscriptionRemainingTitle"
-                style="@style/logged_ItemTitle"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:text="@string/logged_subscription_remaining_title"/>
-
-            <TextView
-                android:id="@+id/tvSubscriptionRemainingText"
-                style="@style/logged_ItemText"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-            <!-- SUBSCRIPTION REMAINING END ****************************************************** -->
-
-            <!-- THANK FOR YOUR SUPPORT START **************************************************** -->
-
-            <View style="@style/logged_DividerFullWidth"/>
-
-            <TextView
-                android:id="@+id/tvThanksForYourSupport"
-                style="@style/logged_ThankForYourSupport"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:text="@string/logged_thanks_for_your_support"
-                />
-            <!-- THANK FOR YOUR SUPPORT END **************************************************** -->
-
-            <!-- INFO POINTS START **************************************************** -->
-
-            <View style="@style/logged_DividerBeforeInfoPoints"/>
-
-            <!-- POINT 1 -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:padding="0dp"
-                android:layout_margin="0dp"
-                >
-
-                <!-- SOURCE of app:solidColor="@color/..." :
-                     http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes
-                     Point 2. Use the attributes in your layout
-
-                     !!! DO NOT use android:background attribute - it over-paints the circle
-                     !!! android:gravity have to be "center"
-                -->
-                <sk.cestaplus.cestaplusapp.views.CircularTextView
-
-                    android:id="@+id/ctvInfoPoint1"
-                    style="@style/logged_CtvInfoPoint"
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    app:solidColor="@color/white"
-                    app:strokeColor="@color/accountDataInfoPoint"
-                    app:strokeWidth="1"
-
-                    android:gravity="center"
-
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-
-                    android:text="@string/ctv_1"/>
-
-                <TextView
-                    android:id="@+id/tvInfoPoint1Text"
-                    style="@style/logged_InfoPointText"
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_alignParentTop="true"
-
-                    android:layout_toRightOf="@+id/ctvInfoPoint1"
-                    android:layout_toEndOf="@+id/ctvInfoPoint1"
-
-                    android:text="@string/logged_info_point_1_text"/>
-
-                <View
-                    style="@style/logged_InfoPointsDivider"
-
-                    android:layout_below="@id/tvInfoPoint1Text"
-                    android:layout_alignLeft="@id/tvInfoPoint1Text"
-
-                    />
-
-            </RelativeLayout>
-
-
-
-            <!-- POINT 2 -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:padding="0dp"
-                android:layout_margin="0dp"
-                >
-
-                <!-- SOURCE of app:solidColor="@color/..." :
-                     http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes
-                     Point 2. Use the attributes in your layout
-
-                     !!! DO NOT use android:background attribute - it over-paints the circle
-                     !!! android:gravity have to be "center"
-
-                                         android:layout_toRightOf="@+id/tvInfoPoint2Text"
-                    android:layout_toEndOf="@+id/tvInfoPoint2Text"
-                -->
-                <sk.cestaplus.cestaplusapp.views.CircularTextView
-
-                    android:id="@+id/ctvInfoPoint2"
-                    style="@style/logged_CtvInfoPoint"
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    app:solidColor="@color/white"
-                    app:strokeColor="@color/accountDataInfoPoint"
-                    app:strokeWidth="1"
-
-                    android:gravity="center"
-
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-
-                    android:text="@string/ctv_2"/>
-
-                <TextView
-                    android:id="@+id/tvInfoPoint2Text"
-                    style="@style/logged_InfoPointText"
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_alignParentTop="true"
-
-                    android:layout_toRightOf="@+id/ctvInfoPoint2"
-                    android:layout_toEndOf="@+id/ctvInfoPoint2"
-
-                    android:text="@string/logged_info_point_2_text"/>
-            </RelativeLayout>
-
-            <!-- INFO POINTS START **************************************************** -->
-
-            <!-- BUTTON PROLONG SUBSCRIPTION
-                drawableRight SOURCE: http://stackoverflow.com/questions/22966143/android-button-with-icon-and-text
-            -->
-            <Button
-                android:id="@+id/btnProlongSubscription"
-                style="@style/logged_BtnProlongSubscription"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:drawableRight="@drawable/btn_more_info_about_subscription_icon"
-                android:drawablePadding="@dimen/alert_locked_button_padding"
-
-                android:text="@string/logged_btn_prolong_subscription"
-
-                />
-
-            <!-- Logout Button -->
-            <Button
-                android:id="@+id/btnLogout"
-                style="@style/logged_BtnLogout"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:text="@string/btn_logout"
-                />
+            <!-- SUBSCRIPTION OK AREA android:id="@+id/layout_subscription_ok" -->
+            <include
+                android:id="@+id/layout_subscription_ok"
+                layout="@layout/logged_subscription_ok"/>
+
+            <!-- SUBSCRIPTION EXPIRED AREA  -->
+            <include
+                android:id="@+id/layout_subscription_expired"
+                layout="@layout/logged_subscription_expired"/>
 
         </LinearLayout>
 

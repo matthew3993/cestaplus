@@ -2,6 +2,7 @@ package sk.cestaplus.cestaplusapp.activities.account_activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -31,10 +32,13 @@ import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.Util;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.DateUtil;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static sk.cestaplus.cestaplusapp.extras.Constants.URL_SUBSCRIPTION_PROLONG;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_BATERKA_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_LOGGED_ACTIVITY;
@@ -42,7 +46,7 @@ import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_O_PORTALI_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_USER_INFO;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_WAS_ERROR;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_WAS_NETWORK_ERROR;
 
 public class LoggedActivity
     extends AppCompatActivity
@@ -70,12 +74,18 @@ public class LoggedActivity
     //body
     private NestedScrollView nestedScrollView;
     private TextView tvLoggedMainName;
-    //private TextView tvActualStatus;
+    private TextView tvActualStatus;
+
+    private View activeArea;
+
+    // account data
     private TextView tvFullNameText;
     private TextView tvSubscriptionNameText;
     private TextView tvSubscriptionStartText;
     private TextView tvSubscriptionEndText;
     private TextView tvSubscriptionRemainingText;
+
+    private RelativeLayout rlProlongSubscription;
 
     // loading & error views
     private TextView tvLoggedNetworkError; // network error
@@ -106,13 +116,19 @@ public class LoggedActivity
         //try to load saved state from bundle
         if (savedInstanceState != null) { //if is not null = change of state - for example rotation of device
 
-            boolean wasError = savedInstanceState.getBoolean(KEY_SAVED_STATE_WAS_ERROR, true);
-            if (wasError){
+            boolean wasNetworkError = savedInstanceState.getBoolean(KEY_SAVED_STATE_WAS_NETWORK_ERROR, true);
+            if (wasNetworkError){
                 tryLoadUserInfo();
+
             } else {
-                restoreState(savedInstanceState);
+                //was not network error
+                restoreState(savedInstanceState); // restores userInfo from bundle
                 hideErrorAndLoadingViews();
-                showUserInfo();
+
+                SessionManager session = new SessionManager(getApplicationContext());
+                int role = session.getRole();
+
+                showUserInfoAcordingRole(role);
             }
 
         } else {
@@ -184,21 +200,42 @@ public class LoggedActivity
         // body
         nestedScrollView = (NestedScrollView) findViewById(R.id.nestedScrollViewLogged);
         tvLoggedMainName = (TextView) findViewById(R.id.tvLoggedMainName);
+        tvActualStatus = (TextView) findViewById(R.id.tvActualStatus);
+    }
 
-        tvFullNameText = (TextView) findViewById(R.id.tvFullNameText);
-        tvSubscriptionNameText = (TextView) findViewById(R.id.tvSubscriptionNameText);
-        tvSubscriptionStartText = (TextView) findViewById(R.id.tvSubscriptionStartText);
-        tvSubscriptionEndText = (TextView) findViewById(R.id.tvSubscriptionEndText);
-        tvSubscriptionRemainingText = (TextView) findViewById(R.id.tvSubscriptionRemainingText);
+    private void initButtons() {
+        // "button" prolong subscription
+        rlProlongSubscription = (RelativeLayout) activeArea.findViewById(R.id.rlProlongSubscription);
+        rlProlongSubscription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: don't show url, but something like ProlongSubscription Activity
 
-        //logout button
-        btnLogout = (Button) findViewById(R.id.btnLogout);
+                view.getContext().startActivity(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(URL_SUBSCRIPTION_PROLONG)));
+            }
+        });
+
+        // button logout
+        btnLogout = (Button) activeArea.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doLogout();
             }
         });
+    }
+
+    /**
+     * SOURCE of idea: https://stackoverflow.com/questions/4355122/how-to-include-a-layout-twice-in-android
+     */
+    private void initAccountDataViews() {
+        // !! activeArea.findViewById() !!
+        tvFullNameText = (TextView) activeArea.findViewById(R.id.tvFullNameText);
+        tvSubscriptionNameText = (TextView) activeArea.findViewById(R.id.tvSubscriptionNameText);
+        tvSubscriptionStartText = (TextView) activeArea.findViewById(R.id.tvSubscriptionStartText);
+        tvSubscriptionEndText = (TextView) activeArea.findViewById(R.id.tvSubscriptionEndText);
+        tvSubscriptionRemainingText = (TextView) activeArea.findViewById(R.id.tvSubscriptionRemainingText);
     }
 
     private void initLoadingAndErrorViews() {
@@ -305,19 +342,40 @@ public class LoggedActivity
     /**
      * Fills the data vies with data in userInfo object.
      * This object have to be created and filled with data before calling this method.
+     * Also activeArea have to be initialized before calling ths method.
      */
-    private void showUserInfo(){
+    private void showUserInfo(String actualStatusMsg){
         //set the data
         tvLoggedMainName.setText(String.format("%s,", userInfo.getName()));
+        tvActualStatus.setText(actualStatusMsg);
+
+        initButtons();
+        initAccountDataViews();
+        showAccountData();
+
+        //make UI changes
+        activeArea.setVisibility(View.VISIBLE);
+        showDataViews();
+    }
+
+    private void showAccountData() {
         tvFullNameText.setText(userInfo.getFullName());
         tvSubscriptionNameText.setText(userInfo.getSubscription_name());
         tvSubscriptionStartText.setText(DateFormats.dateFormatSlovakPrint.format(userInfo.getSubscription_start()));
         tvSubscriptionEndText.setText(DateFormats.dateFormatSlovakPrint.format(userInfo.getSubscription_end()));
-        tvSubscriptionRemainingText.setText("10 :-D");
 
-        //make UI changes
-        //hideErrorAndLoadingViews();
-        showDataViews();
+        //remaining days
+        long remainingDays = DateUtil.daysBetween(userInfo.getSubscription_end());
+        if (remainingDays < 0){
+            remainingDays = 0;
+        } else {
+            remainingDays++;
+        }
+
+        if (remainingDays <= 3){
+            TextUtil.setTextBoldAndRed(tvSubscriptionRemainingText, this);
+        }
+        tvSubscriptionRemainingText.setText(String.format("%d dní", remainingDays));
     }
 
     private void showDataViews() {
@@ -361,10 +419,6 @@ public class LoggedActivity
     }
 
     private void showNoConnection(String msg) {
-        //hide data views
-        //rlHeader.setVisibility(View.GONE);
-        //nestedScrollView.setVisibility(View.GONE);
-
         showErrorViews();
 
         tvLoggedNetworkError.setText(msg);
@@ -382,8 +436,6 @@ public class LoggedActivity
 
         // show error views
         loggedNetworkErrorRelativeLayout.setVisibility(View.VISIBLE);
-        //tvLoggedNetworkError.setVisibility(View.VISIBLE);
-        ivRefresh.setVisibility(View.VISIBLE);
     }
 
     private void hideErrorAndLoadingViews() {
@@ -393,8 +445,6 @@ public class LoggedActivity
 
     private void hideErrorViews() {
         loggedNetworkErrorRelativeLayout.setVisibility(View.GONE);
-        //tvLoggedNetworkError.setVisibility(View.GONE);
-        //ivRefresh.setVisibility(View.GONE);
     }
 
     // endregion
@@ -405,14 +455,20 @@ public class LoggedActivity
     public void onLoginSuccessful(UserInfo userInfo) {
         this.userInfo = userInfo;
         hideErrorAndLoadingViews();
-        showUserInfo();
+
+        activeArea = findViewById(R.id.layout_subscription_ok);
+        showUserInfo(getString(R.string.logged_actual_status_subscription_ok));
     }
 
     @Override
     public void onLoginPartiallySuccessful(UserInfo userInfo) {
         this.userInfo = userInfo;
         hideErrorAndLoadingViews();
-        showUserInfo();
+
+        activeArea = findViewById(R.id.layout_subscription_expired);
+        showUserInfo(getString(R.string.logged_actual_status_subscription_expired));
+
+        TextUtil.setTextBoldAndRed(tvSubscriptionEndText, this);
     }
 
     @Override
@@ -434,8 +490,21 @@ public class LoggedActivity
         //retrieve user info from session
         SessionManager session = new SessionManager(getApplicationContext());
         userInfo = session.getUserInfo();
+        int role = session.getRole();
 
-        showUserInfo();
+        showUserInfoAcordingRole(role);
+    }
+
+    private void showUserInfoAcordingRole(int role) {
+        if (Util.isSubscriptionValid(role)){
+            activeArea = findViewById(R.id.layout_subscription_ok);
+            showUserInfo(getString(R.string.logged_actual_status_subscription_ok));
+
+        } else {
+            activeArea = findViewById(R.id.layout_subscription_expired);
+            showUserInfo(getString(R.string.logged_actual_status_subscription_expired));
+            TextUtil.setTextBoldAndRed(tvSubscriptionEndText, this);
+        }
     }
 
     // endregion
@@ -451,7 +520,7 @@ public class LoggedActivity
         if (loggedNetworkErrorRelativeLayout.getVisibility() == View.VISIBLE){
             wasError = true;
         }
-        outState.putBoolean(KEY_SAVED_STATE_WAS_ERROR, wasError);
+        outState.putBoolean(KEY_SAVED_STATE_WAS_NETWORK_ERROR, wasError);
 
         // !!! Always call the superclass so it can save the view hierarchy state !!
         super.onSaveInstanceState(outState);

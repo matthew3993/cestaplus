@@ -10,6 +10,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,10 +56,9 @@ public class SettingsActivity extends PreferenceActivity {
         });
 
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            bar.setTitleTextColor(R.color.white);
-            bar.setSubtitleTextColor(R.color.white);
+            bar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
+            bar.setSubtitleTextColor(ContextCompat.getColor(this, R.color.white));
         }
-
         setupSimplePreferencesScreen();
     }// onPostCreate()
 

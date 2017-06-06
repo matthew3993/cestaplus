@@ -14,6 +14,13 @@ android {
         multiDexEnabled true
     }
 
+    // makes 'variant.versionName' available as "@string/versionName"
+    // for Settings screen
+    // SOURCE: https://stackoverflow.com/a/29525111
+    applicationVariants.all { variant ->
+        variant.resValue "string", "versionName", variant.versionName
+    }
+
     dexOptions {
         // raise heap limit - because of 'java.lang.OutOfMemoryError: GC overhead limit exceeded'
         // SOURCE: http://stackoverflow.com/questions/25013638/android-studio-google-jar-file-causing-gc-overhead-limit-exceeded-error

@@ -132,7 +132,10 @@
 
     <!-- LOGGED activity START ***************************** -->
     <string name="logged_act_header_title">Moje konto - predplatné</string>
-    <string name="logged_actual_status">aktuálne máš aktivované predplatné</string>
+    <string name="logged_actual_status_subscription_ok">aktuálne máš aktivované predplatné.</string>
+    <string name="logged_actual_status_subscription_expired">
+        Vaše konto bolo deaktivované, pretože uplynula doba predplatenia.\nAk si aj naďalej prajete využívať rozšírené možnosti portálu cesta+, predĺžte si svoje predplatné.
+    </string>
     <string name="logged_full_name_title">Meno:</string>
     <string name="logged_subscription_name_title">Typ predplatného:</string>
     <string name="logged_subscription_start_title">Dátum aktivácie:</string>
@@ -145,6 +148,15 @@
     </string>
     <string name="logged_info_point_2_text">
         Prvopredplatiteľom (okrem predplatného cez SMS) sme darovali prvých 5 dní grátis\n(z dôvodu trvania prevodu a overenia, viď bod č.1)
+    </string>
+    <string name="logged_info_points_intro_text">
+        V prípade, že ste si cesta+ predplatili, ale Vaše konto nebolo zatiaľ aktivované:
+    </string>
+    <string name="logged_info_point_1_expired_text">
+        Platba cez SMS:\nV prípade doručenia potvrdzovacej správy by malo byť Vaše predplatné v priebehu niekoľkých minút predĺžené.
+    </string>
+    <string name="logged_info_point_2_expired_text">
+        Platba cez internetbanking:\nPrevod z účtu na účet trvá zvyčajne tri dni. V prípade že Vaše konto nebolo aktivované po piatich dňoch od zaplatenia, kontaktujte nás na office@cestaplus.sk
     </string>
     <string name="logged_btn_prolong_subscription">Predĺžiť predplatné</string>
     <string name="btn_logout">Odhlásiť</string>

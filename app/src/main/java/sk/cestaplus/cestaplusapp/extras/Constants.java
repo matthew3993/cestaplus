@@ -16,4 +16,7 @@ public interface Constants {
     //List styles
     int LIST_STYLE_ALL = 0;
     int LIST_STYLE_PICTURES_AND_TITLES = 1;
+
+    String URL_SUBSCRIPTION_INFO = "http://www.cestaplus.sk/predplatne/info";
+    String URL_SUBSCRIPTION_PROLONG = "http://www.cestaplus.sk/predplatne?temp=new";
 }
