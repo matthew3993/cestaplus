@@ -579,7 +579,9 @@ public class BaterkaActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equalsIgnoreCase(IKeys.KEY_PREF_TEXT_SIZE)) {
+        if (key.equalsIgnoreCase(getString(R.string.pref_text_size_key))) {
+            // TODO: implement this feature - issue #8, todo #4
+            // change of TEXT SIZE
             showBaterkaText(); //reload views
         }
     }//end onSharedPreferenceChanged

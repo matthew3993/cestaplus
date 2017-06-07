@@ -141,6 +141,7 @@
     <string name="logged_subscription_start_title">Dátum aktivácie:</string>
     <string name="logged_subscription_end_title">Koniec predplatného:</string>
     <string name="logged_subscription_remaining_title">Zostáva:</string>
+    <string name="logged_subscription_remaining_format">%1$d dní</string>
     <string name="logged_thanks_for_your_support">Ďakujeme za tvoju podporu.</string>
     <!-- do not make new line after '\n' character => making new line makes ' ' in real printed text! -->
     <string name="logged_info_point_1_text">

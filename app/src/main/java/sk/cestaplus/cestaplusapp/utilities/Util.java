@@ -29,53 +29,61 @@ import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPT
  */
 public class Util {
 
-    public static void checkScreenSize(Context context) {
+    public static String checkScreenSizeAndDensity(Context context) {
         int screenSize = context.getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK;
 
-        String toastMsg;
+        String msg = "Veľkosť displeja: ";
         switch(screenSize) { // screenSize
             case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                toastMsg = "Extra Large screen";
+                msg += "Extra Large screen";
                 break;
             case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                toastMsg = "Large screen";
+                msg += "Large screen";
                 break;
             case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                toastMsg = "Normal screen";
+                msg += "Normal screen";
                 break;
             case Configuration.SCREENLAYOUT_SIZE_SMALL:
-                toastMsg = "Small screen";
+                msg += "Small screen";
                 break;
             default:
-                toastMsg = "Nedá sa určiť veľkosť obrazovky!";
+                msg += "Nedá sa určiť veľkosť displeja!";
         }
+
+        msg += "\nRozlíšenie: ";
 
         int density= context.getResources().getDisplayMetrics().densityDpi;
         switch(density)
         {
             case DisplayMetrics.DENSITY_LOW:
-                toastMsg += " LDPI";
+                msg += " LDPI";
                 break;
             case DisplayMetrics.DENSITY_MEDIUM:
-                toastMsg += " MDPI";
+                msg += " MDPI";
                 break;
             case DisplayMetrics.DENSITY_HIGH:
-                toastMsg += " HDPI";
+                msg += " HDPI";
                 break;
             case DisplayMetrics.DENSITY_XHIGH:
-                toastMsg += " XHDPI";
+                msg += " XHDPI";
                 break;
             case DisplayMetrics.DENSITY_XXHIGH:
-                toastMsg += " XXHDPI";
+                msg += " XXHDPI";
                 break;
             case DisplayMetrics.DENSITY_XXXHIGH:
-                toastMsg += " XXXHDPI";
+                msg += " XXXHDPI";
                 break;
         }
 
+        return msg;
+    }//end check checkScreenSizeAndDensity()
+
+    public static void checkScreenSizeAndDensityToast(Context context) {
+        String toastMsg = checkScreenSizeAndDensity(context);
+
         Toast.makeText(context.getApplicationContext(), toastMsg, Toast.LENGTH_LONG).show();
-    }//end check screensize()
+    }//end check checkScreenSizeAndDensityToast()
 
     private static String[] getListStyles() {
         return new String[] {"Zobraziť okrem nadpisov aj popisy k článkom", "Zobraziť len nadpisy"};

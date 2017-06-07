@@ -186,12 +186,14 @@
             <!-- ACTUAL STATUS END ****************************************************** -->
             <!-- OVERALL INFO END ==================================================================== -->
 
-            <!-- SUBSCRIPTION OK AREA android:id="@+id/layout_subscription_ok" -->
+            <!-- SUBSCRIPTION OK AREA
+                 android:id SOURCE: https://stackoverflow.com/questions/4355122/how-to-include-a-layout-twice-in-android -->
             <include
                 android:id="@+id/layout_subscription_ok"
                 layout="@layout/logged_subscription_ok"/>
 
-            <!-- SUBSCRIPTION EXPIRED AREA  -->
+            <!-- SUBSCRIPTION EXPIRED AREA
+                 android:id SOURCE: https://stackoverflow.com/questions/4355122/how-to-include-a-layout-twice-in-android -->
             <include
                 android:id="@+id/layout_subscription_expired"
                 layout="@layout/logged_subscription_expired"/>

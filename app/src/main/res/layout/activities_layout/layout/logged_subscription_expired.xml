@@ -12,7 +12,7 @@
     android:visibility="gone"
     >
 
-    <!-- here are MAIN NAME and ACTUAL STATUS views (in activity main layout) -->
+    <!-- here are MAIN NAME and ACTUAL STATUS views (in activity_logged main layout file) -->
 
     <!-- "BUTTON" PROLONG SUBSCRIPTION START ****************************************************
           SOURCE of idea: https://stackoverflow.com/questions/23010356/button-with-text-aligned-left-and-right
@@ -53,9 +53,7 @@
     <!-- "BUTTON" PROLONG SUBSCRIPTION END ****************************************************** -->
 
     <!-- ACCOUNT DATA ********************************************************* -->
-    <include
-        android:id="@+id/account_data_subscription_expired"
-        layout="@layout/logged_account_data"/>
+    <include layout="@layout/logged_account_data"/>
 
     <!-- INFO POINTS - SUBSCRIPTION EXPIRED START **************************************************** -->
 

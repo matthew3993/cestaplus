@@ -1,7 +1,5 @@
 package sk.cestaplus.cestaplusapp.activities;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,42 +26,27 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.NetworkImageView;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import sk.cestaplus.cestaplusapp.R;
-import sk.cestaplus.cestaplusapp.activities.account_activities.LoginActivity;
-import sk.cestaplus.cestaplusapp.extras.IErrorCodes;
 import sk.cestaplus.cestaplusapp.fragments.AllFragment;
 import sk.cestaplus.cestaplusapp.fragments.SectionFragment;
-import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.utilities.CustomJobManager;
 import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.navDrawer.NavigationalDrawerPopulator;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
-import sk.cestaplus.cestaplusapp.utilities.CustomJobManager;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 import sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_DEFAULT_VALUE;
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_FROM_NOTIFICATION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_ARTICLE;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_FROM_NOTIFICATION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_LIST_STYLE;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_POST_NOTIFICATIONS;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_HEADER_ARTICLE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.TAG_ALL_FRAGMENT;
 
@@ -161,7 +144,7 @@ public class MainActivity
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                 .registerOnSharedPreferenceChangeListener(this);
 
-        //Util.checkScreenSize(this);
+        //Util.checkScreenSizeAndDensityToast(this);
     } // end ActivityMain onCreate method
 
     //region FONTS INIT - CALLIGRAPHY
@@ -467,29 +450,11 @@ public class MainActivity
 
     // endregion
 
-    //region UTIL METHODS
-
-    /*
-    private void checkRole() {
-        //kontrola módu aplikácie
-        int role = session.getRole();
-
-        if (role == ROLE_DEFAULT_VALUE) { //for example: first app start
-            // Launching the login activity
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
-
-            finish(); // finish actual activity
-        }
-    }
-    */
-    // endregion
-
     // region LISTENERS METHODS
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equalsIgnoreCase(KEY_PREF_POST_NOTIFICATIONS)) {
+        if (key.equalsIgnoreCase(getString(R.string.pref_post_notifications_key))) {
 
             if (customJobManager == null){
                 customJobManager = CustomJobManager.getInstance(getApplicationContext());
@@ -507,7 +472,7 @@ public class MainActivity
             }
         }//end if
 
-        if (key.equalsIgnoreCase(KEY_PREF_LIST_STYLE)) {
+        if (key.equalsIgnoreCase(getString(R.string.pref_list_style_key))) {
             // find fragment by it's container ID
             Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainActivityMainFragmentContainer);
 

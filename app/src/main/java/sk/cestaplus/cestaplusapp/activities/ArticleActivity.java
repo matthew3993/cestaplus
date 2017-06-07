@@ -29,7 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
@@ -74,7 +73,6 @@ import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_ARTICLE_URL;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_TEXT_SIZE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_ARTICLE_ERROR_CODE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_SCROLL_PERC;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_OBJ;
@@ -681,7 +679,9 @@ public class ArticleActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equalsIgnoreCase(KEY_PREF_TEXT_SIZE)) {
+
+        if (key.equalsIgnoreCase(getString(R.string.pref_text_size_key))) {
+            // change of TEXT SIZE
             showArticleText(); //reload views
         }
     }//end onSharedPreferenceChanged

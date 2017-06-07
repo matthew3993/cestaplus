@@ -12,9 +12,10 @@
     android:visibility="gone"
     >
 
-    <include
-        android:id="@+id/account_data_subscription_ok"
-        layout="@layout/logged_account_data"/>
+    <!-- here are MAIN NAME and ACTUAL STATUS views (in activity_logged main layout file) -->
+
+    <!-- ACCOUNT DATA ********************************************************* -->
+    <include layout="@layout/logged_account_data"/>
 
     <!-- THANK FOR YOUR SUPPORT START **************************************************** -->
 

@@ -11,7 +11,7 @@ public interface IKeys {
     String KEY_ARTICLE_ACTIVITY = "ArticleActivity";
     String KEY_BATERKA_ACTIVITY = "BaterkaActivity";
     String KEY_O_PORTALI_ACTIVITY = "OPortaliActivity";
-    String KEY_SETTINGS_ACTIVITY = "SettingsActivity";
+    String KEY_SETTINGS_ACTIVITY = "SettingsActivity_old";
     String KEY_LOGGED_ACTIVITY = "LoggedActivity";
     String KEY_NOT_LOGGED_ACTIVITY = "NotLoggedActivity";
 
@@ -78,11 +78,6 @@ public interface IKeys {
     String KEY_SUBSCRIPTION_START = "subscription_start";
     String KEY_SUBSCRIPTION_END = "subscription_end";
     String KEY_SUBSCRIPTION_NAME = "subscription_name";
-
-    //preferences keys
-    String KEY_PREF_POST_NOTIFICATIONS = "pref_post_notifications";
-    String KEY_PREF_LIST_STYLE = "pref_list_style";
-    String KEY_PREF_TEXT_SIZE = "pref_text_size";
 
     //
     String KEY_LAST_UPDATE = "lastUpdate";

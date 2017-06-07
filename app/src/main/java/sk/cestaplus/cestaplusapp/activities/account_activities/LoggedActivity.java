@@ -203,6 +203,9 @@ public class LoggedActivity
         tvActualStatus = (TextView) findViewById(R.id.tvActualStatus);
     }
 
+    /**
+     * SOURCE of idea activeArea.findViewById(): https://stackoverflow.com/questions/4355122/how-to-include-a-layout-twice-in-android
+     */
     private void initButtons() {
         // "button" prolong subscription
         rlProlongSubscription = (RelativeLayout) activeArea.findViewById(R.id.rlProlongSubscription);
@@ -227,7 +230,7 @@ public class LoggedActivity
     }
 
     /**
-     * SOURCE of idea: https://stackoverflow.com/questions/4355122/how-to-include-a-layout-twice-in-android
+     * SOURCE of idea activeArea.findViewById(): https://stackoverflow.com/questions/4355122/how-to-include-a-layout-twice-in-android
      */
     private void initAccountDataViews() {
         // !! activeArea.findViewById() !!
@@ -375,7 +378,10 @@ public class LoggedActivity
         if (remainingDays <= 3){
             TextUtil.setTextBoldAndRed(tvSubscriptionRemainingText, this);
         }
-        tvSubscriptionRemainingText.setText(String.format("%d dní", remainingDays));
+
+        //tvSubscriptionRemainingText.setText(String.format("%d dní", remainingDays));
+        // SOURCE: https://stackoverflow.com/questions/2397613/are-parameters-in-strings-xml-possible
+        tvSubscriptionRemainingText.setText(getString(R.string.logged_subscription_remaining_format, remainingDays));
     }
 
     private void showDataViews() {

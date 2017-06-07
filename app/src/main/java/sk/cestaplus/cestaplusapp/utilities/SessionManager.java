@@ -12,14 +12,11 @@ import android.util.Log;
 import java.text.ParseException;
 import java.util.Date;
 
+import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.objects.UserInfo;
 
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_DEFAULT_VALUE;
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_NAME;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_LIST_STYLE;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_POST_NOTIFICATIONS;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_TEXT_SIZE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SUBSCRIPTION_END;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SUBSCRIPTION_NAME;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SUBSCRIPTION_START;
@@ -178,11 +175,11 @@ public class SessionManager {
     }
 
     public int getTextSize(){
-        return Integer.parseInt(sharedPreferences.getString(KEY_PREF_TEXT_SIZE, "1"));
+        return Integer.parseInt(sharedPreferences.getString(context.getString(R.string.pref_text_size_key), "1"));
     }
 
     public void setTextSize(int textSize){
-        editor.putString(KEY_PREF_TEXT_SIZE, String.valueOf(textSize));
+        editor.putString(context.getString(R.string.pref_text_size_key), String.valueOf(textSize));
 
         // commit changes
         editor.commit();
@@ -200,18 +197,18 @@ public class SessionManager {
     }
 
     public int getListStyle(){
-        return Integer.parseInt(sharedPreferences.getString(KEY_PREF_LIST_STYLE, "0"));
+        return Integer.parseInt(sharedPreferences.getString(context.getString(R.string.pref_list_style_key), "0"));
     }
 
     public void setListStyle(int listStyle){
-        editor.putString(KEY_PREF_LIST_STYLE, String.valueOf(listStyle));
+        editor.putString(context.getString(R.string.pref_list_style_key), String.valueOf(listStyle));
 
         // commit changes
         editor.commit();
     }
 
     public boolean getPostNotificationStatus(){
-        return sharedPreferences.getBoolean(KEY_PREF_POST_NOTIFICATIONS, true); // true = notifications are on by default
+        return sharedPreferences.getBoolean(context.getString(R.string.pref_post_notifications_key), true); // true = notifications are on by default
     }
 
 }//end class SessionManager
