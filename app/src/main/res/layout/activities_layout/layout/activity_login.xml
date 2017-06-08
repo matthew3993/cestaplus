@@ -1,84 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    android:focusableInTouchMode="true" to stop EditText from gaining focus at Activity startup
+    SOURCE: comments (@Herman) of question: https://stackoverflow.com/questions/1555109/stop-edittext-from-gaining-focus-at-activity-startup?page=1&tab=votes#tab-top
+
+   android:layout_gravity="center"
+   -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    style="@style/login_RootLinearLayout"
 
-    android:background="@color/login_activity_bg"
-    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:layout_gravity="center"
     android:orientation="vertical"
-    android:padding="10dp" >
+
+    android:focusableInTouchMode="true">
 
     <!--
-        android:focusableInTouchMode="true" to stop EditText from gaining focus at Activity startup
-        SOURCE: comments (@Herman) of question: https://stackoverflow.com/questions/1555109/stop-edittext-from-gaining-focus-at-activity-startup?page=1&tab=votes#tab-top
-       -->
-    <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+    -->
+    <ImageView
+        style="@style/login_MainLogo"
 
-        android:focusableInTouchMode="true">
+        android:layout_width="200dp"
+        android:layout_height="80dp"
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
 
-            android:src="@drawable/cestaplus_full_logo"/>
+        android:src="@drawable/cestaplus_full_logo"/>
 
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:background="@color/white"
-            android:hint="@string/hint_email"
-            android:inputType="textEmailAddress"
-            android:padding="10dp"
-            android:maxLines="1"
-            android:textColor="@color/input_login"
-            android:textColorHint="@color/input_login_hint" />
+    <include layout="@layout/login_controls"/>
 
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:background="@color/white"
-            android:hint="@string/hint_password"
-            android:inputType="textPassword"
-            android:padding="10dp"
-            android:singleLine="true"
-            android:textColor="@color/input_login"
-            android:textColorHint="@color/input_login_hint" />
+    <!-- Button "Use as not logged in"  -->
+    <Button
+        android:id="@+id/btnUseAsNotLoggedIn"
+        style="@style/login_ButtonUseAsNotLoggedIn"
 
-        <!-- Login Button -->
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
 
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
-            android:background="@color/btn_login_bg"
-            android:text="@string/btn_login"
-            android:textColor="@color/btn_login_text" />
-
-        <!-- Use as not logged in button -->
-
-        <Button
-            android:id="@+id/btnUseAsNotLoggedIn"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dip"
-            android:background="@null"
-            android:text="@string/btn_use_as_not_logged_in"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15dp" />
-
-    </LinearLayout>
+        android:text="@string/btn_use_as_not_logged_in"
+        />
 
 </LinearLayout>

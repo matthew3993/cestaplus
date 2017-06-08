@@ -3,14 +3,17 @@
 <!-- NOTE: !! STYLES AND DIMENSIONS refer to Baterka styles and dimensions !! -->
 <android.support.design.widget.CoordinatorLayout
     android:id="@+id/loggedRootCoordinatorLayout"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- APPBAR START ************************************************************* -->
     <android.support.design.widget.AppBarLayout
         android:id="@+id/loggedAppBarLayout"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
@@ -26,6 +29,7 @@
         -->
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/loggedCollapsingToolbarLayout"
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
 

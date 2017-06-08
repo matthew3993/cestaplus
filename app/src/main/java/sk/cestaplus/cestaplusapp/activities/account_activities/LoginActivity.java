@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +27,8 @@ import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.Util;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 
@@ -46,7 +49,9 @@ public class LoginActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_login);
+        initActivityDefaultFont(); // set up default font of activity
 
         loginManager = LoginManager.getInstance(getApplicationContext()); //login manager initialisation !!
 
@@ -86,6 +91,33 @@ public class LoginActivity
             });
         }
     }// end onCreate
+
+    //region FONTS INIT - CALLIGRAPHY
+
+    /**
+     * Set up default font of activity Activity (not entire Application!) using Calligraphy lib
+     * SOURCE: https://github.com/chrisjenx/Calligraphy
+     */
+    private void initActivityDefaultFont() {
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/LatoLatin-Regular.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+        );
+    }
+
+    /**
+     * We NEED to override this method, because we MUST wrap the Activity! (not Application!) context
+     * for Calligraphy to get working
+     * SOURCE: https://github.com/chrisjenx/Calligraphy
+     * @param newBase
+     */
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase)); // IMPORTANT for Calligraphy to get working
+    }
+
+    //endregion
 
     /**
      * This method is called after login button click.
