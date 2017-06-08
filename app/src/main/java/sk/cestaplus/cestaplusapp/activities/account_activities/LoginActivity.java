@@ -51,8 +51,8 @@ public class LoginActivity
         loginManager = LoginManager.getInstance(getApplicationContext()); //login manager initialisation !!
 
         // init views
-        inputEmail = (EditText) findViewById(R.id.txtvNotLoggedIn);
-        inputPassword = (EditText) findViewById(R.id.password);
+        inputEmail = (EditText) findViewById(R.id.etEmail);
+        inputPassword = (EditText) findViewById(R.id.etPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
         btnUseAsNotLoggedIn = (Button) findViewById(R.id.btnUseAsNotLoggedIn);
 
@@ -65,7 +65,7 @@ public class LoginActivity
 
         // Check if user is already logged in or not
         if (Util.isLoggedIn()) {
-            launchMainActivity();            // User is already logged in. Take him to main activity
+            launchMainActivity(); // User is already logged in. Take him to main activity
         }
 
         // Login button Click Event
@@ -77,14 +77,14 @@ public class LoginActivity
 
         });
         
-        // Button use as not logged in Click Event
-        btnUseAsNotLoggedIn.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View view) {
-            setUseAsNotLoggedIn();
-            }
-        });
-
+        // Button 'use as not logged in' Click Event
+        if (btnUseAsNotLoggedIn != null) {
+            btnUseAsNotLoggedIn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    setUseAsNotLoggedIn();
+                }
+            });
+        }
     }// end onCreate
 
     /**
@@ -96,7 +96,7 @@ public class LoginActivity
 
         // Check for empty data in the form
         if (email.trim().length() > 0 && password.trim().length() > 0) {
-            showDialog();
+            showLoggingDialog();
 
             // try to login - will trigger one of LoginManagerInteractionListener methods
             loginManager.tryLogin(email, password, true, this); // true = remember password
@@ -120,7 +120,7 @@ public class LoginActivity
         finish();
     }
 
-    private void showDialog() {
+    private void showLoggingDialog() {
         if (!pDialog.isShowing())
             pDialog.show();
     }
