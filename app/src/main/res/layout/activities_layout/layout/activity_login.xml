@@ -25,8 +25,8 @@
     <ImageView
         style="@style/login_MainLogo"
 
-        android:layout_width="200dp"
-        android:layout_height="80dp"
+        android:layout_width="@dimen/main_logo_width"
+        android:layout_height="@dimen/main_logo_height"
 
         android:layout_gravity="center_horizontal"
 

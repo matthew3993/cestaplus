@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -89,6 +90,10 @@ public class LoginActivity
                     setUseAsNotLoggedIn();
                 }
             });
+
+            // underline text
+            // SOURCE: https://stackoverflow.com/a/4623602 - in comments
+            btnUseAsNotLoggedIn.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
         }
     }// end onCreate
 
