@@ -1,10 +1,10 @@
 <!-- These dimension values are DEFAULT values -->
-<!-- !@ == overrided other screen sizes config files -->
+<!-- !@ == overrided in other screen sizes config files -->
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="expanded_toolbar_title_margin_start">64dp</dimen>
+    <!-- Definition of "match_parent" and "wrap_content" constants, so they can be use in dimensions
+         SOURCE: https://stackoverflow.com/a/34176155 -->
+    <item name="match_parent" format="integer" type="dimen">-1</item>
+    <item name="wrap_content" format="integer" type="dimen">-2</item>
 
 <!-- ===================== MAIN ACTIVITY START ======================================================================================== -->
     <!-- HEADER IMAGE -->

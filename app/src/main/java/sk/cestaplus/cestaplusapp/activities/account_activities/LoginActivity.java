@@ -19,6 +19,7 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -38,14 +39,23 @@ public class LoginActivity
     extends Activity
     implements LoginManager.LoginManagerInteractionListener {
 
+    //data
+    private LoginManager loginManager;
+    private SessionManager session;
+    private boolean isShowedKeyboard; //helper flag meaning if soft keyboard is showed or not
+
+    // UI components
+    private View activeLayout;
+
+    //body
+    private EditText etEmail;
+    private EditText etPassword;
     private Button btnLogin;
     private Button btnUseAsNotLoggedIn;
-    private EditText inputEmail;
-    private EditText inputPassword;
-    private ProgressDialog pDialog;
-    private SessionManager session;
 
-    private LoginManager loginManager;
+    // loading & error views
+    private ProgressDialog pDialog;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,27 +64,90 @@ public class LoginActivity
         setContentView(R.layout.activity_login);
         initActivityDefaultFont(); // set up default font of activity
 
-        loginManager = LoginManager.getInstance(getApplicationContext()); //login manager initialisation !!
-
-        // init views
-        inputEmail = (EditText) findViewById(R.id.etEmail);
-        inputPassword = (EditText) findViewById(R.id.etPassword);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
-        btnUseAsNotLoggedIn = (Button) findViewById(R.id.btnUseAsNotLoggedIn);
-
-        // Progress dialog init
-        pDialog = new ProgressDialog(this);
-        pDialog.setCancelable(false);
-
-        // Session manager
-        session = new SessionManager(getApplicationContext());
-
         // Check if user is already logged in or not
         if (Util.isLoggedIn()) {
             launchMainActivity(); // User is already logged in. Take him to main activity
         }
 
-        // Login button Click Event
+        // initialisations
+        loginManager = LoginManager.getInstance(getApplicationContext()); //login manager initialisation !!
+        session = new SessionManager(getApplicationContext());
+
+        // keyboard is hidden at the start of activity
+        // (using android:focusableInTouchMode="true" on root layout to prevent EditText from receiving focus)
+        isShowedKeyboard = false;
+
+        // init OnGlobalLayoutListener
+        final View activityRootView = findViewById(R.id.login_RootLinearLayout);
+        final Context context = this;
+
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            /**
+             * This method is called EVERY time when something changes on the screen - mainly when entire soft keyboard is shown/hidden,
+             * but also when only part of soft keyboard is shown/hidden (for example top row with numbers),
+             * AND it's called 2 times when something changes on the screen (for some reason, found out by debugging) => therefore
+             * helper flag "isShowedKeyboard" and it check is needed to prevent initialisation of same views multiple times
+             * when it's not needed and requesting focus multiple times even we don't want it.
+             */
+            @Override
+            public void onGlobalLayout() {
+                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+
+                if (heightDiff > Util.pxFromDp(context, 200)) { // if more than 200 dp, it's probably a keyboard...
+                    // soft keyboard is SHOWED
+                    //Toast.makeText(context, "Keyboard SHOWED", Toast.LENGTH_SHORT).show();
+
+                    if (!isShowedKeyboard) { //check comment of method
+                        // keyboard WAS hidden and NOW it is SHOWED
+                        isShowedKeyboard = true;
+
+                        View withKeyboard = findViewById(R.id.login_LayoutWithKeyboard);
+                        withKeyboard.setVisibility(View.VISIBLE);
+                        View withOutKeyboard = findViewById(R.id.login_LayoutWithOutKeyboard);
+                        withOutKeyboard.setVisibility(View.GONE);
+
+                        activeLayout = withKeyboard;
+                        initViews();
+                        etEmail.requestFocus(); //!! - SOURCE: https://stackoverflow.com/a/8080621 - check the comments of this answer
+                    }
+                } else {
+                    // soft keyboard is HIDDEN
+                    //Toast.makeText(context, "Keyboard HIDDEN", Toast.LENGTH_SHORT).show();
+
+                    if (isShowedKeyboard) { //check comment of method
+                        // keyboard WAS showed and NOW it is HIDDEN
+                        isShowedKeyboard = false;
+
+                        View withKeyboard = findViewById(R.id.login_LayoutWithKeyboard);
+                        withKeyboard.setVisibility(View.GONE);
+                        View withOutKeyboard = findViewById(R.id.login_LayoutWithOutKeyboard);
+                        withOutKeyboard.setVisibility(View.VISIBLE);
+
+                        activeLayout = withOutKeyboard;
+                        initViews();
+                    }
+                }
+            }
+        });
+
+        activeLayout = findViewById(R.id.login_LayoutWithOutKeyboard);
+        initViews();
+
+        // Progress dialog init
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(false);
+
+    }// end onCreate
+
+    private void initViews() {
+        // !! activeLayout.findViewById() !!
+        etEmail = (EditText) activeLayout.findViewById(R.id.etEmail);
+        etPassword = (EditText) activeLayout.findViewById(R.id.etPassword);
+        btnLogin = (Button) activeLayout.findViewById(R.id.btnLogin);
+        btnUseAsNotLoggedIn = (Button) activeLayout.findViewById(R.id.btnUseAsNotLoggedIn);
+
+        // Login button OnClickListener
         btnLogin.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
@@ -82,8 +155,8 @@ public class LoginActivity
             }//end onClick
 
         });
-        
-        // Button 'use as not logged in' Click Event
+
+        // Button 'use as not logged in' OnClickListener
         if (btnUseAsNotLoggedIn != null) {
             btnUseAsNotLoggedIn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
@@ -92,10 +165,15 @@ public class LoginActivity
             });
 
             // underline text
-            // SOURCE: https://stackoverflow.com/a/4623602 - in comments
-            btnUseAsNotLoggedIn.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+            // SOURCES:
+            //  https://stackoverflow.com/a/31718887
+            //  https://stackoverflow.com/a/31719008
+            btnUseAsNotLoggedIn.setPaintFlags(btnUseAsNotLoggedIn.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+            // underlining this way for some reason makes text look like without antialiasing :(
+            // btnUseAsNotLoggedIn.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
         }
-    }// end onCreate
+    }
 
     //region FONTS INIT - CALLIGRAPHY
 
@@ -128,8 +206,8 @@ public class LoginActivity
      * This method is called after login button click.
      */
     private void checkForm() {
-        String email = inputEmail.getText().toString();
-        String password = computeHash( inputPassword.getText().toString() );
+        String email = etEmail.getText().toString();
+        String password = computeHash( etPassword.getText().toString() );
 
         // Check for empty data in the form
         if (email.trim().length() > 0 && password.trim().length() > 0) {

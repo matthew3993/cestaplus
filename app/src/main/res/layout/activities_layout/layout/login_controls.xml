@@ -30,15 +30,4 @@
         android:hint="@string/hint_password"
         />
 
-    <!-- Login Button -->
-    <Button
-        android:id="@+id/btnLogin"
-        style="@style/login_ButtonLogin"
-
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:text="@string/btn_login"
-        />
-
 </LinearLayout>

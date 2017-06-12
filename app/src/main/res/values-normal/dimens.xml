@@ -187,11 +187,21 @@
     <dimen name="main_logo_margin_top">70dp</dimen>
     <dimen name="main_logo_margin_bottom">115dp</dimen>
 
+    <dimen name="main_logo_width_with_keyboard">150dp</dimen>
+    <dimen name="main_logo_height_with_keyboard">60dp</dimen>
+    <dimen name="main_logo_margin_top_with_keyboard">30dp</dimen>
+    <dimen name="main_logo_margin_bottom_with_keyboard">20dp</dimen>
+
     <dimen name="email_password_text_size">18sp</dimen>
+
+    <dimen name="btn_login_layout_height">40dp</dimen>
     <dimen name="btn_login_text_size">14sp</dimen>
 
-    <dimen name="btn_use_as_not_logged_in_margin_top">100dp</dimen>
+    <!-- <dimen name="btn_use_as_not_logged_in_margin_top">100dp</dimen> -->
     <dimen name="btn_use_as_not_logged_in_text_size">15sp</dimen>
+    <dimen name="btn_use_as_not_logged_in_margin_bottom">30dp</dimen>
+    <dimen name="btn_use_as_not_logged_in_margin_bottom_with_keyboard">0dp</dimen>
+
     <!-- ===================== LOGIN ACTIVITY END ===================================================================================== -->
 
 </resources>

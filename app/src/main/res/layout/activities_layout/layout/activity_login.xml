@@ -8,41 +8,24 @@
    -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:id="@+id/login_RootLinearLayout"
     style="@style/login_RootLinearLayout"
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:layout_gravity="center"
     android:orientation="vertical"
 
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    >
 
-    <!--
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-    -->
-    <ImageView
-        style="@style/login_MainLogo"
+    <include
+        android:id="@+id/login_LayoutWithOutKeyboard"
+        layout="@layout/login_without_keyboard"/>
 
-        android:layout_width="@dimen/main_logo_width"
-        android:layout_height="@dimen/main_logo_height"
-
-        android:layout_gravity="center_horizontal"
-
-        android:src="@drawable/cestaplus_full_logo"/>
-
-    <include layout="@layout/login_controls"/>
-
-    <!-- Button "Use as not logged in"  -->
-    <Button
-        android:id="@+id/btnUseAsNotLoggedIn"
-        style="@style/login_ButtonUseAsNotLoggedIn"
-
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:text="@string/btn_use_as_not_logged_in"
-        />
+    <include
+        android:id="@+id/login_LayoutWithKeyboard"
+        layout="@layout/login_with_keyboard"/>
 
 </LinearLayout>
