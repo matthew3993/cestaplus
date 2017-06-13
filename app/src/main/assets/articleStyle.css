@@ -16,6 +16,12 @@ p {
 	line-height: 1.42857143;
 }
 
+div.articleText { /* naming according to Templator getFullTeplate() */
+    font-family: "LatoLatinWeb";
+	color: #3b454a;
+	line-height: 1.42857143;
+}
+
 img {
 	max-width: 100%;
 	height: auto;

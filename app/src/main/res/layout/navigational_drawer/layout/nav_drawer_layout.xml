@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- Some dimensions according to: https://material.io/guidelines/patterns/navigation-drawer.html#navigation-drawer-specs
+     or according to Gmail app by try&error method :) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
 

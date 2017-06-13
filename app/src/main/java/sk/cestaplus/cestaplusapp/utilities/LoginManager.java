@@ -144,7 +144,7 @@ public class LoginManager {
                         String API_key = Parser.parseAPI_key(response);
                         session.setAPI_key(API_key);
 
-                        CustomNotificationManager.issueNotification("New API key: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST+3); // debug notification
+                        //CustomNotificationManager.issueNotification("New API key: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST+3); // debug notification
 
                         listener.onLoginSuccessful(null); // null = user info is not needed in this case
                         break;
@@ -191,7 +191,7 @@ public class LoginManager {
             }
         };
 
-        CustomNotificationManager.issueNotification("Trying to relogin...", NOTIFICATION_API_KEY_TEST+2); // debug notification
+        //CustomNotificationManager.issueNotification("Trying to relogin...", NOTIFICATION_API_KEY_TEST+2); // debug notification
         volleySingleton.createReLoginRequest(responseLis, errorLis);
     }//end relogin
 

@@ -197,14 +197,17 @@
                 />
 
             <com.google.android.gms.ads.AdView
-                ads:adSize="BANNER"
-                ads:adUnitId="ca-app-pub-1436124006395902/9227313475"
-                android:visibility="gone"
                 android:id="@+id/adView"
+
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
 
+                ads:adSize="BANNER"
+                ads:adUnitId="ca-app-pub-1436124006395902/9227313475"
+
                 android:layout_marginTop="10dp"
+
+                android:visibility="gone"
                 >
 
             </com.google.android.gms.ads.AdView>

@@ -51,6 +51,8 @@
         <item name="android:layout_marginLeft">@dimen/nav_dr_group_item_title_margin_left</item>
         <item name="android:layout_marginRight">@dimen/nav_dr_group_item_title_margin_right</item>
         <item name="android:layout_marginBottom">@dimen/nav_dr_header_email_margin_bottom</item>
+        <!-- layout_marginBottom is same as tv email - but if this view if visible, tvNavDrEmail has adjusted marginBottom
+             in code to be same as tvNavDrFullName margin_bottom -->
 
     </style>
 

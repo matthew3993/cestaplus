@@ -151,7 +151,7 @@ public class VolleySingleton {
                 Map<String, String> params = new HashMap<>();
                 params.put(KEY_PARAMS_API_KEY, session.getAPI_key());
 
-                CustomNotificationManager.issueNotification("Loading article, API_KEY: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST); // debug notification
+                //CustomNotificationManager.issueNotification("Loading article, API_KEY: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST); // debug notification
 
                 //create request
                 JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(

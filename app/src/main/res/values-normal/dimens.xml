@@ -60,6 +60,8 @@
     <!-- RECYCLER VIEW LIST ITEMS END ******************************* -->
 
     <!-- NAVIGATIONAL DRAWER START ****************************************************** -->
+    <!-- Some dimensions according to: https://material.io/guidelines/patterns/navigation-drawer.html#navigation-drawer-specs
+         or according to Gmail app by try&error method :) -->
     <!-- NAV. DR. HEADER ***** -->
     <dimen name="nav_dr_header_layout_height">120dp</dimen>
 
@@ -67,7 +69,7 @@
     <dimen name="nav_dr_header_image_height">60dp</dimen>
 
     <!-- NAV. DR. LOGIN STATUS -->
-    <dimen name="nav_dr_header_full_name_text_size">13sp</dimen>
+    <dimen name="nav_dr_header_full_name_text_size">13sp</dimen> <!-- should be 14sp  -->
     <dimen name="nav_dr_header_email_margin_bottom">12dp</dimen>
 
     <!-- DIVIDER between nav. dr. header and AnimatedExpandableListView -->
@@ -88,17 +90,16 @@
     <dimen name="nav_dr_group_item_title_margin_top_bottom">15dp</dimen>
 
     <!-- CHILD ITEM TITLE -->
-    <dimen name="nav_dr_list_item_text_size">11sp</dimen> <!-- 17sp  -->
+    <dimen name="nav_dr_list_item_text_size">13sp</dimen>
 
     <dimen name="nav_dr_child_item_title_margin_left">100dp</dimen>
     <dimen name="nav_dr_child_item_title_margin_right">10dp</dimen>
     <dimen name="nav_dr_child_item_title_margin_top_bottom">10dp</dimen>
     <!-- NAVIGATIONAL DRAWER END ******************************************************* -->
 
-
     <!-- ===================== MAIN ACTIVITY END ======================================================================================== -->
 
-<!-- ===================== ARTICLE ACTIVITY START =================================================================================== -->
+    <!-- ===================== ARTICLE ACTIVITY START =================================================================================== -->
     <dimen name="linear_layout_padding">3dp</dimen>
 
     <dimen name="article_font_size_big">22px</dimen>

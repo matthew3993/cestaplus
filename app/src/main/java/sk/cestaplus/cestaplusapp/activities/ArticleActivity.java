@@ -483,7 +483,7 @@ public class ArticleActivity
             // role is "subscription ok", but there is a problem with api key
             // this means, that API_key is not valid => refresh API_key
 
-            CustomNotificationManager.issueNotification("Problem with API key: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST+1); // debug notification
+            //CustomNotificationManager.issueNotification("Problem with API key: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST+1); // debug notification
 
             loginManager.tryRelogin(1, this);
 
@@ -575,8 +575,9 @@ public class ArticleActivity
     }
 
     private void loadAd() {
-        //load ads only if app is NOT logged mode
-        if (session.getRole() == 0) { //user use apllication in NOT logged mode
+        //load ads only if subscription is not valid
+        if (!Util.isSubscriptionValid(role)) {
+            // subscription is not valid
 
             AdView adView = (AdView) findViewById(R.id.adView);
 
@@ -792,7 +793,7 @@ public class ArticleActivity
         @Override
         public void onPageFinished(WebView view, String url) {
 
-            Log.d("SCROLLING", "onPageLoaded()");
+            Log.d("SCROLLING", "onPageFinished()");
             // SOURCE: http://stackoverflow.com/a/26565217
             //webView.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
 

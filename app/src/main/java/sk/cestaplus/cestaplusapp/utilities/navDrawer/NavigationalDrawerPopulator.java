@@ -61,11 +61,36 @@ public class NavigationalDrawerPopulator {
     // init full name & email text views
         TextView tvFullName = (TextView) activity.findViewById(R.id.tvNavDrFullName);
         TextView tvEmail= (TextView) activity.findViewById(R.id.tvNavDrEmail);
+        TextView tvSubscriptionExpired = (TextView) activity.findViewById(R.id.tvNavDrSubscriptionExpired);
 
         switch (session.getRole()){
             case ROLE_NOT_LOGGED: {
                 tvFullName.setText(context.getString(R.string.not_logged_user));
                 tvEmail.setVisibility(View.GONE);
+
+            // Adjust bottom margin of tvFullName
+                //SOURCES:
+                //  http://stackoverflow.com/questions/11121028/load-dimension-value-from-res-values-dimension-xml-from-source-code
+                //  http://stackoverflow.com/questions/3277196/can-i-set-androidlayout-below-at-runtime-programmatically
+
+                //Creating a new params
+                /*RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );*/
+
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvFullName.getLayoutParams();
+
+                // getDimension methods returns dimensions in PIXELS
+                int leftPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_left);
+                int topPx = 0;
+                int rightPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_right);
+                int bottomPx = (int) context.getResources().getDimension(R.dimen.nav_dr_header_email_margin_bottom); // CHANGE! - same as email
+
+                params.setMargins(leftPx, topPx, rightPx, bottomPx); // set in PIXELS (left, top, right, bottom);
+                //params.addRule(RelativeLayout.BELOW, R.id.navDrHeaderLogoRelativeLayout); //!! don't forget to set all "layout_..." rules from xml, when creating new params ;-)
+
+                tvFullName.setLayoutParams(params);
                 break;
             }
             case ROLE_LOGGED_SUBSCRIPTION_OK: {
@@ -77,9 +102,7 @@ public class NavigationalDrawerPopulator {
                 tvFullName.setText(session.getFullName());
                 tvEmail.setText(session.getEmail());
 
-                // show tvSubscriptionExpired
-                TextView tvSubscriptionExpired = (TextView) activity.findViewById(R.id.tvNavDrSubscriptionExpired);
-                tvSubscriptionExpired.setVisibility(View.VISIBLE);
+                tvSubscriptionExpired.setVisibility(View.VISIBLE); // show tvSubscriptionExpired
 
             // Adjust bottom margin of tvEmail
                 //SOURCES:
@@ -98,12 +121,10 @@ public class NavigationalDrawerPopulator {
                 int rightPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_right);
                 int bottomPx = (int) context.getResources().getDimension(R.dimen.nav_dr_header_full_name_margin_bottom); // CHANGE! - same as full name
 
-                params.setMargins(leftPx, topPx, rightPx, bottomPx); // in PIXELS (left, top, right, bottom);
+                params.setMargins(leftPx, topPx, rightPx, bottomPx); // set in PIXELS (left, top, right, bottom);
                 params.addRule(RelativeLayout.BELOW, R.id.tvNavDrFullName); //!! don't forget to set all "layout_..." rules from xml, when creating new params ;-)
 
                 tvEmail.setLayoutParams(params);
-                //tvEmail.invalidate();
-                //tvEmail.requestLayout();
 
                 break;
             }
@@ -112,6 +133,24 @@ public class NavigationalDrawerPopulator {
                 tvEmail.setVisibility(View.GONE);
             }
         }
+
+        // create and set onClickListener to account info TextViews
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // init class that have to be started for account activity
+                Class accountClassToStart = Util.getAccountActivityToStart();
+
+                // start corresponding AccountActivity
+                new ActivityStarter(context, accountClassToStart, KEY_MAIN_ACTIVITY, 0)
+                        .execute();
+
+            }
+        };
+
+        tvFullName.setOnClickListener(onClickListener);
+        tvEmail.setOnClickListener(onClickListener);
+        tvSubscriptionExpired.setOnClickListener(onClickListener);
 
     // POPULATE LIST
         final List<GroupItem> groupItems = new ArrayList<>();
@@ -159,7 +198,7 @@ public class NavigationalDrawerPopulator {
 
         GroupItem groupWorld = new GroupItem(context.getString(R.string.world_group_item_title), new EmptyAction());
 
-        groupWorld.items.add(new ChildItemSection(activity, context.getString(R.string.krestan_v_politike_title), context.getString(R.string.z_parlamentu_id)));
+        groupWorld.items.add(new ChildItemSection(activity, context.getString(R.string.krestan_v_politike_title), context.getString(R.string.krestan_v_politike_id)));
         groupWorld.items.add(new ChildItemSection(activity, context.getString(R.string.z_parlamentu_title), context.getString(R.string.z_parlamentu_id)));
         groupWorld.items.add(new ChildItemSection(activity, context.getString(R.string.recenzia_title), context.getString(R.string.recenzia_id)));
         groupWorld.items.add(new ChildItemSection(activity, context.getString(R.string.na_pulze_title), context.getString(R.string.na_pulze_id)));
