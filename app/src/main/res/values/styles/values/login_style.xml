@@ -5,9 +5,9 @@
          marginTop is always 0dp
          setting martingBottom to desired value
 
-         NOTE: because 3 views (ivMainLogo, btnLogin and btnUseAsNotLogged) are doubled (without and with keyboard)
-               ALL common attributes are moved to styles - also attributes normally written in layout file,
-               for example: src, text, layout_gravity,
+         NOTE: because 3 views (ivMainLogo, btnLogin and btnUseAsNotLogged) are doubled (without and with keyboard),
+               some attributes, which these doubled views have in common are moved to styles -
+               also attributes normally written in layout file, for example: src, text, layout_gravity, ...
          -->
 
     <style
@@ -28,6 +28,9 @@
 
         <item name="android:layout_marginTop">@dimen/main_logo_margin_top</item> <!-- 70dp -->
         <item name="android:layout_marginBottom">@dimen/main_logo_margin_bottom</item> <!-- 50dp / 135dp -->
+
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:src">@drawable/cestaplus_full_logo</item>
     </style>
 
     <style
@@ -67,6 +70,8 @@
 
         <item name="android:layout_marginTop">0dp</item>
         <item name="android:layout_marginBottom">0dp</item> <!-- because it is on bottom of login_control layout -->
+
+        <item name="android:text">@string/btn_login</item>
     </style>
 
     <style
@@ -83,6 +88,8 @@
 
         <item name="android:layout_marginTop">0dp</item> <!-- 40dp / 100dp --> <!-- exception -->
         <item name="android:layout_marginBottom">@dimen/btn_use_as_not_logged_in_margin_bottom</item>
+
+        <item name="android:text">@string/btn_use_as_not_logged_in</item>
     </style>
 
 
@@ -90,7 +97,7 @@
 
     <style
         name="login_MainLogoWithKeyboard"
-        parent="Theme.AppCompat.Light.DarkActionBar">
+        parent="login_MainLogo">
 
         <item name="android:layout_marginTop">@dimen/main_logo_margin_top_with_keyboard</item> <!-- 70dp -->
         <item name="android:layout_marginBottom">@dimen/main_logo_margin_bottom_with_keyboard</item> <!-- 50dp / 135dp -->

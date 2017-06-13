@@ -18,6 +18,7 @@
     android:focusableInTouchMode="true"
     >
 
+    <!-- MAIN LOGOs-->
     <LinearLayout
         android:id="@+id/llMainLogo"
 
@@ -36,9 +37,7 @@
             android:layout_width="@dimen/main_logo_width"
             android:layout_height="@dimen/main_logo_height"
 
-            android:layout_gravity="center_horizontal"
-
-            android:src="@drawable/cestaplus_full_logo"/>
+            />
 
         <!-- Main logo *** WITH KEYBOARD *** -->
         <ImageView
@@ -48,11 +47,8 @@
             android:layout_width="@dimen/main_logo_width_with_keyboard"
             android:layout_height="@dimen/main_logo_height_with_keyboard"
 
-            android:layout_gravity="center_horizontal"
-
             android:visibility="gone"
-
-            android:src="@drawable/cestaplus_full_logo"/>
+            />
 
     </LinearLayout>
 
@@ -78,14 +74,11 @@
         style="@style/login_ButtonLogin"
 
         android:layout_width="match_parent"
-
         android:layout_below="@id/llLoginControls"
-
-        android:text="@string/btn_login"
         />
 
     <!-- Login Button  *** WITH KEYBOARD *** -->
-    <!-- layout_height set in style -->
+    <!-- layout_height set in style, because on NORMAL screens WITH keyboard it must be less than "wrap_content"-->
     <Button
         android:id="@+id/btnLoginWithKeyboard"
         style="@style/login_ButtonLoginWithKeyboard"
@@ -94,7 +87,6 @@
         android:layout_below="@id/llLoginControls"
 
         android:visibility="gone"
-        android:text="@string/btn_login"
         />
 
     <!-- Button "Use as not logged in"  -->
@@ -107,7 +99,6 @@
 
         android:layout_alignParentBottom="true"
 
-        android:text="@string/btn_use_as_not_logged_in"
         />
 
     <!-- Button "Use as not logged in"  *** WITH KEYBOARD *** -->
@@ -121,6 +112,5 @@
         android:layout_alignParentBottom="true"
 
         android:visibility="gone"
-        android:text="@string/btn_use_as_not_logged_in"
         />
 </RelativeLayout>
