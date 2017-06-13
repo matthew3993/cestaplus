@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import sk.cestaplus.cestaplusapp.objects.UserInfo;
@@ -45,9 +46,8 @@ public class LoginActivity
     private boolean isShowedKeyboard; //helper flag meaning if soft keyboard is showed or not
 
     // UI components
-    private View activeLayout;
-
     //body
+    private ImageView ivMainLogo;
     private EditText etEmail;
     private EditText etPassword;
     private Button btnLogin;
@@ -102,13 +102,16 @@ public class LoginActivity
                         // keyboard WAS hidden and NOW it is SHOWED
                         isShowedKeyboard = true;
 
-                        View withKeyboard = findViewById(R.id.login_LayoutWithKeyboard);
-                        withKeyboard.setVisibility(View.VISIBLE);
-                        View withOutKeyboard = findViewById(R.id.login_LayoutWithOutKeyboard);
-                        withOutKeyboard.setVisibility(View.GONE);
+                        ivMainLogo.setVisibility(View.GONE);
+                        btnLogin.setVisibility(View.GONE);
+                        btnUseAsNotLoggedIn.setVisibility(View.GONE);
 
-                        activeLayout = withKeyboard;
-                        initViews();
+                        initViewsWithKeyboard();
+
+                        ivMainLogo.setVisibility(View.VISIBLE);
+                        btnLogin.setVisibility(View.VISIBLE);
+                        btnUseAsNotLoggedIn.setVisibility(View.VISIBLE);
+
                         etEmail.requestFocus(); //!! - SOURCE: https://stackoverflow.com/a/8080621 - check the comments of this answer
                     }
                 } else {
@@ -119,20 +122,22 @@ public class LoginActivity
                         // keyboard WAS showed and NOW it is HIDDEN
                         isShowedKeyboard = false;
 
-                        View withKeyboard = findViewById(R.id.login_LayoutWithKeyboard);
-                        withKeyboard.setVisibility(View.GONE);
-                        View withOutKeyboard = findViewById(R.id.login_LayoutWithOutKeyboard);
-                        withOutKeyboard.setVisibility(View.VISIBLE);
+                        ivMainLogo.setVisibility(View.GONE);
+                        btnLogin.setVisibility(View.GONE);
+                        btnUseAsNotLoggedIn.setVisibility(View.GONE);
 
-                        activeLayout = withOutKeyboard;
-                        initViews();
+                        initViewsWithOutKeyboard();
+
+                        ivMainLogo.setVisibility(View.VISIBLE);
+                        btnLogin.setVisibility(View.VISIBLE);
+                        btnUseAsNotLoggedIn.setVisibility(View.VISIBLE);
                     }
                 }
             }
         });
 
-        activeLayout = findViewById(R.id.login_LayoutWithOutKeyboard);
-        initViews();
+        initLoginControls();
+        initViewsWithOutKeyboard();
 
         // Progress dialog init
         pDialog = new ProgressDialog(this);
@@ -140,13 +145,28 @@ public class LoginActivity
 
     }// end onCreate
 
-    private void initViews() {
-        // !! activeLayout.findViewById() !!
-        etEmail = (EditText) activeLayout.findViewById(R.id.etEmail);
-        etPassword = (EditText) activeLayout.findViewById(R.id.etPassword);
-        btnLogin = (Button) activeLayout.findViewById(R.id.btnLogin);
-        btnUseAsNotLoggedIn = (Button) activeLayout.findViewById(R.id.btnUseAsNotLoggedIn);
+    private void initViewsWithOutKeyboard() {
+        initViews(R.id.ivMainLogo, R.id.btnLogin, R.id.btnUseAsNotLoggedIn);
+    }
 
+    private void initViewsWithKeyboard() {
+        initViews(R.id.ivMainLogoWithKeyboard, R.id.btnLoginWithKeyboard, R.id.btnUseAsNotLoggedIn_WithKeyboard);
+    }
+
+    private void initViews(int mainLogoId, int btnLoginId, int btnUseAsNotLoggedInId) {
+        ivMainLogo = (ImageView) findViewById(mainLogoId);
+        btnLogin = (Button) findViewById(btnLoginId);
+        btnUseAsNotLoggedIn = (Button) findViewById(btnUseAsNotLoggedInId);
+
+        setButtonsListeners();
+    }
+
+    private void initLoginControls() {
+        etEmail = (EditText) findViewById(R.id.etEmail);
+        etPassword = (EditText) findViewById(R.id.etPassword);
+    }
+
+    private void setButtonsListeners() {
         // Login button OnClickListener
         btnLogin.setOnClickListener(new View.OnClickListener() {
 

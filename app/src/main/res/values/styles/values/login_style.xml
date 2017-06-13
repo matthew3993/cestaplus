@@ -3,7 +3,12 @@
 
     <!-- in LOGIN activity:
          marginTop is always 0dp
-         setting martingBottom to desired value -->
+         setting martingBottom to desired value
+
+         NOTE: because 3 views (ivMainLogo, btnLogin and btnUseAsNotLogged) are doubled (without and with keyboard)
+               ALL common attributes are moved to styles - also attributes normally written in layout file,
+               for example: src, text, layout_gravity,
+         -->
 
     <style
         name="login_RootLinearLayout"
@@ -101,8 +106,6 @@
     <style
         name="login_ButtonUseAsNotLoggedIn_WithKeyboard"
         parent="login_ButtonUseAsNotLoggedIn">
-
-        <item name="android:textSize">@dimen/btn_use_as_not_logged_in_text_size</item>
 
         <item name="android:layout_marginBottom">@dimen/btn_use_as_not_logged_in_margin_bottom_with_keyboard</item>
     </style>
