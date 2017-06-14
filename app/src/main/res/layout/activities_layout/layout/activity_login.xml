@@ -4,7 +4,7 @@
     android:focusableInTouchMode="true" to stop EditText from gaining focus at Activity startup
     SOURCE: comments (@Herman) of question: https://stackoverflow.com/questions/1555109/stop-edittext-from-gaining-focus-at-activity-startup?page=1&tab=votes#tab-top
 
-   android:layout_gravity="center"
+    android:layout_gravity="center"
    -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"

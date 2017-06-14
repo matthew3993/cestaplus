@@ -13,10 +13,15 @@ public interface Constants {
     int ART_NUM = 20; //number of articles per page
     int DELAY_TO_START_ACTIVITY_MILLIS = 200;
 
+    //Volley cache expiration constants
+    int CACHE_ENTRY_SOFT_TTL_MIN = 24 * 60; // 24 hours in minutes
+    int CACHE_ENTRY_TTL_MIN = 24 * 60; // 24 hours in minutes
+
     //List styles
     int LIST_STYLE_ALL = 0;
     int LIST_STYLE_PICTURES_AND_TITLES = 1;
 
+    // urls
     String URL_SUBSCRIPTION_INFO = "http://www.cestaplus.sk/predplatne/info";
     String URL_SUBSCRIPTION_PROLONG = "http://www.cestaplus.sk/predplatne?temp=new";
 }

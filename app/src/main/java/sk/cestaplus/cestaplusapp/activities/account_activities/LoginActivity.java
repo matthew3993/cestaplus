@@ -102,15 +102,9 @@ public class LoginActivity
                         // keyboard WAS hidden and NOW it is SHOWED
                         isShowedKeyboard = true;
 
-                        ivMainLogo.setVisibility(View.GONE);
-                        btnLogin.setVisibility(View.GONE);
-                        btnUseAsNotLoggedIn.setVisibility(View.GONE);
-
-                        initViewsWithKeyboard();
-
-                        ivMainLogo.setVisibility(View.VISIBLE);
-                        btnLogin.setVisibility(View.VISIBLE);
-                        btnUseAsNotLoggedIn.setVisibility(View.VISIBLE);
+                        setGoneChangableViews();
+                        initViewsWithKeyboard(); // re-init views
+                        setVisibleChangableViews();
 
                         etEmail.requestFocus(); //!! - SOURCE: https://stackoverflow.com/a/8080621 - check the comments of this answer
                     }
@@ -122,15 +116,9 @@ public class LoginActivity
                         // keyboard WAS showed and NOW it is HIDDEN
                         isShowedKeyboard = false;
 
-                        ivMainLogo.setVisibility(View.GONE);
-                        btnLogin.setVisibility(View.GONE);
-                        btnUseAsNotLoggedIn.setVisibility(View.GONE);
-
-                        initViewsWithOutKeyboard();
-
-                        ivMainLogo.setVisibility(View.VISIBLE);
-                        btnLogin.setVisibility(View.VISIBLE);
-                        btnUseAsNotLoggedIn.setVisibility(View.VISIBLE);
+                        setGoneChangableViews();
+                        initViewsWithOutKeyboard(); // re-init views
+                        setVisibleChangableViews();
                     }
                 }
             }
@@ -144,6 +132,18 @@ public class LoginActivity
         pDialog.setCancelable(false);
 
     }// end onCreate
+
+    private void setGoneChangableViews() {
+        ivMainLogo.setVisibility(View.GONE);
+        btnLogin.setVisibility(View.GONE);
+        btnUseAsNotLoggedIn.setVisibility(View.GONE);
+    }
+
+    private void setVisibleChangableViews() {
+        ivMainLogo.setVisibility(View.VISIBLE);
+        btnLogin.setVisibility(View.VISIBLE);
+        btnUseAsNotLoggedIn.setVisibility(View.VISIBLE);
+    }
 
     private void initViewsWithOutKeyboard() {
         initViews(R.id.ivMainLogo, R.id.btnLogin, R.id.btnUseAsNotLoggedIn);

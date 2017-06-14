@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
+import sk.cestaplus.cestaplusapp.utilities.CustomHttpHeaderParser;
+
 /**
  * Created by Matej on 22. 4. 2015.
  */
@@ -47,8 +49,9 @@ public class JsonObjectCustomUtf8Request
             // toto som dopisal ja
             String jsonString = new String(response.data, "UTF-8");
 
-            //
-            return Response.success(new JSONObject(jsonString), HttpHeaderParser.parseCacheHeaders(response));
+            //return Response.success(new JSONObject(jsonString), HttpHeaderParser.parseCacheHeaders(response));
+            return Response.success(new JSONObject(jsonString), CustomHttpHeaderParser.parseIgnoreCacheHeaders(response));
+
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
 

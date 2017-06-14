@@ -37,15 +37,13 @@ public class Endpoints {
         return URL_CESTA_PLUS_ANDROID + GET_NEW_ARTICLES + "?date=" + lastUpdateTime + "&limit="+ART_NUM + "&page="+1;
     }
 
-    //TODO: APIKEY in URL - WTH?!?!?!
-    public static String getConcreteArticleRequestUrl(String id, boolean withPictures, String API_key) {
+    public static String getConcreteArticleRequestUrl(String id, boolean withPictures) {
         int wp = 1;
         if (!withPictures){
             wp = 0;
         }
 
-        return URL_CESTA_PLUS_ANDROID + GET_CONCRETE_ARTICLE + "?id="+id + "&withPictures="+wp
-                + ( API_key != null ? ("&apikey="+API_key) : "" );
+        return URL_CESTA_PLUS_ANDROID + GET_CONCRETE_ARTICLE + "?id="+id + "&withPictures="+wp;
     } //end getConcreteArticleRequestUrl
 
     public static String getBaterkaUrl(Date pubDate) {

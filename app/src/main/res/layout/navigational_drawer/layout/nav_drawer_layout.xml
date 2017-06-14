@@ -1,51 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Some dimensions according to: https://material.io/guidelines/patterns/navigation-drawer.html#navigation-drawer-specs
-     or according to Gmail app by try&error method :) -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+     or according to Gmail app by try&error method :)
+
+     ExpandableListView inside scroll view
+     SOURCE: http://stackoverflow.com/a/36544003
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
 
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
-    <!-- ExpandableListView inside scroll view
-         SOURCE: http://stackoverflow.com/a/36544003
-    -->
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+        android:orientation="vertical"
         >
 
-        <LinearLayout
+        <!-- HEADER layout -->
+        <include layout="@layout/navigational_header"/>
+
+        <!-- DIVIDER between header and expandable list view - most top divider line (before home Group item) -->
+        <View
+            android:background="@color/baterkaDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+
+            android:layout_marginTop="@dimen/nav_dr_divider_margin_top"/>
+
+        <!-- EXPANDABLE LIST VIEW - MENU, SECTIONS & SETINGS -->
+        <!-- Change background color on click:
+             SOURCE: http://stackoverflow.com/questions/10318642/highlight-for-selected-item-in-expandable-list
+             Take a look at first comment on accepted answer. -->
+        <sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView
+            android:id="@+id/navDrListViewSections"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:orientation="vertical"
-            >
+            android:groupIndicator="@android:color/transparent"
+            android:choiceMode="singleChoice"
+            android:listSelector="@drawable/selector_nav_dr_list_item_bg"
+            />
 
-            <include layout="@layout/navigational_header"/>
-
-            <View
-                android:background="@color/baterkaDivider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-
-                android:layout_marginTop="@dimen/nav_dr_divider_margin_top"/>
-
-            <!-- Change background color on click:
-                 SOURCE: http://stackoverflow.com/questions/10318642/highlight-for-selected-item-in-expandable-list
-                 Take a look at first comment on accepted answer. -->
-            <sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView
-                android:id="@+id/navDrListViewSections"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:groupIndicator="@android:color/transparent"
-                android:choiceMode="singleChoice"
-                android:listSelector="@drawable/selector_nav_dr_list_item_bg"
-                />
-
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

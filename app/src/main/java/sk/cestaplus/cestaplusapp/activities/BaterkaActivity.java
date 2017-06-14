@@ -130,7 +130,7 @@ public class BaterkaActivity
         initActivityDefaultFont(); // set up default font of activity
 
         // initialisations
-        volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //inicializácia volleySingleton - dôležité !!!
+        volleySingleton = VolleySingleton.getInstance(getApplicationContext()); // !!!
 
         // load data from intent
         articleObj = getIntent().getParcelableExtra(IKeys.KEY_INTENT_EXTRA_BATERKA);
@@ -385,7 +385,7 @@ public class BaterkaActivity
         //send the request
         Date dateToLoad = getDateToLoad();
 
-        Requestor.createBaterkaRequest(volleySingleton.getRequestQueue(), dateToLoad, responseLis, errorLis); //boolean = či aj z obrázkami
+        Requestor.createBaterkaRequest(volleySingleton.getRequestQueue(), dateToLoad, responseLis, errorLis);
 
     }//end loadBaterka
 
