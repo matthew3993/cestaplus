@@ -2,17 +2,17 @@
 <resources>
 <!-- ===================== MAIN ACTIVITY START ======================================================================================== -->
     <!-- HEADER IMAGE -->
-    <dimen name="header_image_height">616dp</dimen> <!-- 616dp -->
+    <dimen name="header_image_height">450dp</dimen> <!-- 450 is approximately 3/4 from 616; was 616dp - Samsung S5 full screen-->
     <dimen name="header_image_gradient_from_bottom">308dp</dimen>
 
     <!-- HEADER AUTHOR -->
-    <dimen name="header_author_text_size">13sp</dimen>
+    <dimen name="header_author_text_size">13sp</dimen> <!-- 13sp-->
 
     <!-- HEADER TITLE -->
-    <dimen name="header_title_text_size">25sp</dimen>
+    <dimen name="header_title_text_size">23sp</dimen> <!-- 25sp -->
 
     <!-- HEADER SHORT TEXT -->
-    <dimen name="header_short_text_size">15sp</dimen>
+    <dimen name="header_short_text_size">15sp</dimen> <!-- 15sp -->
 
     <!-- HEADER END *************************************** -->
 

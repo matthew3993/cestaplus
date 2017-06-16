@@ -699,16 +699,18 @@ public class ArticleActivity
     @Override
     public void onLoginSuccessful(UserInfo userInfo) {
         // relogin successful - subscription still OK
-        removeEntryFromCache();
 
-        // create new article request with NEW API_key
-        tryLoadArticle();
+        // Remove old entry from cache!! - important!!
+        removeEntryFromCache(); // !!
+        tryLoadArticle(); // create new article request with NEW API_key
     }
 
     /**
+     * Removes old cache entry of actual article (if any).
      * SOURCES:
      *      https://stackoverflow.com/questions/24495055/android-volley-invalidate-cache-and-make-fresh-request-every-x-minutes
      *      https://stackoverflow.com/questions/17230431/google-volley-when-to-use-cache-remove-and-cache-invalidate
+     *      https://stackoverflow.com/questions/24464610/how-to-clear-the-volley-cache-automatically
      *
      */
     private void removeEntryFromCache() {
@@ -716,7 +718,7 @@ public class ArticleActivity
         String url = Endpoints.getConcreteArticleRequestUrl(articleObj.getID(), true);
 
         Log.d(VOLLEY_DEBUG, "Get url from cache: " + url);
-        Cache.Entry entry = cache.get(url);
+        Cache.Entry entry = cache.get(url); //url is cache key
 
         if (entry != null){
             cache.remove(url);

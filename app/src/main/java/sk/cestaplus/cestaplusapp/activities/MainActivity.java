@@ -234,10 +234,21 @@ public class MainActivity
         tvHeaderTitle = (TextView) findViewById(R.id.tvHeaderTitle);
         tvHeaderDescription = (TextView) findViewById(R.id.tvHeaderDescription);
 
-        nivHeaderImage.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener startActivityListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startArticleActivityWithHeaderArticle();
+            }
+        };
+        tvHeaderAuthor.setOnClickListener(startActivityListener);
+        tvHeaderTitle.setOnClickListener(startActivityListener);
+        tvHeaderDescription.setOnClickListener(startActivityListener);
+
+        // clicking header image will collapse the appbar
+        nivHeaderImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                appBarLayout.setExpanded(false); // SOURCE: http://stackoverflow.com/questions/30655939/programmatically-collapse-or-expand-collapsingtoolbarlayout
             }
         });
 

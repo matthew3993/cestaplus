@@ -22,11 +22,13 @@ public class ImageUtil {
             return;
         }
 
+        /*
         // no in landscape
         if (Util.getScreenSize(context) == Configuration.SCREENLAYOUT_SIZE_NORMAL){
             adjustImageHeightToScreenHeight(context, imageView);
             return;
         }
+        */
     }
 
     /**

@@ -4,7 +4,6 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.HttpHeaderParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +11,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import sk.cestaplus.cestaplusapp.utilities.CustomHttpHeaderParser;
+import sk.cestaplus.cestaplusapp.network.CustomHttpHeaderParser;
 
 /**
  * Created by Matej on 22. 4. 2015.

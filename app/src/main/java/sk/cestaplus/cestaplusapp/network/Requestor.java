@@ -43,9 +43,9 @@ public class Requestor {
         JsonObjectUtf8FutureRequest request = new JsonObjectUtf8FutureRequest(
                 Request.Method.GET,
                 Endpoints.getUpdateRequestUrl(),
-                null,
+                null, // no params to be sent (for example in POST method)
                 requestFuture,
-                requestFuture); //end of JsonObjectUtf8FutureRequest
+                requestFuture);
 
         request.setShouldCache(false); //disable caching
         requestQueue.add(request);
@@ -58,10 +58,12 @@ public class Requestor {
     public static void createBaterkaRequest(RequestQueue requestQueue, Date pubDate,
                                      Response.Listener<JSONObject> responseList, Response.ErrorListener errList){
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        // using custom request class - Cache-control headers of response are IGNORED
+        // this request is always cached , but not if we disable caching with setShouldCache(false)
+        JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
                 Request.Method.GET,
                 Endpoints.getBaterkaUrl(pubDate),
-                (JSONObject) null,
+                null, // no params to be sent (for example in POST method)
                 responseList,
                 errList);
 
@@ -84,6 +86,9 @@ public class Requestor {
     public static void createGetArticlesObjectRequestGET(RequestQueue requestQueue, String section, int limit, int page,
                                                          Response.Listener<JSONObject> responseList, Response.ErrorListener errList){
 
+        // using Volley's built in Request class
+        // if we don't disable caching with setShouldCache(false), this request caching policy is set
+        // according to Cache-control headers of response from server
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
                 Endpoints.getListOfArticlesRequestUrl(section, limit, page),
@@ -91,6 +96,7 @@ public class Requestor {
                 responseList,
                 errList);
 
+        request.setShouldCache(false);  //disable caching!!!
         requestQueue.add(request);
     } //end createGetArticlesObjectRequestGET
 
@@ -102,15 +108,17 @@ public class Requestor {
                                                Response.Listener<JSONObject> responseLis, Response.ErrorListener errLis,
                                                boolean withPictures){
 
-        Request<JSONObject> request;
+        // using custom request class - Cache-control headers of response are IGNORED
+        // this request is always cached , but not if we disable caching with setShouldCache(false)
+        JsonObjectCustomUtf8Request request;
         String url = Endpoints.getConcreteArticleRequestUrl(articleId, withPictures);
         Log.d(VOLLEY_DEBUG, "Request url: " + url);
 
         if (!locked){ //not locked = public article
-            request = new JsonObjectRequest(
+            request = new JsonObjectCustomUtf8Request(
                     Request.Method.GET,
                     url,
-                    (JSONObject) null,
+                    null, // no params to be sent (for example in POST method)
                     responseLis,
                     errLis);
 
@@ -127,22 +135,21 @@ public class Requestor {
                  request = new JsonObjectCustomUtf8Request(
                         Request.Method.POST,
                         url,
-                        params,
+                        params, // params to be sent in POST method
                         responseLis,
                         errLis);
 
             } else { // Other roles
-                 request = new JsonObjectRequest(
+                 request = new JsonObjectCustomUtf8Request(
                         Request.Method.GET,
                         url,
-                        (JSONObject) null,
+                        null, // no params to be sent (for example in POST method)
                         responseLis,
                         errLis);
 
             } // if role == ROLE_LOGGED_SUBSCRIPTION_OK
         }// if !locked
 
-        request.setShouldCache(true);
         requestQueue.add(request);
     }//end createGetArticleRequest
 

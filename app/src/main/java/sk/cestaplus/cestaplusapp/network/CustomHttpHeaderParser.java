@@ -1,4 +1,4 @@
-package sk.cestaplus.cestaplusapp.utilities;
+package sk.cestaplus.cestaplusapp.network;
 
 import com.android.volley.Cache;
 import com.android.volley.NetworkResponse;

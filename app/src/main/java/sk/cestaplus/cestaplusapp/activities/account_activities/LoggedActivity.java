@@ -27,6 +27,7 @@ import sk.cestaplus.cestaplusapp.activities.MainActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.OPortaliActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.SettingsActivity;
 import sk.cestaplus.cestaplusapp.network.Parser;
+import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.UserInfo;
 import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.LoginManager;
@@ -543,6 +544,11 @@ public class LoggedActivity
 
         SessionManager session = new SessionManager(getApplicationContext());
         session.logout();
+
+        /* clear the cache
+        VolleySingleton volleySingleton = VolleySingleton.getInstance(getApplicationContext());
+        volleySingleton.getRequestQueue().getCache().clear();
+        */
 
         // Launching the login activity
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
