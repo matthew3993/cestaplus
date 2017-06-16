@@ -7,6 +7,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import java.util.Map;
 
 import static sk.cestaplus.cestaplusapp.extras.Constants.CACHE_ENTRY_SOFT_TTL_MIN;
+import static sk.cestaplus.cestaplusapp.extras.Constants.CACHE_ENTRY_TTL_MIN;
 
 /**
  * Created by matth on 14.06.2017.
@@ -35,8 +36,8 @@ public class CustomHttpHeaderParser {
         serverEtag = headers.get("ETag");
 
                                                          // "in" here ==> read as 'after' // 'in' == 'ZA'
-        final long cacheHitButRefreshed = 3 * 60 * 1000; // in 3 minutes cache will be hit, but also refreshed on background
-        final long cacheExpired = 24 * 60 * 60 * 1000;   // in 24 hours this cache entry expires completely
+        final long cacheHitButRefreshed = CACHE_ENTRY_SOFT_TTL_MIN * 60 * 1000; // in 3 minutes cache will be hit, but also refreshed on background
+        final long cacheExpired = CACHE_ENTRY_TTL_MIN * 60 * 1000;   // in 24 hours this cache entry expires completely
         final long softExpire = now + cacheHitButRefreshed;
         final long ttl = now + cacheExpired;
 

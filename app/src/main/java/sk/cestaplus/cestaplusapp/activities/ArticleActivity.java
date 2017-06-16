@@ -30,6 +30,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.Cache;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -45,6 +46,7 @@ import sk.cestaplus.cestaplusapp.activities.account_activities.LoginActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.OPortaliActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.SettingsActivity;
 import sk.cestaplus.cestaplusapp.extras.IKeys;
+import sk.cestaplus.cestaplusapp.network.Endpoints;
 import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
@@ -66,6 +68,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 //static imports
 import static sk.cestaplus.cestaplusapp.extras.Constants.DELAY_TO_START_ACTIVITY_MILLIS;
 import static sk.cestaplus.cestaplusapp.extras.Constants.URL_SUBSCRIPTION_INFO;
+import static sk.cestaplus.cestaplusapp.extras.Constants.VOLLEY_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.AEC_OK;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.NOTIFICATION_API_KEY_TEST;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
@@ -484,6 +487,7 @@ public class ArticleActivity
             // this means, that API_key is not valid => refresh API_key
 
             //CustomNotificationManager.issueNotification("Problem with API key: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST+1); // debug notification
+            Log.d(VOLLEY_DEBUG, "Problem with API key: " + session.getAPI_key());
 
             loginManager.tryRelogin(1, this);
 
@@ -692,8 +696,29 @@ public class ArticleActivity
     @Override
     public void onLoginSuccessful(UserInfo userInfo) {
         // relogin successful - subscription still OK
+        removeEntryFromCache();
+
         // create new article request with NEW API_key
         tryLoadArticle();
+    }
+
+    /**
+     * SOURCES:
+     *      https://stackoverflow.com/questions/24495055/android-volley-invalidate-cache-and-make-fresh-request-every-x-minutes
+     *      https://stackoverflow.com/questions/17230431/google-volley-when-to-use-cache-remove-and-cache-invalidate
+     *
+     */
+    private void removeEntryFromCache() {
+        Cache cache = volleySingleton.getRequestQueue().getCache();
+        String url = Endpoints.getConcreteArticleRequestUrl(articleObj.getID(), true);
+
+        Log.d(VOLLEY_DEBUG, "Get url from cache: " + url);
+        Cache.Entry entry = cache.get(url);
+
+        if (entry != null){
+            cache.remove(url);
+            Log.d(VOLLEY_DEBUG, "REMOVED entry from cache with url: " + url);
+        }
     }
 
     @Override

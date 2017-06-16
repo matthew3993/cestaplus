@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -21,6 +22,7 @@ import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.UserInfo;
 
+import static sk.cestaplus.cestaplusapp.extras.Constants.VOLLEY_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.LOGIN_PARTIALLY_SUCCESSFUL;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.LOGIN_SUCCESSFUL;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.NOTIFICATION_API_KEY_TEST;
@@ -145,6 +147,7 @@ public class LoginManager {
                         session.setAPI_key(API_key);
 
                         //CustomNotificationManager.issueNotification("New API key: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST+3); // debug notification
+                        Log.d(VOLLEY_DEBUG, "New API key: " + session.getAPI_key());
 
                         listener.onLoginSuccessful(null); // null = user info is not needed in this case
                         break;
@@ -192,6 +195,8 @@ public class LoginManager {
         };
 
         //CustomNotificationManager.issueNotification("Trying to relogin...", NOTIFICATION_API_KEY_TEST+2); // debug notification
+        Log.d(VOLLEY_DEBUG, "Trying to relogin...");
+
         volleySingleton.createReLoginRequest(responseLis, errorLis);
     }//end relogin
 

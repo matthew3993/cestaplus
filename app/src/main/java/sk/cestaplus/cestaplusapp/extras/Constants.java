@@ -24,4 +24,7 @@ public interface Constants {
     // urls
     String URL_SUBSCRIPTION_INFO = "http://www.cestaplus.sk/predplatne/info";
     String URL_SUBSCRIPTION_PROLONG = "http://www.cestaplus.sk/predplatne?temp=new";
+
+    //Log tags
+    String VOLLEY_DEBUG = "Volley_debug";
 }

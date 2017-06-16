@@ -2,6 +2,7 @@ package sk.cestaplus.cestaplusapp.network;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.LruCache;
 
 import com.android.volley.Cache;
@@ -33,6 +34,7 @@ import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 
 // importy IKeys
 import static com.android.volley.Request.*;
+import static sk.cestaplus.cestaplusapp.extras.Constants.VOLLEY_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.NOTIFICATION_API_KEY_TEST;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARAMS_API_KEY;
@@ -152,6 +154,7 @@ public class VolleySingleton {
 
         Request<JSONObject> request;
         String url = Endpoints.getConcreteArticleRequestUrl(articleId, withPictures);
+        Log.d(VOLLEY_DEBUG, "Request url: " + url);
 
         if (!locked){ //not locked = public article
             request = new JsonObjectRequest(
@@ -168,6 +171,7 @@ public class VolleySingleton {
                 params.put(KEY_PARAMS_API_KEY, session.getAPI_key());
 
                 //CustomNotificationManager.issueNotification("Loading article, API_KEY: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST); // debug notification
+                Log.d(VOLLEY_DEBUG, "Loading article, API_KEY: " + session.getAPI_key());
 
                 //create request
                  request = new JsonObjectCustomUtf8Request(
