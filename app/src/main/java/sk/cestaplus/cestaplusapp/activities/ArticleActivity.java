@@ -48,11 +48,11 @@ import sk.cestaplus.cestaplusapp.activities.other_activities.SettingsActivity;
 import sk.cestaplus.cestaplusapp.extras.IKeys;
 import sk.cestaplus.cestaplusapp.network.Endpoints;
 import sk.cestaplus.cestaplusapp.network.Parser;
+import sk.cestaplus.cestaplusapp.network.Requestor;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.objects.ArticleText;
 import sk.cestaplus.cestaplusapp.objects.UserInfo;
-import sk.cestaplus.cestaplusapp.utilities.CustomNotificationManager;
 import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.SectionsUtil;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
@@ -70,7 +70,6 @@ import static sk.cestaplus.cestaplusapp.extras.Constants.DELAY_TO_START_ACTIVITY
 import static sk.cestaplus.cestaplusapp.extras.Constants.URL_SUBSCRIPTION_INFO;
 import static sk.cestaplus.cestaplusapp.extras.Constants.VOLLEY_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.AEC_OK;
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.NOTIFICATION_API_KEY_TEST;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_ARTICLE_URL;
@@ -464,7 +463,11 @@ public class ArticleActivity
         };
 
         //send the request
-        volleySingleton.createGetArticleRequest(articleObj.getID(), articleObj.isLocked(), responseLis, errorLis, true); //boolean = či aj z obrázkami
+        Requestor.createGetArticleRequest(
+                volleySingleton.getRequestQueue(), session,
+                articleObj.getID(), articleObj.isLocked(),
+                responseLis, errorLis,
+                true); //boolean = či aj z obrázkami
     }//end loadArticle()
 
     private void onResponse(JSONObject response) {

@@ -28,6 +28,7 @@ import sk.cestaplus.cestaplusapp.extras.Constants;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
 import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
 import sk.cestaplus.cestaplusapp.network.Parser;
+import sk.cestaplus.cestaplusapp.network.Requestor;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.ResponseCrate;
@@ -267,7 +268,7 @@ public class SectionFragment
         };
 
         //send the request
-        volleySingleton.createGetArticlesObjectRequestGET(sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
+        Requestor.createGetArticlesObjectRequestGET(volleySingleton.getRequestQueue(), sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
     }
 
     private void onResponse(JSONObject response) {

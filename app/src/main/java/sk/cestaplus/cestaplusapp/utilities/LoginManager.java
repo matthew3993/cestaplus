@@ -19,17 +19,16 @@ import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.account_activities.LoginActivity;
 import sk.cestaplus.cestaplusapp.extras.IErrorCodes;
 import sk.cestaplus.cestaplusapp.network.Parser;
+import sk.cestaplus.cestaplusapp.network.Requestor;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.UserInfo;
 
 import static sk.cestaplus.cestaplusapp.extras.Constants.VOLLEY_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.LOGIN_PARTIALLY_SUCCESSFUL;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.LOGIN_SUCCESSFUL;
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.NOTIFICATION_API_KEY_TEST;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_DEFAULT_VALUE;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.SERVER_INTERNAL_ERROR;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARAMS_EMAIL;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARAMS_PASSWORD;
@@ -124,7 +123,7 @@ public class LoginManager {
         params.put(KEY_PARAMS_EMAIL, email);
         params.put(KEY_PARAMS_PASSWORD, password);
 
-        volleySingleton.createLoginRequestPOST(params, responseLis, errorLis);
+        Requestor.createLoginRequestPOST(volleySingleton.getRequestQueue(), params, responseLis, errorLis);
     }
 
     /**
@@ -197,7 +196,7 @@ public class LoginManager {
         //CustomNotificationManager.issueNotification("Trying to relogin...", NOTIFICATION_API_KEY_TEST+2); // debug notification
         Log.d(VOLLEY_DEBUG, "Trying to relogin...");
 
-        volleySingleton.createReLoginRequest(responseLis, errorLis);
+        Requestor.createReLoginRequest(volleySingleton.getRequestQueue(), session, responseLis, errorLis);
     }//end relogin
 
     public void checkRole(Activity activity) {

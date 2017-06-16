@@ -43,10 +43,7 @@ public class JsonObjectCustomUtf8Request
     @Override
     protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
         try {
-            //toto bolo povodne
-            //String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-
-            // toto som dopisal ja
+            //String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers)); //default
             String jsonString = new String(response.data, "UTF-8");
 
             //return Response.success(new JSONObject(jsonString), HttpHeaderParser.parseCacheHeaders(response));

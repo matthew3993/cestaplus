@@ -20,6 +20,7 @@ import sk.cestaplus.cestaplusapp.activities.BaterkaActivity;
 import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.extras.Constants;
 import sk.cestaplus.cestaplusapp.network.Parser;
+import sk.cestaplus.cestaplusapp.network.Requestor;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.ResponseCrate;
@@ -159,7 +160,7 @@ public class CustomRecyclerViewClickHandler
             } //end of onErrorResponse
         };
 
-        volleySingleton.createGetArticlesObjectRequestGET(sectionID, Constants.ART_NUM, pagesNum, responseLis, errorLis);
+        Requestor.createGetArticlesObjectRequestGET(volleySingleton.getRequestQueue(), sectionID, Constants.ART_NUM, pagesNum, responseLis, errorLis);
     }
 
     private void startArticleOrBaterkaActivity(ArticleObj articleObj) {
