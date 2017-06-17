@@ -35,7 +35,6 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 
-
 public class LoginActivity
     extends Activity
     implements LoginManager.LoginManagerInteractionListener {
@@ -55,7 +54,6 @@ public class LoginActivity
 
     // loading & error views
     private ProgressDialog pDialog;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

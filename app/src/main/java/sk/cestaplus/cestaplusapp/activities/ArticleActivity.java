@@ -70,15 +70,15 @@ import static sk.cestaplus.cestaplusapp.extras.Constants.DELAY_TO_START_ACTIVITY
 import static sk.cestaplus.cestaplusapp.extras.Constants.URL_SUBSCRIPTION_INFO;
 import static sk.cestaplus.cestaplusapp.extras.Constants.VOLLEY_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.AEC_OK;
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_ARTICLE_URL;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_ARTICLE_ERROR_CODE;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_ERROR_CODE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_SCROLL_PERC;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_OBJ;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_TEXT;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ROLE;
 
 /**
  * Created by Matej on 19. 3. 2015.
@@ -287,7 +287,7 @@ public class ArticleActivity
             }
         });
 
-        // adjust image height to screen height
+        // adjust image height to screen height - if needed
         ImageUtil.resolveAdjustImageHeightToScreenHeight(this, nivArticleImage);
 
         // body
@@ -467,10 +467,11 @@ public class ArticleActivity
                 volleySingleton.getRequestQueue(), session,
                 articleObj.getID(), articleObj.isLocked(),
                 responseLis, errorLis,
-                true); //boolean = či aj z obrázkami
+                true); //boolean = with pictures?
     }//end loadArticle()
 
     private void onResponse(JSONObject response) {
+        // role is initialized here, and therefore don't have to be re-initialized from session during orientation changes
         role = session.getRole();
 
         // get articleErrorCode - AEC
@@ -485,7 +486,7 @@ public class ArticleActivity
 
         articleText = Parser.parseArticleTextResponse(response); //parse response to articleText
 
-        if ( (role == ROLE_LOGGED_SUBSCRIPTION_OK) && (articleErrorCode != AEC_OK) ){
+        if ( Util.isSubscriptionValid(role) && (articleErrorCode != AEC_OK) ){
             // role is "subscription ok", but there is a problem with api key
             // this means, that API_key is not valid => refresh API_key
 
@@ -654,7 +655,8 @@ public class ArticleActivity
         Log.d("SCROLLING", "onSaveInstanceState()");
         outState.putParcelable(KEY_SAVED_STATE_ARTICLE_OBJ, articleObj);
         outState.putParcelable(KEY_SAVED_STATE_ARTICLE_TEXT, articleText);
-        outState.putInt(KEY_SAVED_ARTICLE_ERROR_CODE, articleErrorCode);
+        outState.putInt(KEY_SAVED_STATE_ARTICLE_ERROR_CODE, articleErrorCode);
+        outState.putInt(KEY_SAVED_STATE_ROLE, role);
 
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nestedScrollViewArticle);
 
@@ -678,7 +680,8 @@ public class ArticleActivity
 
         articleObj = savedInstanceState.getParcelable(KEY_SAVED_STATE_ARTICLE_OBJ);
         articleText = savedInstanceState.getParcelable(KEY_SAVED_STATE_ARTICLE_TEXT);
-        articleErrorCode = savedInstanceState.getInt(KEY_SAVED_ARTICLE_ERROR_CODE);
+        articleErrorCode = savedInstanceState.getInt(KEY_SAVED_STATE_ARTICLE_ERROR_CODE);
+        role = savedInstanceState.getInt(KEY_SAVED_STATE_ROLE);
 
         scrollPercentage = savedInstanceState.getDouble(KEY_SAVED_SCROLL_PERC);
     }

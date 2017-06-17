@@ -6,27 +6,17 @@ import android.util.LruCache;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import sk.cestaplus.cestaplusapp.network.custom_requests.JsonObjectCustomUtf8Request;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
-import sk.cestaplus.cestaplusapp.utilities.SessionManager;
-
 // importy IKeys
-import static com.android.volley.Request.*;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARAMS_EMAIL;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARAMS_PASSWORD;
+
 
 /**
  * Created by Matej on 3.3.2015.
  * SOURCE: https://developer.android.com/training/volley/requestqueue.html#singleton
+ *
+ * Volley lib docs: http://afzaln.com/volley/
  */
 public class VolleySingleton {
 
@@ -74,7 +64,9 @@ public class VolleySingleton {
             mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
 
             // init request queue with custom cache and custom network
-            //SOURCES: https://developer.android.com/reference/android/content/Context.html#getCacheDir()
+            //SOURCES:
+            //  https://stackoverflow.com/questions/25664627/android-volley-does-not-work-offline-with-cache
+            //  https://developer.android.com/reference/android/content/Context.html#getCacheDir()
             /*
             Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024 * 10); // 10MB cap
             Network network = new BasicNetwork(new HurlStack());

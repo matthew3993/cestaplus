@@ -545,10 +545,9 @@ public class LoggedActivity
         SessionManager session = new SessionManager(getApplicationContext());
         session.logout();
 
-        /* clear the cache
+        //clear the entire cache
         VolleySingleton volleySingleton = VolleySingleton.getInstance(getApplicationContext());
         volleySingleton.getRequestQueue().getCache().clear();
-        */
 
         // Launching the login activity
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);

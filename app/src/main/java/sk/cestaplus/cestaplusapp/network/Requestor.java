@@ -19,8 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import sk.cestaplus.cestaplusapp.network.custom_requests.JsonArrayCustomUtf8Request;
-import sk.cestaplus.cestaplusapp.network.custom_requests.JsonArrayUtf8FutureRequest;
-import sk.cestaplus.cestaplusapp.network.custom_requests.JsonObjectCustomUtf8Request;
+import sk.cestaplus.cestaplusapp.network.custom_requests.CustomJsonObjectCachedUtf8Request;
 import sk.cestaplus.cestaplusapp.network.custom_requests.JsonObjectUtf8FutureRequest;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 
@@ -60,7 +59,7 @@ public class Requestor {
 
         // using custom request class - Cache-control headers of response are IGNORED
         // this request is always cached , but not if we disable caching with setShouldCache(false)
-        JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
+        CustomJsonObjectCachedUtf8Request request = new CustomJsonObjectCachedUtf8Request(
                 Request.Method.GET,
                 Endpoints.getBaterkaUrl(pubDate),
                 null, // no params to be sent (for example in POST method)
@@ -110,12 +109,12 @@ public class Requestor {
 
         // using custom request class - Cache-control headers of response are IGNORED
         // this request is always cached , but not if we disable caching with setShouldCache(false)
-        JsonObjectCustomUtf8Request request;
+        CustomJsonObjectCachedUtf8Request request;
         String url = Endpoints.getConcreteArticleRequestUrl(articleId, withPictures);
         Log.d(VOLLEY_DEBUG, "Request url: " + url);
 
         if (!locked){ //not locked = public article
-            request = new JsonObjectCustomUtf8Request(
+            request = new CustomJsonObjectCachedUtf8Request(
                     Request.Method.GET,
                     url,
                     null, // no params to be sent (for example in POST method)
@@ -132,7 +131,7 @@ public class Requestor {
                 Log.d(VOLLEY_DEBUG, "Loading article, API_KEY: " + sessionManager.getAPI_key());
 
                 //create request
-                 request = new JsonObjectCustomUtf8Request(
+                 request = new CustomJsonObjectCachedUtf8Request(
                         Request.Method.POST,
                         url,
                         params, // params to be sent in POST method
@@ -140,7 +139,7 @@ public class Requestor {
                         errLis);
 
             } else { // Other roles
-                 request = new JsonObjectCustomUtf8Request(
+                 request = new CustomJsonObjectCachedUtf8Request(
                         Request.Method.GET,
                         url,
                         null, // no params to be sent (for example in POST method)
@@ -157,7 +156,7 @@ public class Requestor {
                                               Response.Listener<JSONObject> responseList,
                                               Response.ErrorListener errList){
 
-        JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
+        CustomJsonObjectCachedUtf8Request request = new CustomJsonObjectCachedUtf8Request(
                 Request.Method.POST,
                 Endpoints.getLoginUrl(),
                 parameters,
