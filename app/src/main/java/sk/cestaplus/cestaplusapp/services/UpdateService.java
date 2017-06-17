@@ -39,7 +39,7 @@ public class UpdateService
     }
 
     @Override
-    public void onArticlesLoaded(ResponseCrate responseCrate) {
+    public void onArticlesLoaded(ResponseCrate responseCrate, boolean loadingError) {
         jobFinished(jobParameters, false);
     } //end onArticlesLoaded
 

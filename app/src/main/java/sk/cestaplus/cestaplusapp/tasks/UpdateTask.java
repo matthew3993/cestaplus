@@ -140,21 +140,25 @@ public class UpdateTask
 
     @Override
     protected void onPostExecute(ResponseCrate responseCrate) {
+        // onArticlesLoaded is called every time !!
+        articlesLoadedListener.onArticlesLoaded(responseCrate, loadingError); //callback of listener
+
         if (loadingError) {
             articlesLoadedListener.onLoadingError();
-        }
-
-        // onArticlesLoaded is called every time !!
-        articlesLoadedListener.onArticlesLoaded(responseCrate); //callback of listener
-
-        if (refreshing){
-            articlesLoadedListener.numNewArticles(newArticles.size());
         } else {
-            if (!newArticles.isEmpty()){
+            // no error
+            // calling numNewArticles() only if there is no loading error
+
+            if (refreshing){
                 articlesLoadedListener.numNewArticles(newArticles.size());
+
+            } else {
+                // no refreshing - for example new start of activity
+                if (!newArticles.isEmpty()){
+                    articlesLoadedListener.numNewArticles(newArticles.size());
+                }
             }
         }
-
     } //end onPostExecute
 
     private ArrayList<ArticleObj> checkNewArticles(ArrayList<ArticleObj> loadedArticles) {

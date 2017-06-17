@@ -26,5 +26,6 @@ public interface Constants {
     String URL_SUBSCRIPTION_PROLONG = "http://www.cestaplus.sk/predplatne?temp=new";
 
     //Log tags
-    String VOLLEY_DEBUG = "Volley_debug";
+    String VOLLEY_DEBUG = "VolleyDebug";
+    String NEW_ART_NOTIFICATIONS_DEBUG = "newArticlesNotifDebug";
 }

@@ -25,6 +25,7 @@ import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
 import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.tasks.UpdateTask;
+import sk.cestaplus.cestaplusapp.utilities.CustomJobManager;
 import sk.cestaplus.cestaplusapp.utilities.ResponseCrate;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.DateFormats;
@@ -34,6 +35,7 @@ import sk.cestaplus.cestaplusapp.listeners.CustomRecyclerViewClickHandler;
 import sk.cestaplus.cestaplusapp.utilities.Util;
 
 import static java.lang.System.currentTimeMillis;
+import static sk.cestaplus.cestaplusapp.extras.Constants.NEW_ART_NOTIFICATIONS_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_BATERKA_SECTION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_LAST_TRY_TIME;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
@@ -248,7 +250,7 @@ public class AllFragment
      * And if network is ok, it shows updated list of articles.
      */
     @Override
-    public void onArticlesLoaded(ResponseCrate responseCrate) {
+    public void onArticlesLoaded(ResponseCrate responseCrate, boolean loadingError) {
         // !!!!!!!!! TODO: solve memory problem with paging !!!
 
         // 1. make UI changes = stop refreshing or loading animation -- important!
@@ -268,6 +270,27 @@ public class AllFragment
         arvaAll.setArticlesList(responseCrate.getArticles());
         pagesNum = 1; // !!
         recyclerViewAll.setVisibility(View.VISIBLE);
+
+        if (!loadingError){
+            CustomJobManager customJobManager = CustomJobManager.getInstance(getActivity().getApplicationContext());
+
+            if (session.getPostNotificationStatus()){ //if notifications are on
+                // create an update job
+                // now using FirebaseJobDispatcher it is not needed to delay the scheduling of job,
+                // because in time when job is built, job is not executed - only scheduled to be executed in future
+                customJobManager.constructAndScheduleUpdateJob();
+
+                /*
+                new Handler().postDelayed(new Runnable() {
+                                              @Override
+                                              public void run() { customJobManager.constructAndScheduleUpdateJob(); }
+                                          },
+                        //DELAY
+                        //(UPDATE_PERIOD_MIN/2)*60*1000); //half from update period
+                        CREATE_JOB_DELAY_SEC*1000); //30 seconds
+                */
+            }
+        }
     }//end onArticlesLoaded
 
     public ArticleObj getHeaderArticle(String headerArticleId){
@@ -390,7 +413,7 @@ public class AllFragment
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    // region LISTENERS METHODS
+    // region ListStyleChangeListener & ICustomRecyclerViewClickHandlerDataProvider METHODS
 
     @Override
     public void handleListStyleSelection(DialogInterface dialog, int listStyle) {

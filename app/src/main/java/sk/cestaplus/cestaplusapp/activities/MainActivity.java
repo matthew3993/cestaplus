@@ -122,21 +122,6 @@ public class MainActivity
 
         } else {
             //new start of application
-            if (session.getPostNotificationStatus()){ //if notifications are on
-                // create an update job
-                // now using FirebaseJobDispatcher it is not needed to delay the scheduling of job,
-                // because in time when job is built, job is not executed - only scheduled to be executed in future
-                customJobManager.constructAndSheduleUpdateJob();
-                /*
-                new Handler().postDelayed(new Runnable() {
-                                              @Override
-                                              public void run() { customJobManager.constructAndSheduleUpdateJob(); }
-                                          },
-                        //DELAY
-                        //(UPDATE_PERIOD_MIN/2)*60*1000); //half from update period
-                        CREATE_JOB_DELAY_SEC*1000); //30 seconds
-                */
-            }
 
         } //end else savedInstanceState
 
@@ -473,7 +458,7 @@ public class MainActivity
 
             if (session.getPostNotificationStatus()){
                 // notifications are now allowed - construct JOB
-                customJobManager.constructAndSheduleUpdateJob();
+                customJobManager.constructAndScheduleUpdateJob();
                 Toast.makeText(this, R.string.notifications_allowed, Toast.LENGTH_SHORT).show();
 
             } else {
