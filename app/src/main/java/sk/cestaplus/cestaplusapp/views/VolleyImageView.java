@@ -13,12 +13,13 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageContainer;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
 
+import sk.cestaplus.cestaplusapp.objects.ArticleObj;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
+
 import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGE_DEBUG;
 
 
 public class VolleyImageView extends AppCompatImageView {
-
-    VolleyImageView thisIm;
 
     public interface ResponseObserver
     {
@@ -32,13 +33,17 @@ public class VolleyImageView extends AppCompatImageView {
         mObserver = observer;
     }
 
-    /**
-     * The URL of the network image to load
-     */
-    private String mUrl;
+    private VolleyImageView thisIm;
+
+    private ArticleObj articleObj;
 
     /**
-     * The URL of the network image to load
+     * The URL of the network image to load - DIMEN
+     */
+    private String mDimenUrl;
+
+    /**
+     * The URL of the network image to load in case of error when loading from mDimenUrl
      */
     private String mDefUrl;
 
@@ -60,10 +65,10 @@ public class VolleyImageView extends AppCompatImageView {
     /**
      * Current ImageContainer. (either in-flight or finished)
      */
-    private ImageContainer mImageContainer;
+    private ImageContainer mDimenImageContainer;
 
 
-    private ImageContainer mErrorImageContainer;
+    private ImageContainer mDefaultImageContainer;
 
     public VolleyImageView(Context context) {
         this(context, null);
@@ -86,15 +91,52 @@ public class VolleyImageView extends AppCompatImageView {
      * NOTE: If applicable, {@link VolleyImageView#setDefaultImageResId(int)} and {@link
      * VolleyImageView#setErrorImageResId(int)} should be called prior to calling this function.
      *
-     * @param dimenUrl         The URL that should be loaded into this ImageView.
      * @param imageLoader ImageLoader that will be used to make the request.
      */
-    public void setImageUrl(String dimenUrl, String defUrl, ImageLoader imageLoader) {
-        mUrl = dimenUrl;
-        mDefUrl = defUrl;
-        mImageLoader = imageLoader;
-        // The URL has potentially changed. See if we need to load it.
-        loadImageIfNecessary(false);
+    public void setImageUrl(ArticleObj articleObj, ImageLoader imageLoader, Context context) {
+
+        if (this.articleObj == null){
+            // first load of article - in recycler view during inflating of row layouts
+
+            this.articleObj = articleObj;
+            mDimenUrl = ImageUtil.getImageDimenUrl(context, articleObj);
+            mDefUrl = articleObj.getImageUrl();
+            mImageLoader = imageLoader;
+
+            resolveLoadImages(); //start load dimen or default image
+
+            return;
+        }
+        //some article loaded before
+
+        if (this.articleObj.getID().equalsIgnoreCase(articleObj.getID())){
+            // there was a some article loaded before AND new articleObj EQUALS to old articleObj
+            // => same article was set - do NOTHING
+            Log.d(IMAGE_DEBUG, "Setting same article: " + mDimenUrl);
+            return;
+
+        } else {
+            // there was a some article loaded before new articleObj DON'T equals to old articleObj
+            // => load image of new article
+
+            // cancel requests
+            if (mDimenImageContainer != null && mDimenImageContainer.getRequestUrl() != null) {
+                mDimenImageContainer.cancelRequest();
+                setDefaultImageOrNull();
+            }
+            if (mDefaultImageContainer != null && mDefaultImageContainer.getRequestUrl() != null) {
+                mDefaultImageContainer.cancelRequest();
+                setDefaultImageOrNull();
+            }
+
+            // set new values
+            this.articleObj = articleObj;
+            mDimenUrl = ImageUtil.getImageDimenUrl(context, articleObj);
+            mDefUrl = articleObj.getImageUrl();
+            mImageLoader = imageLoader;
+
+            resolveLoadImages(); //start load dimen or default image
+        }
     }
 
     /**
@@ -133,86 +175,56 @@ public class VolleyImageView extends AppCompatImageView {
 
         // if the URL to be loaded in this view is empty, cancel any old requests and clear the
         // currently loaded image.
-        if (TextUtils.isEmpty(mUrl)) {
-            if (mImageContainer != null) {
-                mImageContainer.cancelRequest();
-                mImageContainer = null;
+        if (TextUtils.isEmpty(mDimenUrl)) {
+            if (mDimenImageContainer != null) {
+                mDimenImageContainer.cancelRequest();
+                mDimenImageContainer = null;
             }
             setDefaultImageOrNull();
             return;
         }
 
         // if there was an old request in this view, check if it needs to be canceled.
-        if (mImageContainer != null && mImageContainer.getRequestUrl() != null) {
+        if (mDimenImageContainer != null && mDimenImageContainer.getRequestUrl() != null) {
             // there is pre-existing request
-            if (mImageContainer.getRequestUrl().equals(mUrl)) {
+            if (mDimenImageContainer.getRequestUrl().equals(mDimenUrl)) {
                 // if the request is from the same URL, return.
                 return;
             } else {
                 // if there is a pre-existing request, cancel it if it's fetching a different URL.
-                mImageContainer.cancelRequest();
+                mDimenImageContainer.cancelRequest();
                 setDefaultImageOrNull();
             }
         }
 
+        resolveLoadImages(); //start load dimen or default image
+    }
+
+    private void resolveLoadImages() {
+        if (!articleObj.wasErrorDimenImage()){
+            loadImages(false);
+        } else {
+            loadDefaultImage(false);
+        }
+    }
+
+    private void loadImages(final boolean isInLayoutPass) {
         // The pre-existing content of this view didn't match the current URL. Load the new image
         // from the network.
-        ImageContainer newContainer = mImageLoader.get(mUrl,
+        ImageContainer newContainer = mImageLoader.get(mDimenUrl,
                 new ImageListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        /*
-                        if (mErrorImageId != 0) {
-                            setImageResource(mErrorImageId);
-                        }
-                        */
+                        // error loading image from DIMEN url
+                        // => load from default url
 
                         if(mObserver!=null)
                         {
                             mObserver.onError(thisIm);
                         }
 
-                        ImageContainer errContainer = mImageLoader.get(mDefUrl, new ImageListener() {
-                            @Override
-                            public void onResponse(final ImageContainer response, boolean isImmediate) {
-                                Log.d(IMAGE_DEBUG, "Successfully loaded image from DEFAULT url " + mDefUrl);
-
-                                // If this was an immediate response that was delivered inside of a layout
-                                // pass do not set the image immediately as it will trigger a requestLayout
-                                // inside of a layout. Instead, defer setting the image by posting back to
-                                // the main thread.
-                                if (isImmediate && isInLayoutPass) {
-                                    post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            onResponse(response, false);
-                                        }
-                                    });
-                                    return;
-                                }
-
-                                if (response.getBitmap() != null) {
-                                    setImageBitmap(response.getBitmap());
-                                } else if (mDefaultImageId != 0) {
-                                    //setImageResource(mDefaultImageId);
-                                }
-
-                                if(mObserver!=null)
-                                {
-                                    mObserver.onSuccess();
-                                }
-                            }
-
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.d(IMAGE_DEBUG, "Error loading DEFAULT url!");
-
-                                if (mErrorImageId != 0) {
-                                    setImageResource(mErrorImageId);
-                                }
-                            }
-                        });
-
+                        articleObj.setWasErrorDimenImage(true);
+                        loadDefaultImage(isInLayoutPass);
                     }
 
                     @Override
@@ -245,7 +257,54 @@ public class VolleyImageView extends AppCompatImageView {
                 });
 
         // update the ImageContainer to be the new bitmap container.
-        mImageContainer = newContainer;
+        mDimenImageContainer = newContainer;
+    }
+
+    private void loadDefaultImage(final boolean isInLayoutPass) {
+        ImageContainer defaultContainer = mImageLoader.get(mDefUrl, new ImageListener() {
+
+            @Override
+            public void onResponse(final ImageContainer response, boolean isImmediate) {
+                Log.d(IMAGE_DEBUG, "Successfully loaded image from DEFAULT url " + mDefUrl);
+
+                // If this was an immediate response that was delivered inside of a layout
+                // pass do not set the image immediately as it will trigger a requestLayout
+                // inside of a layout. Instead, defer setting the image by posting back to
+                // the main thread.
+                if (isImmediate && isInLayoutPass) {
+                    post(new Runnable() {
+                        @Override
+                        public void run() {
+                            onResponse(response, false);
+                        }
+                    });
+                    return;
+                }
+
+                if (response.getBitmap() != null) {
+                    setImageBitmap(response.getBitmap());
+                } else if (mDefaultImageId != 0) {
+                    //setImageResource(mDefaultImageId);
+                }
+
+                if(mObserver!=null)
+                {
+                    mObserver.onSuccess();
+                }
+            }
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Error loading DEFAULT image => show error image
+                //Log.d(IMAGE_DEBUG, "Error loading DEFAULT url!");
+
+                if (mErrorImageId != 0) {
+                    setImageResource(mErrorImageId);
+                }
+            }
+        });
+
+        mDefaultImageContainer = defaultContainer;
     }
 
     private void setDefaultImageOrNull() {
@@ -264,13 +323,13 @@ public class VolleyImageView extends AppCompatImageView {
 
     @Override
     protected void onDetachedFromWindow() {
-        if (mImageContainer != null) {
+        if (mDimenImageContainer != null) {
             // If the view was bound to an image request, cancel it and clear
             // out the image from the view.
-            mImageContainer.cancelRequest();
+            mDimenImageContainer.cancelRequest();
             setImageBitmap(null);
             // also clear out the container so we can reload the image if necessary.
-            mImageContainer = null;
+            mDimenImageContainer = null;
         }
         super.onDetachedFromWindow();
     }

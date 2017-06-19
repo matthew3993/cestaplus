@@ -34,6 +34,8 @@ public class ArticleObj
     private String imageName;
     private int imageID;
 
+    private boolean wasErrorDimenImage; // if there was an error during loading a dimen image
+
     /**
      * NA TESTOVANIE
      * @param title
@@ -133,21 +135,21 @@ public class ArticleObj
         return imageName;
     }
 
+    public boolean wasErrorDimenImage() {
+        return wasErrorDimenImage;
+    }
+
     // ===================== SETTERS ==========================================================================================================
     public void setTitle(String title) {
         this.title = title;
     }
 
-    public void setShort_text(String short_text) {
-        this.short_text = short_text;
-    }
-
-    public void setPubDate(Date pubDate) {
-        this.pubDate = pubDate;
-    }
-
     public void setId(String ID) {
         this.ID = ID;
+    }
+
+    public void setWasErrorDimenImage(boolean wasErrorDimenImage) {
+        this.wasErrorDimenImage = wasErrorDimenImage;
     }
 
 // ===================== Other methods ==========================================================================================================

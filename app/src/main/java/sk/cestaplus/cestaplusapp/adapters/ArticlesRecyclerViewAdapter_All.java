@@ -109,7 +109,7 @@ public class ArticlesRecyclerViewAdapter_All
 
         } else {
             ArticleViewHolder_All holder = (ArticleViewHolder_All) viewHolder;
-            ArticleObj actArticle = articlesList.get(i - (super.hasHeader ? 1 : 0));    // -1 beacuse of header
+            ArticleObj actArticle = articlesList.get(i - (super.hasHeader ? 1 : 0));    // -1 because of header
 
         //Author name
             holder.author.setText(actArticle.getAuthor().toUpperCase());
@@ -122,9 +122,17 @@ public class ArticlesRecyclerViewAdapter_All
             holder.description.setText(actArticle.getShort_text());
 
         //Image - start to load image and check if user is logged in or not
+            String articleId = actArticle.getID();
             String imageDimenUrl = ImageUtil.getImageDimenUrl(context, actArticle);
             String imageDefUrl = actArticle.getImageUrl();
-            loadImage(imageDimenUrl, imageDefUrl, holder);
+
+            /*
+            String articleId = articlesList.get(0).getID();
+            String imageDimenUrl = ImageUtil.getImageDimenUrl(context, articlesList.get(0));
+            String imageDefUrl = articlesList.get(0).getImageUrl();
+            */
+
+            loadImage(actArticle, holder);
             //holder.getImage().setImageUrl(imageDimenUrl, im);
 
             // ak je role 0 a článok je zamknuty treba zobrazit zamok

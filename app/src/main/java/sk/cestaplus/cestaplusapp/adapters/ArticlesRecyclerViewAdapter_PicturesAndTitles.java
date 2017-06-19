@@ -87,7 +87,8 @@ public class ArticlesRecyclerViewAdapter_PicturesAndTitles
         //Image - start to load image and check if user is logged in or not
             String imageDimenUrl = ImageUtil.getImageDimenUrl(context, actArticle);
             String imageDefUrl = actArticle.getImageUrl();
-            loadImage(imageDimenUrl, imageDefUrl, holder);
+
+            loadImage(actArticle, holder);
 
             // ak je role 0 a článok je zamknuty treba zobrazit zamok
             if (TextUtil.showLock(role, actArticle.isLocked())) {

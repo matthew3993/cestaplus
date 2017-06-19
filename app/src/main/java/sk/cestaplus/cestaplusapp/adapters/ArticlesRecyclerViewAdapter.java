@@ -168,104 +168,101 @@ public abstract class ArticlesRecyclerViewAdapter
 
     /**
      * Load the image from url, using ImageLoader
-     * @param imgDimenUrl
      * @param viewHolder
      */
-    protected void loadImage(final String imgDimenUrl, final String imgDefUrl, final ArticleViewHolder viewHolder){
+    protected void loadImage(ArticleObj articleObj, final ArticleViewHolder viewHolder){
 
-        if (!imgDimenUrl.equals("NA")){
-            //imageLoader.get(imgDimenUrl, ImageLoader.getImageListener(viewHolder.image, 0, R.drawable.err_pic)); //not good way
-                // - this way is slower and causes image changes during scrolling = showing image that doesn't belong to that
-                // article for short while = very annoing
+        //imageLoader.get(imgDimenUrl, ImageLoader.getImageListener(viewHolder.image, 0, R.drawable.err_pic)); //not good way of showing error picture
+            // - this way is slower and causes image changes during scrolling = showing image that doesn't belong to that
+            // article for short while = very annoing
 
-            //viewHolder.image.setImageUrl(imgDimenUrl, imageLoader);
-            viewHolder.image.setErrorImageResId(R.drawable.err_pic); //better way of showing error picture
+        //viewHolder.image.setImageUrl(imgDimenUrl, imageLoader);
+        viewHolder.image.setErrorImageResId(R.drawable.err_pic); //better way of showing error picture
 
+        viewHolder.image.setImageUrl(articleObj, imageLoader, context);
 
-            viewHolder.image.setImageUrl(imgDimenUrl, imgDefUrl, imageLoader);
+        //set observer to view
+        // OBSERVER is set to IMAGE VIEW - NOT to request
 
-            //set observer to view
-            // OBSERVER is set to IMAGE VIEW - NOT to request
+        /*
+        viewHolder.image.setResponseObserver(new VolleyImageView.ResponseObserver() {
+            @Override
+            public void onError(VolleyImageView volleyImageView) {
+                Log.d(IMAGE_DEBUG, "Error loading dimen url!");
+                Log.d(IMAGE_DEBUG, "\tWrong dimen URL: " + imgDimenUrl);
 
-            /*
-            viewHolder.image.setResponseObserver(new VolleyImageView.ResponseObserver() {
-                @Override
-                public void onError(VolleyImageView volleyImageView) {
-                    Log.d(IMAGE_DEBUG, "Error loading dimen url!");
-                    Log.d(IMAGE_DEBUG, "\tWrong dimen URL: " + imgDimenUrl);
+                volleyImageView.setResponseObserver(new VolleyImageView.ResponseObserver() {
+                    @Override
+                    public void onError(VolleyImageView volleyImageView) {
+                        Log.d(IMAGE_DEBUG, "Error loading DEFAULT url!");
+                    }
+                    @Override
+                    public void onSuccess() {
+                        Log.d(IMAGE_DEBUG, "Successfully loaded image from DEFAULT url " + imgDefUrl);
+                    }
+                });
 
-                    volleyImageView.setResponseObserver(new VolleyImageView.ResponseObserver() {
-                        @Override
-                        public void onError(VolleyImageView volleyImageView) {
-                            Log.d(IMAGE_DEBUG, "Error loading DEFAULT url!");
-                        }
-                        @Override
-                        public void onSuccess() {
-                            Log.d(IMAGE_DEBUG, "Successfully loaded image from DEFAULT url " + imgDefUrl);
-                        }
-                    });
+                volleyImageView.setImageUrl(imgDefUrl, imgDefUrl, imageLoader);
+            }
 
-                    volleyImageView.setImageUrl(imgDefUrl, imgDefUrl, imageLoader);
-                }
+            @Override
+            public void onSuccess() {
+                Log.d(IMAGE_DEBUG, "Successfully loaded image from DIMEN url " + imgDimenUrl);
+            }
+        });
 
-                @Override
-                public void onSuccess() {
-                    Log.d(IMAGE_DEBUG, "Successfully loaded image from DIMEN url " + imgDimenUrl);
-                }
-            });
+        viewHolder.image.setImageUrl(imgDimenUrl, imgDefUrl, imageLoader);
 
-            viewHolder.image.setImageUrl(imgDimenUrl, imgDefUrl, imageLoader);
-
-            */
-
-
-            /*
-            imageLoader.get(imgDimenUrl, new ImageLoader.ImageListener() {
-                @Override
-                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                    viewHolder.image.setImageBitmap(response.getBitmap()); //nastavenie obrazka, ak je dostupny na nete
-                }
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    //load image from  DEFAULT url - loaded from API
-
-                    Log.d(IMAGE_DEBUG, "Error loading dimen url, loading from DEFAULT url...");
-                    Log.d(IMAGE_DEBUG, "\tWrong dimen URL: " + imgDimenUrl);
-                    /*
-                    imageLoader.get(imgDefUrl, new ImageLoader.ImageListener() {
-                        @Override
-                        public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                            viewHolder.image.setImageBitmap(response.getBitmap()); //nastavenie obrazka, ak je dostupny na nete
-                        }
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            //viewHolder.image.
-                        }
-                    });
-
-                }
-            });
         */
 
 
-            //region OLD IMPLEMENTATION using classic ImageView instead Volley's NetworkImageView
-            /*
-            imageLoader.get(imgDimenUrl, new ImageLoader.ImageListener() {
-                @Override
-                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                    viewHolder.image.setImageBitmap(response.getBitmap()); //nastavenie obrazka, ak je dostupny na nete
-                }
+        /*
+        imageLoader.get(imgDimenUrl, new ImageLoader.ImageListener() {
+            @Override
+            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                viewHolder.image.setImageBitmap(response.getBitmap()); //nastavenie obrazka, ak je dostupny na nete
+            }
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    //do nothing
-                }
-            });
-            */
-            //endregion
-        }
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //load image from  DEFAULT url - loaded from API
+
+                Log.d(IMAGE_DEBUG, "Error loading dimen url, loading from DEFAULT url...");
+                Log.d(IMAGE_DEBUG, "\tWrong dimen URL: " + imgDimenUrl);
+                /*
+                imageLoader.get(imgDefUrl, new ImageLoader.ImageListener() {
+                    @Override
+                    public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                        viewHolder.image.setImageBitmap(response.getBitmap()); //nastavenie obrazka, ak je dostupny na nete
+                    }
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //viewHolder.image.
+                    }
+                });
+
+            }
+        });
+    */
+
+
+        //region OLD IMPLEMENTATION using classic ImageView instead Volley's NetworkImageView
+        /*
+        imageLoader.get(imgDimenUrl, new ImageLoader.ImageListener() {
+            @Override
+            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                viewHolder.image.setImageBitmap(response.getBitmap()); //nastavenie obrazka, ak je dostupny na nete
+            }
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //do nothing
+            }
+        });
+        */
+        //endregion
+
     }// end loadImage
 
     public void setHeaderArticle(ArticleObj headerArticle) {
