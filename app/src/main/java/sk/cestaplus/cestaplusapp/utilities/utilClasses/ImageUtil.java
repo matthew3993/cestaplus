@@ -3,7 +3,6 @@ package sk.cestaplus.cestaplusapp.utilities.utilClasses;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.widget.ImageView;
 
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
@@ -14,7 +13,6 @@ import static sk.cestaplus.cestaplusapp.extras.Constants.DIMEN_B;
 import static sk.cestaplus.cestaplusapp.extras.Constants.DIMEN_C;
 import static sk.cestaplus.cestaplusapp.extras.Constants.DIMEN_D;
 import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGES;
-import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGE_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.Constants.SMALL;
 import static sk.cestaplus.cestaplusapp.extras.Constants.URL_CESTA_PLUS;
 
@@ -81,7 +79,7 @@ public class ImageUtil {
 
         switch(screenSize) { // screenSize
             case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                dimenUrl = article.getImageUrl();   //image url from API
+                dimenUrl = article.getImageDefaulUrl();   //image url from API
                 break;
             case Configuration.SCREENLAYOUT_SIZE_LARGE: // 7" tablets
                 dimenUrl += getImgDimenUrlLarge(context);
@@ -92,10 +90,10 @@ public class ImageUtil {
                 dimenUrl += getFullImageName(article);
                 break;
             case Configuration.SCREENLAYOUT_SIZE_SMALL: // mostly wearables ?
-                dimenUrl = article.getImageUrl();   //image url from API
+                dimenUrl = article.getImageDefaulUrl();   //image url from API
                 break;
             default:
-                dimenUrl = article.getImageUrl();   //image url from API
+                dimenUrl = article.getImageDefaulUrl();   //image url from API
                 break;
         }
 

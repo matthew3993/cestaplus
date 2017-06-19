@@ -8,7 +8,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 23
         versionCode 11
-        versionName "alpha 1.45"
+        versionName "alpha 1.5"
 
         //https://developer.android.com/studio/build/multidex.html
         multiDexEnabled true

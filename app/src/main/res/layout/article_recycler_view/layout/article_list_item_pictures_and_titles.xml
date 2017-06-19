@@ -10,7 +10,7 @@
     >
 
     <!--  com.android.volley.toolbox.NetworkImageView -->
-    <sk.cestaplus.cestaplusapp.views.VolleyImageView
+    <sk.cestaplus.cestaplusapp.views.CustomVolleyImageView
         android:id="@+id/nivListItem"
 
         android:layout_width="@dimen/li_image_width"

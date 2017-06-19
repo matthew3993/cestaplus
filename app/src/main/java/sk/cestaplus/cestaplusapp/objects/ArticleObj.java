@@ -2,13 +2,10 @@ package sk.cestaplus.cestaplusapp.objects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.util.Date;
 
 import sk.cestaplus.cestaplusapp.extras.Constants;
-
-import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGE_DEBUG;
 
 /**
  * Created by Matej on 28.2.2015.
@@ -21,7 +18,7 @@ public class ArticleObj
     private String short_text;  // shortened version of description, showed only in recycler view
 
     private String author;
-    private String imageUrl;
+    private String imageDefaulUrl;
 
     private Date pubDate;       // publish time & date
     private String section;     // rubrika
@@ -52,19 +49,19 @@ public class ArticleObj
     /**
      *  PLNY KONSTRUKTOR
      */
-    public ArticleObj(String title, String short_text, String author, String imageUrl, Date pubDate, String section, String ID, boolean locked) {
+    public ArticleObj(String title, String short_text, String author, String imageDefaulUrl, Date pubDate, String section, String ID, boolean locked) {
         this.title = title;
         this.short_text = short_text;
         this.author = author;
-        this.imageUrl = imageUrl;
+        this.imageDefaulUrl = imageDefaulUrl;
         this.pubDate = pubDate;
         this.section = section;
         this.ID = ID;
         this.locked = locked;
 
-        //parse imageName from imageUrl
+        //parse imageName from imageDefaulUrl
         String urlWithoutName = Constants.URL_CESTA_PLUS + Constants.IMAGES + section + "/";
-        this.imageName = imageUrl.replace(urlWithoutName, ""); //SOURCE: https://stackoverflow.com/questions/8694984/remove-part-of-string
+        this.imageName = imageDefaulUrl.replace(urlWithoutName, ""); //SOURCE: https://stackoverflow.com/questions/8694984/remove-part-of-string
 
         //Log.d(IMAGE_DEBUG, "Parsed image name: " + this.imageName);
     }
@@ -78,7 +75,7 @@ public class ArticleObj
         title = input.readString();
         short_text = input.readString();
         author = input.readString();
-        imageUrl = input.readString();
+        imageDefaulUrl = input.readString();
         imageName = input.readString();
 
         pubDate = new Date(input.readLong()); //prevod casu v milisekundach (long) na datum
@@ -111,8 +108,8 @@ public class ArticleObj
         return author;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImageDefaulUrl() {
+        return imageDefaulUrl;
     }
 
     public Date getPubDate() {
@@ -160,7 +157,7 @@ public class ArticleObj
         return "ArticleObj{" +
                 "title='" + title + '\'' +
                 ", short_text='" + short_text + '\'' +
-                ", ImageUrl=" + imageUrl +
+                ", ImageUrl=" + imageDefaulUrl +
                 ", pubDate=" + pubDate +
                 ", section='" + section + '\'' +
                 ", id=" + ID +
@@ -183,7 +180,7 @@ public class ArticleObj
         dest.writeString(title);
         dest.writeString(short_text);
         dest.writeString(author);
-        dest.writeString(imageUrl);
+        dest.writeString(imageDefaulUrl);
         dest.writeString(imageName);
         dest.writeLong(pubDate.getTime()); //prevod datumu na cas v milisekundach (long)
         dest.writeString(section);

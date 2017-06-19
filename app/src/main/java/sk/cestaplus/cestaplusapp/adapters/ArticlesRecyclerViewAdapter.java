@@ -2,7 +2,6 @@ package sk.cestaplus.cestaplusapp.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
@@ -21,9 +19,7 @@ import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
-import sk.cestaplus.cestaplusapp.views.VolleyImageView;
-
-import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGE_DEBUG;
+import sk.cestaplus.cestaplusapp.views.CustomVolleyImageView;
 
 /**
  * Created by Matej on 4.3.2015.
@@ -148,7 +144,7 @@ public abstract class ArticlesRecyclerViewAdapter
             holder.description.setText(headerArticle.getShort_text());
 
             //Image - start to load image and check if user is logged in or not
-            String imageUrl = headerArticle.getImageUrl();
+            String imageUrl = headerArticle.getImageDefaulUrl();
             holder.image.setImageUrl(imageUrl, imageLoader);
             holder.image.setErrorImageResId(R.drawable.err_pic); //better way of showing error picture
 
@@ -187,13 +183,13 @@ public abstract class ArticlesRecyclerViewAdapter
         /*
         viewHolder.image.setResponseObserver(new VolleyImageView.ResponseObserver() {
             @Override
-            public void onError(VolleyImageView volleyImageView) {
+            public void onDimenError(VolleyImageView volleyImageView) {
                 Log.d(IMAGE_DEBUG, "Error loading dimen url!");
                 Log.d(IMAGE_DEBUG, "\tWrong dimen URL: " + imgDimenUrl);
 
                 volleyImageView.setResponseObserver(new VolleyImageView.ResponseObserver() {
                     @Override
-                    public void onError(VolleyImageView volleyImageView) {
+                    public void onDimenError(VolleyImageView volleyImageView) {
                         Log.d(IMAGE_DEBUG, "Error loading DEFAULT url!");
                     }
                     @Override
@@ -306,11 +302,11 @@ public abstract class ArticlesRecyclerViewAdapter
         extends RecyclerView.ViewHolder
         {
 
-        protected VolleyImageView image;
+        protected CustomVolleyImageView image;
 
         public ArticleViewHolder(View view) {
             super(view);
-            image = (VolleyImageView) view.findViewById(R.id.nivListItem);
+            image = (CustomVolleyImageView) view.findViewById(R.id.nivListItem);
         } //end constructor ArticleViewHolder(View view)
     } // end ArticleViewHolder
 

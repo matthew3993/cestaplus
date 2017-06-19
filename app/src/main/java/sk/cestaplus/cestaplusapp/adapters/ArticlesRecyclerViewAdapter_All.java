@@ -7,14 +7,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.NetworkImageView;
-
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
-import sk.cestaplus.cestaplusapp.views.VolleyImageView;
+import sk.cestaplus.cestaplusapp.views.CustomVolleyImageView;
 
 /**
  * Created by Matej on 4.3.2015.
@@ -124,12 +122,12 @@ public class ArticlesRecyclerViewAdapter_All
         //Image - start to load image and check if user is logged in or not
             String articleId = actArticle.getID();
             String imageDimenUrl = ImageUtil.getImageDimenUrl(context, actArticle);
-            String imageDefUrl = actArticle.getImageUrl();
+            String imageDefUrl = actArticle.getImageDefaulUrl();
 
             /*
             String articleId = articlesList.get(0).getID();
             String imageDimenUrl = ImageUtil.getImageDimenUrl(context, articlesList.get(0));
-            String imageDefUrl = articlesList.get(0).getImageUrl();
+            String imageDefUrl = articlesList.get(0).getImageDefaulUrl();
             */
 
             loadImage(actArticle, holder);
@@ -174,7 +172,7 @@ public class ArticlesRecyclerViewAdapter_All
                 //itemView.setOnClickListener(this);
             } //end constructor ArticleViewHolder(View itemView)
 
-            private VolleyImageView getImage(){
+            private CustomVolleyImageView getImage(){
                 return super.image;
             }
         } // end ArticleViewHolder

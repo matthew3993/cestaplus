@@ -18,13 +18,18 @@ import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
 
 import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGE_DEBUG;
 
-
-public class VolleyImageView extends AppCompatImageView {
+/**
+ * SOURCE of first idea: https://stackoverflow.com/a/22053985
+ */
+public class CustomVolleyImageView extends AppCompatImageView {
 
     public interface ResponseObserver
     {
-        public void onError(VolleyImageView volleyImageView);
-        public void onSuccess();
+        void onDimenError(CustomVolleyImageView customVolleyImageView);
+        void onDimenSuccess(CustomVolleyImageView customVolleyImageView);
+
+        void onDefaultError(CustomVolleyImageView customVolleyImageView);
+        void onDefaultSuccess(CustomVolleyImageView customVolleyImageView);
     }
 
     private ResponseObserver mObserver;
@@ -33,7 +38,7 @@ public class VolleyImageView extends AppCompatImageView {
         mObserver = observer;
     }
 
-    private VolleyImageView thisIm;
+    private CustomVolleyImageView thisImgView;
 
     private ArticleObj articleObj;
 
@@ -45,7 +50,7 @@ public class VolleyImageView extends AppCompatImageView {
     /**
      * The URL of the network image to load in case of error when loading from mDimenUrl
      */
-    private String mDefUrl;
+    private String mDefaultUrl;
 
     /**
      * Resource ID of the image to be used as a placeholder until the network image is loaded.
@@ -70,26 +75,26 @@ public class VolleyImageView extends AppCompatImageView {
 
     private ImageContainer mDefaultImageContainer;
 
-    public VolleyImageView(Context context) {
+    public CustomVolleyImageView(Context context) {
         this(context, null);
     }
 
-    public VolleyImageView(Context context, AttributeSet attrs) {
+    public CustomVolleyImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public VolleyImageView(Context context, AttributeSet attrs, int defStyle) {
+    public CustomVolleyImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        thisIm = this;
+        thisImgView = this;
     }
 
     /**
      * Sets URL of the image that should be loaded into this view. Note that calling this will
      * immediately either set the cached image (if available) or the default image specified by
-     * {@link VolleyImageView#setDefaultImageResId(int)} on the view.
+     * {@link CustomVolleyImageView#setDefaultImageResId(int)} on the view.
      *
-     * NOTE: If applicable, {@link VolleyImageView#setDefaultImageResId(int)} and {@link
-     * VolleyImageView#setErrorImageResId(int)} should be called prior to calling this function.
+     * NOTE: If applicable, {@link CustomVolleyImageView#setDefaultImageResId(int)} and {@link
+     * CustomVolleyImageView#setErrorImageResId(int)} should be called prior to calling this function.
      *
      * @param imageLoader ImageLoader that will be used to make the request.
      */
@@ -100,7 +105,7 @@ public class VolleyImageView extends AppCompatImageView {
 
             this.articleObj = articleObj;
             mDimenUrl = ImageUtil.getImageDimenUrl(context, articleObj);
-            mDefUrl = articleObj.getImageUrl();
+            mDefaultUrl = articleObj.getImageDefaulUrl();
             mImageLoader = imageLoader;
 
             resolveLoadImages(); //start load dimen or default image
@@ -132,7 +137,7 @@ public class VolleyImageView extends AppCompatImageView {
             // set new values
             this.articleObj = articleObj;
             mDimenUrl = ImageUtil.getImageDimenUrl(context, articleObj);
-            mDefUrl = articleObj.getImageUrl();
+            mDefaultUrl = articleObj.getImageDefaulUrl();
             mImageLoader = imageLoader;
 
             resolveLoadImages(); //start load dimen or default image
@@ -189,6 +194,7 @@ public class VolleyImageView extends AppCompatImageView {
             // there is pre-existing request
             if (mDimenImageContainer.getRequestUrl().equals(mDimenUrl)) {
                 // if the request is from the same URL, return.
+                Log.d(IMAGE_DEBUG, "mDimenImageContainer: Request from same url - return");
                 return;
             } else {
                 // if there is a pre-existing request, cancel it if it's fetching a different URL.
@@ -211,61 +217,66 @@ public class VolleyImageView extends AppCompatImageView {
     private void loadImages(final boolean isInLayoutPass) {
         // The pre-existing content of this view didn't match the current URL. Load the new image
         // from the network.
-        ImageContainer newContainer = mImageLoader.get(mDimenUrl,
-                new ImageListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // error loading image from DIMEN url
-                        // => load from default url
+        ImageContainer newContainer = mImageLoader.get(mDimenUrl, new ImageListener() {
 
-                        if(mObserver!=null)
-                        {
-                            mObserver.onError(thisIm);
+            @Override
+            public void onResponse(final ImageContainer response, boolean isImmediate) {
+                // success loading image from DIMEN url
+
+                // If this was an immediate response that was delivered inside of a layout
+                // pass do not set the image immediately as it will trigger a requestLayout
+                // inside of a layout. Instead, defer setting the image by posting back to
+                // the main thread.
+                if (isImmediate && isInLayoutPass) {
+                    post(new Runnable() {
+                        @Override
+                        public void run() {
+                            onResponse(response, false);
                         }
+                    });
+                    return;
+                }
 
-                        articleObj.setWasErrorDimenImage(true);
-                        loadDefaultImage(isInLayoutPass);
-                    }
+                if (response.getBitmap() != null) {
+                    setImageBitmap(response.getBitmap());
 
-                    @Override
-                    public void onResponse(final ImageContainer response, boolean isImmediate) {
-                        // If this was an immediate response that was delivered inside of a layout
-                        // pass do not set the image immediately as it will trigger a requestLayout
-                        // inside of a layout. Instead, defer setting the image by posting back to
-                        // the main thread.
-                        if (isImmediate && isInLayoutPass) {
-                            post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    onResponse(response, false);
-                                }
-                            });
-                            return;
-                        }
+                } else if (mDefaultImageId != 0) {
+                    articleObj.setWasErrorDimenImage(true);
+                    loadDefaultImage(isInLayoutPass);
+                }
 
-                        if (response.getBitmap() != null) {
-                            setImageBitmap(response.getBitmap());
-                        } else if (mDefaultImageId != 0) {
-                            //setImageResource(mDefaultImageId);
-                        }
+                if(mObserver!=null)
+                {
+                    mObserver.onDimenSuccess(thisImgView);
+                }
+            }
 
-                        if(mObserver!=null)
-                        {
-                            mObserver.onSuccess();
-                        }
-                    }
-                });
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // error loading image from DIMEN url
+                // => load from default url
+
+                articleObj.setWasErrorDimenImage(true);
+                loadDefaultImage(isInLayoutPass);
+
+                if(mObserver!=null)
+                {
+                    mObserver.onDimenError(thisImgView);
+                }
+            }
+        });
 
         // update the ImageContainer to be the new bitmap container.
         mDimenImageContainer = newContainer;
     }
 
     private void loadDefaultImage(final boolean isInLayoutPass) {
-        ImageContainer defaultContainer = mImageLoader.get(mDefUrl, new ImageListener() {
+        ImageContainer defaultContainer = mImageLoader.get(mDefaultUrl, new ImageListener() {
 
             @Override
             public void onResponse(final ImageContainer response, boolean isImmediate) {
-                Log.d(IMAGE_DEBUG, "Successfully loaded image from DEFAULT url " + mDefUrl);
+                // success loading image from DEFAULT url
+                Log.d(IMAGE_DEBUG, "Successfully loaded image from DEFAULT url " + mDefaultUrl);
 
                 // If this was an immediate response that was delivered inside of a layout
                 // pass do not set the image immediately as it will trigger a requestLayout
@@ -284,12 +295,12 @@ public class VolleyImageView extends AppCompatImageView {
                 if (response.getBitmap() != null) {
                     setImageBitmap(response.getBitmap());
                 } else if (mDefaultImageId != 0) {
-                    //setImageResource(mDefaultImageId);
+                    setImageResource(mDefaultImageId);
                 }
 
                 if(mObserver!=null)
                 {
-                    mObserver.onSuccess();
+                    mObserver.onDefaultSuccess(thisImgView);
                 }
             }
 
@@ -300,6 +311,11 @@ public class VolleyImageView extends AppCompatImageView {
 
                 if (mErrorImageId != 0) {
                     setImageResource(mErrorImageId);
+                }
+
+                if(mObserver!=null)
+                {
+                    mObserver.onDefaultError(thisImgView);
                 }
             }
         });
