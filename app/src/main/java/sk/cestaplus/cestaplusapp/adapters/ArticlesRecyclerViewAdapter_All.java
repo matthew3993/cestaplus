@@ -12,7 +12,9 @@ import com.android.volley.toolbox.NetworkImageView;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
+import sk.cestaplus.cestaplusapp.views.VolleyImageView;
 
 /**
  * Created by Matej on 4.3.2015.
@@ -120,9 +122,10 @@ public class ArticlesRecyclerViewAdapter_All
             holder.description.setText(actArticle.getShort_text());
 
         //Image - start to load image and check if user is logged in or not
-            String imageUrl = actArticle.getImageUrl();
-            loadImage(imageUrl, holder);
-            //holder.getImage().setImageUrl(imageUrl, im);
+            String imageDimenUrl = ImageUtil.getImageDimenUrl(context, actArticle);
+            String imageDefUrl = actArticle.getImageUrl();
+            loadImage(imageDimenUrl, imageDefUrl, holder);
+            //holder.getImage().setImageUrl(imageDimenUrl, im);
 
             // ak je role 0 a článok je zamknuty treba zobrazit zamok
             if (TextUtil.showLock(role, actArticle.isLocked())) {
@@ -163,7 +166,7 @@ public class ArticlesRecyclerViewAdapter_All
                 //itemView.setOnClickListener(this);
             } //end constructor ArticleViewHolder(View itemView)
 
-            private NetworkImageView getImage(){
+            private VolleyImageView getImage(){
                 return super.image;
             }
         } // end ArticleViewHolder

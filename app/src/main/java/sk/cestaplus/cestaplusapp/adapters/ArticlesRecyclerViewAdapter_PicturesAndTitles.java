@@ -10,6 +10,7 @@ import android.widget.TextView;
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 
 /**
@@ -84,8 +85,9 @@ public class ArticlesRecyclerViewAdapter_PicturesAndTitles
                     actArticle.getTitle(), holder.title, R.drawable.lock_black);
 
         //Image - start to load image and check if user is logged in or not
-            String imageUrl = actArticle.getImageUrl();
-            loadImage(imageUrl, holder);
+            String imageDimenUrl = ImageUtil.getImageDimenUrl(context, actArticle);
+            String imageDefUrl = actArticle.getImageUrl();
+            loadImage(imageDimenUrl, imageDefUrl, holder);
 
             // ak je role 0 a článok je zamknuty treba zobrazit zamok
             if (TextUtil.showLock(role, actArticle.isLocked())) {

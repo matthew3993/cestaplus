@@ -2,8 +2,13 @@ package sk.cestaplus.cestaplusapp.objects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.Date;
+
+import sk.cestaplus.cestaplusapp.extras.Constants;
+
+import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGE_DEBUG;
 
 /**
  * Created by Matej on 28.2.2015.
@@ -16,7 +21,6 @@ public class ArticleObj
     private String short_text;  // shortened version of description, showed only in recycler view
 
     private String author;
-    private int ImageID;
     private String imageUrl;
 
     private Date pubDate;       // publish time & date
@@ -25,6 +29,10 @@ public class ArticleObj
     private String ID;
     private boolean locked;
     //private String link;     // link on article on webpage
+
+    //helper attributes
+    private String imageName;
+    private int imageID;
 
     /**
      * NA TESTOVANIE
@@ -35,7 +43,7 @@ public class ArticleObj
     public ArticleObj(String title, String short_text, int imageID, String section) {
         this.title = title;
         this.short_text = short_text;
-        this.ImageID = imageID;
+        this.imageID = imageID;
         this.section = section;
     }
 
@@ -51,6 +59,12 @@ public class ArticleObj
         this.section = section;
         this.ID = ID;
         this.locked = locked;
+
+        //parse imageName from imageUrl
+        String urlWithoutName = Constants.URL_CESTA_PLUS + Constants.IMAGES + section + "/";
+        this.imageName = imageUrl.replace(urlWithoutName, ""); //SOURCE: https://stackoverflow.com/questions/8694984/remove-part-of-string
+
+        //Log.d(IMAGE_DEBUG, "Parsed image name: " + this.imageName);
     }
 
     /**
@@ -63,6 +77,7 @@ public class ArticleObj
         short_text = input.readString();
         author = input.readString();
         imageUrl = input.readString();
+        imageName = input.readString();
 
         pubDate = new Date(input.readLong()); //prevod casu v milisekundach (long) na datum
         section = input.readString();
@@ -114,6 +129,9 @@ public class ArticleObj
         return locked;
     }
 
+    public String getImageName() {
+        return imageName;
+    }
 
     // ===================== SETTERS ==========================================================================================================
     public void setTitle(String title) {
@@ -149,7 +167,7 @@ public class ArticleObj
     }
 
     public int getImageID() {
-        return ImageID;
+        return imageID;
     }
 
     @Override
@@ -164,6 +182,7 @@ public class ArticleObj
         dest.writeString(short_text);
         dest.writeString(author);
         dest.writeString(imageUrl);
+        dest.writeString(imageName);
         dest.writeLong(pubDate.getTime()); //prevod datumu na cas v milisekundach (long)
         dest.writeString(section);
         dest.writeString(ID);
