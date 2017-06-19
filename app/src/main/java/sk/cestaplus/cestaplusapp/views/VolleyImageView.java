@@ -4,6 +4,7 @@ package sk.cestaplus.cestaplusapp.views;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.support.v7.widget.AppCompatImageView;
 
@@ -11,6 +12,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageLoader.ImageContainer;
 import com.android.volley.toolbox.ImageLoader.ImageListener;
+
+import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGE_DEBUG;
 
 
 public class VolleyImageView extends AppCompatImageView {
@@ -35,6 +38,11 @@ public class VolleyImageView extends AppCompatImageView {
     private String mUrl;
 
     /**
+     * The URL of the network image to load
+     */
+    private String mDefUrl;
+
+    /**
      * Resource ID of the image to be used as a placeholder until the network image is loaded.
      */
     private int mDefaultImageId;
@@ -53,6 +61,9 @@ public class VolleyImageView extends AppCompatImageView {
      * Current ImageContainer. (either in-flight or finished)
      */
     private ImageContainer mImageContainer;
+
+
+    private ImageContainer mErrorImageContainer;
 
     public VolleyImageView(Context context) {
         this(context, null);
@@ -75,11 +86,12 @@ public class VolleyImageView extends AppCompatImageView {
      * NOTE: If applicable, {@link VolleyImageView#setDefaultImageResId(int)} and {@link
      * VolleyImageView#setErrorImageResId(int)} should be called prior to calling this function.
      *
-     * @param url         The URL that should be loaded into this ImageView.
+     * @param dimenUrl         The URL that should be loaded into this ImageView.
      * @param imageLoader ImageLoader that will be used to make the request.
      */
-    public void setImageUrl(String url, ImageLoader imageLoader) {
-        mUrl = url;
+    public void setImageUrl(String dimenUrl, String defUrl, ImageLoader imageLoader) {
+        mUrl = dimenUrl;
+        mDefUrl = defUrl;
         mImageLoader = imageLoader;
         // The URL has potentially changed. See if we need to load it.
         loadImageIfNecessary(false);
@@ -132,6 +144,7 @@ public class VolleyImageView extends AppCompatImageView {
 
         // if there was an old request in this view, check if it needs to be canceled.
         if (mImageContainer != null && mImageContainer.getRequestUrl() != null) {
+            // there is pre-existing request
             if (mImageContainer.getRequestUrl().equals(mUrl)) {
                 // if the request is from the same URL, return.
                 return;
@@ -148,14 +161,58 @@ public class VolleyImageView extends AppCompatImageView {
                 new ImageListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        /*
                         if (mErrorImageId != 0) {
                             setImageResource(mErrorImageId);
                         }
+                        */
 
                         if(mObserver!=null)
                         {
                             mObserver.onError(thisIm);
                         }
+
+                        ImageContainer errContainer = mImageLoader.get(mDefUrl, new ImageListener() {
+                            @Override
+                            public void onResponse(final ImageContainer response, boolean isImmediate) {
+                                Log.d(IMAGE_DEBUG, "Successfully loaded image from DEFAULT url " + mDefUrl);
+
+                                // If this was an immediate response that was delivered inside of a layout
+                                // pass do not set the image immediately as it will trigger a requestLayout
+                                // inside of a layout. Instead, defer setting the image by posting back to
+                                // the main thread.
+                                if (isImmediate && isInLayoutPass) {
+                                    post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            onResponse(response, false);
+                                        }
+                                    });
+                                    return;
+                                }
+
+                                if (response.getBitmap() != null) {
+                                    setImageBitmap(response.getBitmap());
+                                } else if (mDefaultImageId != 0) {
+                                    //setImageResource(mDefaultImageId);
+                                }
+
+                                if(mObserver!=null)
+                                {
+                                    mObserver.onSuccess();
+                                }
+                            }
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d(IMAGE_DEBUG, "Error loading DEFAULT url!");
+
+                                if (mErrorImageId != 0) {
+                                    setImageResource(mErrorImageId);
+                                }
+                            }
+                        });
+
                     }
 
                     @Override
@@ -177,7 +234,7 @@ public class VolleyImageView extends AppCompatImageView {
                         if (response.getBitmap() != null) {
                             setImageBitmap(response.getBitmap());
                         } else if (mDefaultImageId != 0) {
-                            setImageResource(mDefaultImageId);
+                            //setImageResource(mDefaultImageId);
                         }
 
                         if(mObserver!=null)

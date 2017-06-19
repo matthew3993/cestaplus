@@ -179,13 +179,15 @@ public abstract class ArticlesRecyclerViewAdapter
                 // article for short while = very annoing
 
             //viewHolder.image.setImageUrl(imgDimenUrl, imageLoader);
-            //viewHolder.image.setErrorImageResId(R.drawable.err_pic); //better way of showing error picture
+            viewHolder.image.setErrorImageResId(R.drawable.err_pic); //better way of showing error picture
 
+
+            viewHolder.image.setImageUrl(imgDimenUrl, imgDefUrl, imageLoader);
 
             //set observer to view
             // OBSERVER is set to IMAGE VIEW - NOT to request
-            /*
 
+            /*
             viewHolder.image.setResponseObserver(new VolleyImageView.ResponseObserver() {
                 @Override
                 public void onError(VolleyImageView volleyImageView) {
@@ -203,7 +205,7 @@ public abstract class ArticlesRecyclerViewAdapter
                         }
                     });
 
-                    volleyImageView.setImageUrl(imgDefUrl, imageLoader);
+                    volleyImageView.setImageUrl(imgDefUrl, imgDefUrl, imageLoader);
                 }
 
                 @Override
@@ -212,8 +214,10 @@ public abstract class ArticlesRecyclerViewAdapter
                 }
             });
 
-            viewHolder.image.setImageUrl(imgDimenUrl, imageLoader);
+            viewHolder.image.setImageUrl(imgDimenUrl, imgDefUrl, imageLoader);
+
             */
+
 
             /*
             imageLoader.get(imgDimenUrl, new ImageLoader.ImageListener() {
