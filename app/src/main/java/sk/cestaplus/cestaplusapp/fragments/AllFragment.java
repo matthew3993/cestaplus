@@ -1,5 +1,6 @@
 package sk.cestaplus.cestaplusapp.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -272,13 +273,17 @@ public class AllFragment
         recyclerViewAll.setVisibility(View.VISIBLE);
 
         if (!loadingError){
-            CustomJobManager customJobManager = CustomJobManager.getInstance(getActivity().getApplicationContext());
 
-            if (session.getPostNotificationStatus()){ //if notifications are on
-                // create an update job
-                // now using FirebaseJobDispatcher it is not needed to delay the scheduling of job,
-                // because in time when job is built, job is not executed - only scheduled to be executed in future
-                customJobManager.constructAndScheduleUpdateJob();
+            Activity activity = getActivity();
+            if (activity != null) { //null check added to stop crashing during login
+
+                CustomJobManager customJobManager = CustomJobManager.getInstance(activity.getApplicationContext());
+
+                if (session.getPostNotificationStatus()) { //if notifications are on
+                    // create an update job
+                    // now using FirebaseJobDispatcher it is not needed to delay the scheduling of job,
+                    // because in time when job is built, job is not executed - only scheduled to be executed in future
+                    customJobManager.constructAndScheduleUpdateJob();
 
                 /*
                 new Handler().postDelayed(new Runnable() {
@@ -289,6 +294,7 @@ public class AllFragment
                         //(UPDATE_PERIOD_MIN/2)*60*1000); //half from update period
                         CREATE_JOB_DELAY_SEC*1000); //30 seconds
                 */
+                }
             }
         }
     }//end onArticlesLoaded

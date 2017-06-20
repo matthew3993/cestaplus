@@ -2,17 +2,18 @@ package sk.cestaplus.cestaplusapp.utilities.utilClasses;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.ImageView;
 
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.Util;
 
-import static sk.cestaplus.cestaplusapp.extras.Constants.DIMEN_A;
 import static sk.cestaplus.cestaplusapp.extras.Constants.DIMEN_B;
 import static sk.cestaplus.cestaplusapp.extras.Constants.DIMEN_C;
-import static sk.cestaplus.cestaplusapp.extras.Constants.DIMEN_D;
 import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGES;
+import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGE_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.Constants.SMALL;
 import static sk.cestaplus.cestaplusapp.extras.Constants.URL_CESTA_PLUS;
 
@@ -71,34 +72,35 @@ public class ImageUtil {
     }
 
     public static String getImageDimenUrl(Context context, ArticleObj article){
-
+        String dimenUrl;
         int screenSize = context.getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK;
-        String dimenUrl = URL_CESTA_PLUS + IMAGES + SMALL;
-
 
         switch(screenSize) { // screenSize
             case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                dimenUrl = article.getImageDefaulUrl();   //image url from API
+                dimenUrl = article.getImageDefaultUrl();   //image url from API
                 break;
             case Configuration.SCREENLAYOUT_SIZE_LARGE: // 7" tablets
-                dimenUrl += getImgDimenUrlLarge(context);
-                dimenUrl += getFullImageName(article);
+                dimenUrl = getImgDimenUrlLarge(context, article);
                 break;
             case Configuration.SCREENLAYOUT_SIZE_NORMAL: // mobile phones
-                dimenUrl += getImgDimenUrlNormal(context);
-                dimenUrl += getFullImageName(article);
+                dimenUrl = getImgDimenUrlNormal(context, article);
                 break;
             case Configuration.SCREENLAYOUT_SIZE_SMALL: // mostly wearables ?
-                dimenUrl = article.getImageDefaulUrl();   //image url from API
+                dimenUrl = article.getImageDefaultUrl();   //image url from API - for now
                 break;
             default:
-                dimenUrl = article.getImageDefaulUrl();   //image url from API
+                dimenUrl = article.getImageDefaultUrl();   //image url from API
                 break;
         }
 
-        //Log.d(IMAGE_DEBUG, "Image dime url: " + dimenUrl);
+        //Log.d(IMAGE_DEBUG, "Image dimen url: " + dimenUrl);
         return dimenUrl;
+    }
+
+    @NonNull
+    private static String getDimenUrlBeginning() {
+        return URL_CESTA_PLUS + IMAGES + SMALL;
     }
 
     private static String getFullImageName(ArticleObj article){
@@ -109,32 +111,37 @@ public class ImageUtil {
      * According table in docs - VERSION 1
      * @return Dimen for used device
      */
-    public static String getImgDimenUrlNormal(Context context){
-        String dimenUrl;
-        int density= context.getResources().getDisplayMetrics().densityDpi;
+    public static String getImgDimenUrlNormal(Context context, ArticleObj article){
+        String dimenUrl = getDimenUrlBeginning();;
+        int density = Util.getScreenDensity(context);
 
         switch(density)
         {
             case DisplayMetrics.DENSITY_LOW: //not in docs
-                dimenUrl = DIMEN_A;
+                dimenUrl += DIMEN_B;
+                dimenUrl += getFullImageName(article);
                 break;
             case DisplayMetrics.DENSITY_MEDIUM:
-                dimenUrl = DIMEN_B;
+                dimenUrl += DIMEN_B;
+                dimenUrl += getFullImageName(article);
                 break;
             case DisplayMetrics.DENSITY_HIGH:
-                dimenUrl = DIMEN_B;
+                dimenUrl += DIMEN_C;
+                dimenUrl += getFullImageName(article);
                 break;
             case DisplayMetrics.DENSITY_XHIGH:
-                dimenUrl = DIMEN_C;
+                dimenUrl += DIMEN_C;
+                dimenUrl += getFullImageName(article);
                 break;
             case DisplayMetrics.DENSITY_XXHIGH:
-                dimenUrl = DIMEN_C;
+                dimenUrl += DIMEN_C;
+                dimenUrl += getFullImageName(article);
                 break;
             case DisplayMetrics.DENSITY_XXXHIGH:
-                dimenUrl = DIMEN_D;
+                dimenUrl = article.getImageDefaultUrl(); //default
                 break;
             default:
-                dimenUrl = DIMEN_D;
+                dimenUrl = article.getImageDefaultUrl(); //default
         }
 
         return dimenUrl;
@@ -144,32 +151,37 @@ public class ImageUtil {
      * According table in docs - VERSION 1
      * @return Dimen for used device
      */
-    public static String getImgDimenUrlLarge(Context context){
-        String dimenUrl;
-        int density= context.getResources().getDisplayMetrics().densityDpi;
+    public static String getImgDimenUrlLarge(Context context, ArticleObj article){
+
+        String dimenUrl = getDimenUrlBeginning();
+        int density = Util.getScreenDensity(context);
 
         switch(density)
         {
             case DisplayMetrics.DENSITY_LOW: //not in docs
-                dimenUrl = DIMEN_B;
+                dimenUrl += DIMEN_B;
+                dimenUrl += getFullImageName(article);
                 break;
             case DisplayMetrics.DENSITY_MEDIUM:
-                dimenUrl = DIMEN_B;
+                dimenUrl += DIMEN_C;
+                dimenUrl += getFullImageName(article);
                 break;
             case DisplayMetrics.DENSITY_HIGH:
-                dimenUrl = DIMEN_C;
+                dimenUrl += DIMEN_C;
+                dimenUrl += getFullImageName(article);
                 break;
             case DisplayMetrics.DENSITY_XHIGH:
-                dimenUrl = DIMEN_C;
+                dimenUrl += DIMEN_C;
+                dimenUrl += getFullImageName(article);
                 break;
             case DisplayMetrics.DENSITY_XXHIGH:
-                dimenUrl = DIMEN_D;
+                dimenUrl = article.getImageDefaultUrl(); //default
                 break;
             case DisplayMetrics.DENSITY_XXXHIGH:
-                dimenUrl = DIMEN_D;
+                dimenUrl = article.getImageDefaultUrl(); //default
                 break;
             default:
-                dimenUrl = DIMEN_D;
+                dimenUrl = article.getImageDefaultUrl(); //default
         }
 
         return dimenUrl;

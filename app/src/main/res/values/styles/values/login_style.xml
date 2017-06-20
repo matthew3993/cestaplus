@@ -11,7 +11,7 @@
          -->
 
     <style
-        name="login_RootLinearLayout"
+        name="login_RootRelativeLayout"
         parent="Theme.AppCompat.Light.DarkActionBar">
 
         <item name="android:background">@color/login_activity_bg</item>
@@ -46,10 +46,10 @@
         <item name="fontPath">fonts/LatoLatin-Regular.ttf</item>
 
         <item name="android:maxLines">1</item>
-        <item name="android:padding">10dp</item>
+        <item name="android:padding">@dimen/email_password_padding</item>
 
         <item name="android:layout_marginTop">0dp</item>
-        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginBottom">@dimen/email_password_margin_bottom</item>
     </style>
 
     <style
@@ -107,7 +107,7 @@
         name="login_ButtonLoginWithKeyboard"
         parent="login_ButtonLogin">
 
-        <item name="android:layout_height">@dimen/btn_login_layout_height</item> <!-- 40dp @dimen/btn_login_layout_height -->
+        <item name="android:layout_height">@dimen/btn_login_layout_height_with_keyboard</item> <!-- 40dp @dimen/btn_login_layout_height -->
     </style>
 
     <style

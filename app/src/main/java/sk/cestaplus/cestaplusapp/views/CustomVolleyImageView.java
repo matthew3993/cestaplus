@@ -1,6 +1,5 @@
 package sk.cestaplus.cestaplusapp.views;
 
-
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -19,7 +18,28 @@ import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
 import static sk.cestaplus.cestaplusapp.extras.Constants.IMAGE_DEBUG;
 
 /**
+ * This is customised {@link com.android.volley.toolbox.NetworkImageView} class to load and show images of
+ * articles - {@link ArticleObj}.
+ * Main method of this class is {@link CustomVolleyImageView#setImageUrl(ArticleObj, ImageLoader, Context)}.
+ * This method is used to load images of articles. At first so called "dimen" image is loaded - image with reduced size.
+ * URL of this reduced sized image is get from {@link ImageUtil#getImageDimenUrl(Context, ArticleObj)}.
+ * But because not all of images are available in all sizes, if there is error during loading dimen image,
+ * class starts to load image from default URL - so called "default" image. URL of default image is received from server's API.
+ *
+ * If there is error loading dimen image, class also sets {@link ArticleObj#setWasErrorDimenImage(boolean)} to true,
+ * to mark that there was problem when loading dimen image of this INSTANCE of ArticleObj.
+ *
+ * When article is set to be loaded to this View, class checks if previously there was an error loading dimen image
+ * and if was, it skips try to load dimen image and starts to load default image at once.
+ * This improves performance during scrolling down and up again.
+ * !!! WARNING !!! - error mark is set only to INSTANCE of ArticleObj, not to database or any persistent storage.
+ * SO if articles are loaded again or refreshed, all error marks are set to false!!!
+ *
+ * Error picture is showed only if there is problem with also with default image.
+ *
  * SOURCE of first idea: https://stackoverflow.com/a/22053985
+ * original code of {@link com.android.volley.toolbox.NetworkImageView} class:
+ * https://android.googlesource.com/platform/frameworks/volley/+/d62a616ebca5bfa4f9ec5517208e13f2d501b69a/src/com/android/volley/toolbox/NetworkImageView.java
  */
 public class CustomVolleyImageView extends AppCompatImageView {
 
@@ -105,10 +125,10 @@ public class CustomVolleyImageView extends AppCompatImageView {
 
             this.articleObj = articleObj;
             mDimenUrl = ImageUtil.getImageDimenUrl(context, articleObj);
-            mDefaultUrl = articleObj.getImageDefaulUrl();
+            mDefaultUrl = articleObj.getImageDefaultUrl();
             mImageLoader = imageLoader;
 
-            resolveLoadImages(); //start load dimen or default image
+            resolveLoadImages(false); //start load dimen or default image
 
             return;
         }
@@ -117,7 +137,7 @@ public class CustomVolleyImageView extends AppCompatImageView {
         if (this.articleObj.getID().equalsIgnoreCase(articleObj.getID())){
             // there was a some article loaded before AND new articleObj EQUALS to old articleObj
             // => same article was set - do NOTHING
-            Log.d(IMAGE_DEBUG, "Setting same article: " + mDimenUrl);
+            //Log.d(IMAGE_DEBUG, "Setting same article: " + mDimenUrl);
             return;
 
         } else {
@@ -137,10 +157,10 @@ public class CustomVolleyImageView extends AppCompatImageView {
             // set new values
             this.articleObj = articleObj;
             mDimenUrl = ImageUtil.getImageDimenUrl(context, articleObj);
-            mDefaultUrl = articleObj.getImageDefaulUrl();
+            mDefaultUrl = articleObj.getImageDefaultUrl();
             mImageLoader = imageLoader;
 
-            resolveLoadImages(); //start load dimen or default image
+            resolveLoadImages(false); //start load dimen or default image
         }
     }
 
@@ -189,28 +209,47 @@ public class CustomVolleyImageView extends AppCompatImageView {
             return;
         }
 
-        // if there was an old request in this view, check if it needs to be canceled.
-        if (mDimenImageContainer != null && mDimenImageContainer.getRequestUrl() != null) {
-            // there is pre-existing request
-            if (mDimenImageContainer.getRequestUrl().equals(mDimenUrl)) {
-                // if the request is from the same URL, return.
-                Log.d(IMAGE_DEBUG, "mDimenImageContainer: Request from same url - return");
-                return;
-            } else {
-                // if there is a pre-existing request, cancel it if it's fetching a different URL.
-                mDimenImageContainer.cancelRequest();
-                setDefaultImageOrNull();
+        if (!articleObj.wasErrorDimenImage()) {
+
+            // if there was an old request in this view, check if it needs to be canceled.
+            if (mDimenImageContainer != null && mDimenImageContainer.getRequestUrl() != null) {
+                // there is pre-existing request
+                if (mDimenImageContainer.getRequestUrl().equals(mDimenUrl)) {
+                    // if the request is from the same URL, return.
+                    //Log.d(IMAGE_DEBUG, "mDimenImageContainer: Request from same url - return");
+                    return;
+                } else {
+                    // if there is a pre-existing request, cancel it if it's fetching a different URL.
+                    mDimenImageContainer.cancelRequest();
+                    setDefaultImageOrNull();
+                }
             }
+        } else {
+
+            // if there was an old request in this view, check if it needs to be canceled.
+            if (mDefaultImageContainer != null && mDefaultImageContainer.getRequestUrl() != null) {
+                // there is pre-existing request
+                if (mDefaultImageContainer.getRequestUrl().equals(mDefaultUrl)) {
+                    // if the request is from the same URL, return.
+                    //Log.d(IMAGE_DEBUG, "mDefaultImageContainer: Request from same url - return");
+                    return;
+                } else {
+                    // if there is a pre-existing request, cancel it if it's fetching a different URL.
+                    mDefaultImageContainer.cancelRequest();
+                    setDefaultImageOrNull();
+                }
+            }
+
         }
 
-        resolveLoadImages(); //start load dimen or default image
+        resolveLoadImages(isInLayoutPass); //start load dimen or default image
     }
 
-    private void resolveLoadImages() {
+    private void resolveLoadImages(boolean isInLayoutPass) {
         if (!articleObj.wasErrorDimenImage()){
-            loadImages(false);
+            loadImages(isInLayoutPass);
         } else {
-            loadDefaultImage(false);
+            loadDefaultImage(isInLayoutPass);
         }
     }
 
@@ -276,7 +315,7 @@ public class CustomVolleyImageView extends AppCompatImageView {
             @Override
             public void onResponse(final ImageContainer response, boolean isImmediate) {
                 // success loading image from DEFAULT url
-                Log.d(IMAGE_DEBUG, "Successfully loaded image from DEFAULT url " + mDefaultUrl);
+                //Log.d(IMAGE_DEBUG, "Successfully loaded image from DEFAULT url " + mDefaultUrl);
 
                 // If this was an immediate response that was delivered inside of a layout
                 // pass do not set the image immediately as it will trigger a requestLayout

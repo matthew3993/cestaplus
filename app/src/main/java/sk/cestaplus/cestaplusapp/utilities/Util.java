@@ -29,6 +29,15 @@ import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPT
  */
 public class Util {
 
+    public static int getScreenSize(Context context){
+        return context.getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK;
+    }
+
+    public static int getScreenDensity(Context context){
+        return context.getResources().getDisplayMetrics().densityDpi;
+    }
+
     public static String checkScreenSizeAndDensity(Context context) {
         int screenSize = context.getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK;
@@ -190,11 +199,6 @@ public class Util {
      */
     public static float dpFromPx(final Context context, final float px) {
         return px / context.getResources().getDisplayMetrics().density;
-    }
-
-    public static int getScreenSize(Context context){
-        return context.getResources().getConfiguration().screenLayout &
-                Configuration.SCREENLAYOUT_SIZE_MASK;
     }
 
     /**

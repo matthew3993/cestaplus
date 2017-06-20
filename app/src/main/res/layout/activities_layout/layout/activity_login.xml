@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-
     SOURCES:
         https://stackoverflow.com/questions/16411056/how-to-adjust-layout-when-soft-keyboard-appears
         https://stackoverflow.com/questions/7300497/adjust-layout-when-soft-keyboard-is-on
@@ -10,14 +9,12 @@
 
     android:focusableInTouchMode="true" to stop EditText from gaining focus at Activity startup
     SOURCE: comments (@Herman) of question: https://stackoverflow.com/questions/1555109/stop-edittext-from-gaining-focus-at-activity-startup?page=1&tab=votes#tab-top
-
-    android:layout_gravity="center"
    -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
 
-    android:id="@+id/login_RootLinearLayout"
-    style="@style/login_RootLinearLayout"
+    android:id="@+id/login_RootRelativeLayout"
+    style="@style/login_RootRelativeLayout"
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"

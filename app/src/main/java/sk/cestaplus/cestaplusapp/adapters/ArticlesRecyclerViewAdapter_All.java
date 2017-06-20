@@ -120,18 +120,7 @@ public class ArticlesRecyclerViewAdapter_All
             holder.description.setText(actArticle.getShort_text());
 
         //Image - start to load image and check if user is logged in or not
-            String articleId = actArticle.getID();
-            String imageDimenUrl = ImageUtil.getImageDimenUrl(context, actArticle);
-            String imageDefUrl = actArticle.getImageDefaulUrl();
-
-            /*
-            String articleId = articlesList.get(0).getID();
-            String imageDimenUrl = ImageUtil.getImageDimenUrl(context, articlesList.get(0));
-            String imageDefUrl = articlesList.get(0).getImageDefaulUrl();
-            */
-
             loadImage(actArticle, holder);
-            //holder.getImage().setImageUrl(imageDimenUrl, im);
 
             // ak je role 0 a článok je zamknuty treba zobrazit zamok
             if (TextUtil.showLock(role, actArticle.isLocked())) {

@@ -26,10 +26,10 @@ public interface Constants {
     String IMAGES = "images/";
     String SMALL = "_small/";
 
-    String DIMEN_A = "img_75x50/";
+    String DIMEN_A = "img_75x50/";  // not used
     String DIMEN_B = "img_128x85/";
     String DIMEN_C = "img_300x191/";
-    String DIMEN_D = "img_700x467/";
+    String DIMEN_D = "img_700x467/"; //not used for now
 
     String URL_SUBSCRIPTION_INFO = "http://www.cestaplus.sk/predplatne/info";
     String URL_SUBSCRIPTION_PROLONG = "http://www.cestaplus.sk/predplatne?temp=new";

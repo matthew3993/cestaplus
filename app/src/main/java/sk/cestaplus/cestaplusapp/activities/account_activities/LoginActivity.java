@@ -1,8 +1,5 @@
 package sk.cestaplus.cestaplusapp.activities.account_activities;
 
-/**
- * Created by Matej on 22. 4. 2015.
- */
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.MainActivity;
 import sk.cestaplus.cestaplusapp.network.Parser;
@@ -15,8 +12,10 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -35,6 +34,33 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 
+/**
+ * Created by Matej on 22. 4. 2015.
+ *
+ * NOTE ADJUSTING SCREEN WHEN SOFTWARE KEYBOARD IS SHOWED AND HIDDEN:
+ *
+ * In layout, we have two variants of views, that some attributes must be adjusted -
+ * this views are MainLogo, Login button, button UseAsNotLoggedIn.
+ * This couples (for example ivMainLogo and ivMainLogoWithKeyboard) have different styles.
+ *
+ * Activity listens on layout changes in {@link android.view.ViewTreeObserver}
+ * OnGlobalLayoutListener onGlobalLayout() method.
+ *
+ * At activity startup holders are initialized with IDs of views used withOUT keyboard, because after startup
+ * keyboard is hidden. (Solved by adding android:focusableInTouchMode="true" to root RelativeLayout)
+ * When keyboard is SHOWED:
+ *  - views used withOUT keyboard are set GONE
+ *  - view holders are re-initialized with IDs of views used WITH keyboard
+ *  - views used WITH keyboard are set VISIBLE.
+ *
+ * When keyboard is HIDDEN again - it goes same way but vice versa.
+ *
+ * SOURCES:
+ *      https://stackoverflow.com/questions/16411056/how-to-adjust-layout-when-soft-keyboard-appears
+ *      https://stackoverflow.com/questions/7300497/adjust-layout-when-soft-keyboard-is-on
+ *      https://stackoverflow.com/questions/2150078/how-to-check-visibility-of-software-keyboard-in-android/4737265#4737265
+ *      https://stackoverflow.com/questions/35585538/adjust-the-layout-when-the-android-soft-keyboard-is-shown-or-hidden
+ */
 public class LoginActivity
     extends Activity
     implements LoginManager.LoginManagerInteractionListener {
@@ -76,9 +102,10 @@ public class LoginActivity
         isShowedKeyboard = false;
 
         // init OnGlobalLayoutListener
-        final View activityRootView = findViewById(R.id.login_RootLinearLayout);
+        final View activityRootView = findViewById(R.id.login_RootRelativeLayout);
         final Context context = this;
 
+        //SOURCE: https://stackoverflow.com/questions/2150078/how-to-check-visibility-of-software-keyboard-in-android/4737265#4737265
         activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
             /**
@@ -104,6 +131,12 @@ public class LoginActivity
                         initViewsWithKeyboard(); // re-init views
                         setVisibleChangableViews();
 
+                        // set GONE 'UseAsNotLoggedIn' button on normal sized devices with resolution of HDPI and lower
+                        if ( (Util.getScreenSize(getApplicationContext()) <= Configuration.SCREENLAYOUT_SIZE_NORMAL) &&
+                                (Util.getScreenDensity(getApplicationContext()) <= DisplayMetrics.DENSITY_HIGH ) ) {
+                            btnUseAsNotLoggedIn.setVisibility(View.GONE);
+                        }
+
                         etEmail.requestFocus(); //!! - SOURCE: https://stackoverflow.com/a/8080621 - check the comments of this answer
                     }
                 } else {
@@ -117,6 +150,12 @@ public class LoginActivity
                         setGoneChangableViews();
                         initViewsWithOutKeyboard(); // re-init views
                         setVisibleChangableViews();
+
+                        // set VISIBLE 'UseAsNotLoggedIn' button on normal sized devices with resolution of HDPI and lower
+                        if ( (Util.getScreenSize(getApplicationContext()) <= Configuration.SCREENLAYOUT_SIZE_NORMAL) &&
+                                (Util.getScreenDensity(getApplicationContext()) <= DisplayMetrics.DENSITY_HIGH ) ) {
+                            btnUseAsNotLoggedIn.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
             }

@@ -507,7 +507,7 @@ public class ArticleActivity
      * Response listener sets the articleErrorCode and articleText.
      */
     private void showArticleText() {
-        nivArticleImage.setImageUrl(articleObj.getImageDefaulUrl(), volleySingleton.getImageLoader());
+        nivArticleImage.setImageUrl(articleObj.getImageDefaultUrl(), volleySingleton.getImageLoader());
         nivArticleImage.setErrorImageResId(R.drawable.baterka_vseobecna);
 
         tvAuthor.setText(articleText.getAuthor());

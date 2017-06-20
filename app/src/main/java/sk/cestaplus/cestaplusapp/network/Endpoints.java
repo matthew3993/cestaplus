@@ -7,6 +7,7 @@ import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.MyApplication;
 
 import static sk.cestaplus.cestaplusapp.extras.Constants.ART_NUM;
+import static sk.cestaplus.cestaplusapp.extras.Constants.URL_CESTA_PLUS;
 
 /**
  * Created by Matej on 27. 5. 2015.
@@ -14,7 +15,7 @@ import static sk.cestaplus.cestaplusapp.extras.Constants.ART_NUM;
 public class Endpoints {
 
     //constants
-    public static final String URL_CESTA_PLUS_ANDROID = "http://www.cestaplus.sk/_android/";
+    public static final String URL_CESTA_PLUS_ANDROID = URL_CESTA_PLUS + "_android/";
 
     public static final String GET_ARTICLES = "getAndroidData.php";
     public static final String GET_NEW_ARTICLES = "getAndroidNewArticle.php";

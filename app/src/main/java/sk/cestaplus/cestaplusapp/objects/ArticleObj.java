@@ -18,7 +18,7 @@ public class ArticleObj
     private String short_text;  // shortened version of description, showed only in recycler view
 
     private String author;
-    private String imageDefaulUrl;
+    private String imageDefaultUrl;
 
     private Date pubDate;       // publish time & date
     private String section;     // rubrika
@@ -53,13 +53,13 @@ public class ArticleObj
         this.title = title;
         this.short_text = short_text;
         this.author = author;
-        this.imageDefaulUrl = imageDefaulUrl;
+        this.imageDefaultUrl = imageDefaulUrl;
         this.pubDate = pubDate;
         this.section = section;
         this.ID = ID;
         this.locked = locked;
 
-        //parse imageName from imageDefaulUrl
+        //parse imageName from imageDefaultUrl
         String urlWithoutName = Constants.URL_CESTA_PLUS + Constants.IMAGES + section + "/";
         this.imageName = imageDefaulUrl.replace(urlWithoutName, ""); //SOURCE: https://stackoverflow.com/questions/8694984/remove-part-of-string
 
@@ -75,7 +75,7 @@ public class ArticleObj
         title = input.readString();
         short_text = input.readString();
         author = input.readString();
-        imageDefaulUrl = input.readString();
+        imageDefaultUrl = input.readString();
         imageName = input.readString();
 
         pubDate = new Date(input.readLong()); //prevod casu v milisekundach (long) na datum
@@ -108,8 +108,8 @@ public class ArticleObj
         return author;
     }
 
-    public String getImageDefaulUrl() {
-        return imageDefaulUrl;
+    public String getImageDefaultUrl() {
+        return imageDefaultUrl;
     }
 
     public Date getPubDate() {
@@ -157,7 +157,7 @@ public class ArticleObj
         return "ArticleObj{" +
                 "title='" + title + '\'' +
                 ", short_text='" + short_text + '\'' +
-                ", ImageUrl=" + imageDefaulUrl +
+                ", ImageUrl=" + imageDefaultUrl +
                 ", pubDate=" + pubDate +
                 ", section='" + section + '\'' +
                 ", id=" + ID +
@@ -180,7 +180,7 @@ public class ArticleObj
         dest.writeString(title);
         dest.writeString(short_text);
         dest.writeString(author);
-        dest.writeString(imageDefaulUrl);
+        dest.writeString(imageDefaultUrl);
         dest.writeString(imageName);
         dest.writeLong(pubDate.getTime()); //prevod datumu na cas v milisekundach (long)
         dest.writeString(section);

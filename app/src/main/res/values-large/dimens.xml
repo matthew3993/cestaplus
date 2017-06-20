@@ -196,7 +196,7 @@
 
     <dimen name="email_password_text_size">19sp</dimen>
 
-    <dimen name="btn_login_layout_height">@dimen/wrap_content</dimen> <!-- SOURCE: https://stackoverflow.com/a/34176155 -->
+    <dimen name="btn_login_layout_height_with_keyboard">@dimen/wrap_content</dimen> <!-- SOURCE: https://stackoverflow.com/a/34176155 -->
     <dimen name="btn_login_text_size">15sp</dimen>
 
     <!-- <dimen name="btn_use_as_not_logged_in_margin_top">160dp</dimen> -->

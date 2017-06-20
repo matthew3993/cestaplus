@@ -386,7 +386,7 @@ public class MainActivity
     }
 
     private void updateHeaderArticleViews(){
-        nivHeaderImage.setImageUrl(headerArticle.getImageDefaulUrl(), volleySingleton.getImageLoader());
+        nivHeaderImage.setImageUrl(headerArticle.getImageDefaultUrl(), volleySingleton.getImageLoader());
         tvHeaderAuthor.setText(headerArticle.getAuthor());
         TextUtil.setTitleText(getApplicationContext(), TextUtil.showLock(role, headerArticle.isLocked()), headerArticle.getTitle(), tvHeaderTitle, R.drawable.lock_white);
         tvHeaderDescription.setText(headerArticle.getShort_text());
