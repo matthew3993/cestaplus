@@ -7,24 +7,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.NetworkImageView;
-
-import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.R;
+import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 
 /**
  * Created by Matej on 4.3.2015.
  */
-public class ArticleRecyclerViewAdapter_All
-    extends ArticleRecyclerViewAdapter {
+public class ArticlesRecyclerViewAdapter_PicturesAndTitles
+    extends ArticlesRecyclerViewAdapter {
 
-    /**
-     * Konstruktor
-     * @param context
-     */
-    public ArticleRecyclerViewAdapter_All(Context context, boolean hasHeader){
+    public ArticlesRecyclerViewAdapter_PicturesAndTitles(Context context, boolean hasHeader){
         super(context, hasHeader);
     }
 
@@ -39,33 +34,10 @@ public class ArticleRecyclerViewAdapter_All
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         RecyclerView.ViewHolder holder;
 
-        switch (viewType) { // inflate corresponding type of view - footer or normal type
-            case TYPE_HEADER: {
-                View view = inflater.inflate(R.layout.header_list_item, viewGroup, false);
-                holder = new HeaderViewHolder(view);
-                break; // !!!!
-            }
-
+        switch (viewType) { // inflate coresponding type of view - footer or normal type
             case TYPE_NORMAL: {
-                View view;
-                view = inflater.inflate(R.layout.article_list_item, viewGroup, false);
-                /*
-                switch(screenSize) {
-                    case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                    case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                        view = inflater.inflate(R.layout.article_list_item, viewGroup, false);
-                        break;
-
-                    case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                    case Configuration.SCREENLAYOUT_SIZE_SMALL:
-                        view = inflater.inflate(R.layout.article_list_item_normal, viewGroup, false);
-                        break;
-
-                    default:
-                        view = inflater.inflate(R.layout.article_list_item_normal, viewGroup, false);
-                }
-                */
-                holder = new ArticleViewHolder_All(view);
+                View view = inflater.inflate(R.layout.article_list_item_pictures_and_titles, viewGroup, false);
+                holder = new ArticleViewHolder_PicturesAndTitles(view);
                 break;  // !!!!
             }
 
@@ -82,8 +54,8 @@ public class ArticleRecyclerViewAdapter_All
             }
 
             default:{
-                View view = inflater.inflate(R.layout.article_list_item, viewGroup, false);
-                holder = new ArticleViewHolder_All(view);
+                View view = inflater.inflate(R.layout.article_list_item_pictures_and_titles, viewGroup, false);
+                holder = new ArticleViewHolder_PicturesAndTitles(view);
                 break;  // !!!!
             }
         }//end switch
@@ -94,19 +66,15 @@ public class ArticleRecyclerViewAdapter_All
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int i) {
 
-        if (viewHolder instanceof HeaderViewHolder){
-            super.onBindViewHolderHeaderView(viewHolder, i);
-
-        } else if (viewHolder instanceof LoadMoreBtnViewHolder){
+        if (viewHolder instanceof LoadMoreBtnViewHolder){
             LoadMoreBtnViewHolder holder = (LoadMoreBtnViewHolder) viewHolder;
-            //holder.btnLoadMore.setText("Load more");
 
         } else if (viewHolder instanceof ProgressViewHolder) {
             ProgressViewHolder holder = (ProgressViewHolder) viewHolder;
             holder.progressBar.setIndeterminate(true);
 
         } else {
-            ArticleViewHolder_All holder = (ArticleViewHolder_All) viewHolder;
+            ArticleViewHolder_PicturesAndTitles holder = (ArticleViewHolder_PicturesAndTitles) viewHolder;
             ArticleObj actArticle = articlesList.get(i - (super.hasHeader ? 1 : 0));    // -1 beacuse of header
 
         //Author name
@@ -116,13 +84,8 @@ public class ArticleRecyclerViewAdapter_All
             TextUtil.setTitleText(CustomApplication.getCustomAppContext(), TextUtil.showLock(role, actArticle.isLocked()),
                     actArticle.getTitle(), holder.title, R.drawable.lock_black);
 
-        //Short text
-            holder.description.setText(actArticle.getShort_text());
-
         //Image - start to load image and check if user is logged in or not
-            String imageUrl = actArticle.getImageUrl();
-            loadImage(imageUrl, holder);
-            //holder.getImage().setImageUrl(imageUrl, im);
+            loadImage(actArticle, holder);
 
             // ak je role 0 a článok je zamknuty treba zobrazit zamok
             if (TextUtil.showLock(role, actArticle.isLocked())) {
@@ -135,37 +98,33 @@ public class ArticleRecyclerViewAdapter_All
             }
 
         }
+
     }// end onBindViewHolder
 
     /**
      * ViewHolder sa vytvori raz a drží jednotlive Views z item_view, takze ich potom netreba hladat
      */
-    class ArticleViewHolder_All
+    class ArticleViewHolder_PicturesAndTitles
         extends ArticleViewHolder
-        //implements View.OnClickListener
         {
 
         TextView author;
         TextView title;
-        TextView description;
-        //ImageView image; //in abstract ArticleViewHolder in ArticleRecyclerViewAdapter
         ImageView lockImage;
 
-            public ArticleViewHolder_All(View itemView) {
+            public ArticleViewHolder_PicturesAndTitles(View itemView) {
                 super(itemView);
 
                 author = (TextView) itemView.findViewById(R.id.item_tvAuthor);
                 title = (TextView) itemView.findViewById(R.id.item_tvTitle);
-                description = (TextView) itemView.findViewById(R.id.item_tvShortText);
-                //image = (ImageView) itemView.findViewById(R.id.item_ivObr);
                 lockImage = (ImageView) itemView.findViewById(R.id.item_ivLock);
 
-                //itemView.setOnClickListener(this);
             } //end constructor ArticleViewHolder(View itemView)
 
-            private NetworkImageView getImage(){
+            private ImageView getImage(){
                 return super.image;
             }
+
         } // end ArticleViewHolder
 
-}//end ArticleRecyclerViewAdapter
+}//end ArticlesRecyclerViewAdapter

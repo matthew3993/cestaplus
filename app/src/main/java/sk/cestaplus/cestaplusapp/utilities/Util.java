@@ -12,83 +12,104 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.Toast;
 
-import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
-import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter_All;
-import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter_PicturesAndTitles;
+import sk.cestaplus.cestaplusapp.activities.account_activities.LoggedActivity;
+import sk.cestaplus.cestaplusapp.activities.account_activities.NotLoggedActivity;
+import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter;
+import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter_All;
+import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter_PicturesAndTitles;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
 
 import static sk.cestaplus.cestaplusapp.extras.Constants.LIST_STYLE_ALL;
 import static sk.cestaplus.cestaplusapp.extras.Constants.LIST_STYLE_PICTURES_AND_TITLES;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
 
 /**
  * Created by Matej on 30. 3. 2015.
  */
 public class Util {
 
-    public static void checkScreenSize(Context context) {
+    public static int getScreenSize(Context context){
+        return context.getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK;
+    }
+
+    public static int getScreenDensity(Context context){
+        return context.getResources().getDisplayMetrics().densityDpi;
+    }
+
+    public static String checkScreenSizeAndDensity(Context context) {
         int screenSize = context.getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK;
 
-        String toastMsg;
+        String msg = "Veľkosť displeja: ";
         switch(screenSize) { // screenSize
             case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                toastMsg = "Extra Large screen";
+                msg += "Extra Large screen";
                 break;
             case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                toastMsg = "Large screen";
+                msg += "Large screen";
                 break;
             case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                toastMsg = "Normal screen";
+                msg += "Normal screen";
                 break;
             case Configuration.SCREENLAYOUT_SIZE_SMALL:
-                toastMsg = "Small screen";
+                msg += "Small screen";
                 break;
             default:
-                toastMsg = "Nedá sa určiť veľkosť obrazovky!";
+                msg += "Nedá sa určiť veľkosť displeja!";
         }
+
+        msg += "\nRozlíšenie: ";
 
         int density= context.getResources().getDisplayMetrics().densityDpi;
         switch(density)
         {
             case DisplayMetrics.DENSITY_LOW:
-                toastMsg += " LDPI";
+                msg += " LDPI";
                 break;
             case DisplayMetrics.DENSITY_MEDIUM:
-                toastMsg += " MDPI";
+                msg += " MDPI";
                 break;
             case DisplayMetrics.DENSITY_HIGH:
-                toastMsg += " HDPI";
+                msg += " HDPI";
                 break;
             case DisplayMetrics.DENSITY_XHIGH:
-                toastMsg += " XHDPI";
+                msg += " XHDPI";
                 break;
             case DisplayMetrics.DENSITY_XXHIGH:
-                toastMsg += " XXHDPI";
+                msg += " XXHDPI";
                 break;
             case DisplayMetrics.DENSITY_XXXHIGH:
-                toastMsg += " XXXHDPI";
+                msg += " XXXHDPI";
                 break;
         }
 
+        return msg;
+    }//end check checkScreenSizeAndDensity()
+
+    public static void checkScreenSizeAndDensityToast(Context context) {
+        String toastMsg = checkScreenSizeAndDensity(context);
+
         Toast.makeText(context.getApplicationContext(), toastMsg, Toast.LENGTH_LONG).show();
-    }//end check screensize()
+    }//end check checkScreenSizeAndDensityToast()
 
     private static String[] getListStyles() {
         return new String[] {"Zobraziť okrem nadpisov aj popisy k článkom", "Zobraziť len nadpisy"};
     }
 
-    public static ArticleRecyclerViewAdapter getCrvaType(Context context, boolean hasHeader){
+    public static ArticlesRecyclerViewAdapter getCrvaType(Context context, boolean hasHeader){
         SessionManager session = new SessionManager(context);
 
         switch (session.getListStyle()){
             case LIST_STYLE_ALL:{ //LIST_STYLE_ALL = 0
-                return new ArticleRecyclerViewAdapter_All(context, hasHeader);
+                return new ArticlesRecyclerViewAdapter_All(context, hasHeader);
             }
             case LIST_STYLE_PICTURES_AND_TITLES:{ //LIST_STYLE_PICTURES_AND_TITLES = 1
-                return new ArticleRecyclerViewAdapter_PicturesAndTitles(context, hasHeader);
+                return new ArticlesRecyclerViewAdapter_PicturesAndTitles(context, hasHeader);
             }
             default:{
-                return new ArticleRecyclerViewAdapter_All(context, hasHeader);
+                return new ArticlesRecyclerViewAdapter_All(context, hasHeader);
             }
 
         } //end switch getListStyle()
@@ -180,17 +201,44 @@ public class Util {
         return px / context.getResources().getDisplayMetrics().density;
     }
 
-    public static int getScreenSize(Context context){
-        return context.getResources().getConfiguration().screenLayout &
-                Configuration.SCREENLAYOUT_SIZE_MASK;
-    }
-
     /**
      * SOURCE: http://stackoverflow.com/questions/3663665/how-can-i-get-the-current-screen-orientation
      * @return true if screen orientation is landscape, false otherwise
      */
     public static boolean inLandscapeOrientation(Context context){
         if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static Class getAccountActivityToStart(){
+        if (isLoggedIn()) {
+            return LoggedActivity.class;
+        } else {
+            return NotLoggedActivity.class;
+        }
+    }
+
+    /**
+     * Should be used ONLY (!) when choosing right account activity to start.
+     * (LoginActivity check is exception)
+     * Warning: This method does not answer question: "Is subscription valid?"
+     */
+    public static boolean isLoggedIn(){
+        final SessionManager session = new SessionManager(CustomApplication.getCustomAppContext());
+        int role = session.getRole();
+
+        if ((role == ROLE_LOGGED_SUBSCRIPTION_OK) || (role == ROLE_LOGGED_SUBSCRIPTION_EXPIRED)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isSubscriptionValid(int role){
+        if ((role == ROLE_LOGGED_SUBSCRIPTION_OK)){
             return true;
         } else {
             return false;

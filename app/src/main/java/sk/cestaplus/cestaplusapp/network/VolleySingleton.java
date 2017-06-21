@@ -6,27 +6,17 @@ import android.util.LruCache;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import sk.cestaplus.cestaplusapp.network.custom_requests.JsonObjectCustomUtf8Request;
-import sk.cestaplus.cestaplusapp.network.custom_requests.JsonArrayCustomUtf8Request;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
-import sk.cestaplus.cestaplusapp.utilities.SessionManager;
-
 // importy IKeys
-import static com.android.volley.Request.*;
+
 
 /**
  * Created by Matej on 3.3.2015.
+ * SOURCE: https://developer.android.com/training/volley/requestqueue.html#singleton
+ *
+ * Volley lib docs: http://afzaln.com/volley/
  */
 public class VolleySingleton {
 
@@ -34,17 +24,15 @@ public class VolleySingleton {
 
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
-    private Context context; //TODO: try remove context
-
-    private SessionManager session;
+    private static Context context;
 
     private VolleySingleton(Context context){
-        this.context = context;
+        VolleySingleton.context = context;
         mRequestQueue = getRequestQueue();
 
         mImageLoader = new ImageLoader(mRequestQueue, new ImageLoader.ImageCache() { //anonymna trieda ImageLoader
 
-            private LruCache<String, Bitmap> cache = new LruCache<>((int)Runtime.getRuntime().maxMemory()/1024/8);
+            private final LruCache<String, Bitmap> cache = new LruCache<>((int)Runtime.getRuntime().maxMemory()/1024/8);
             // runtime.maxMemory - komplet vsetko, co kedy mozeme mat v bajtoch
             // deleno 1024 = kBajty, dalej deleno 8 - 1/8 vsetkeho, co mozeme mat
             // musime pretypovat z long na int
@@ -59,12 +47,9 @@ public class VolleySingleton {
                 cache.put(url, bitmap);
             }
         });
-
-        // Session manager
-        session = new SessionManager(CustomApplication.getCustomAppContext());
     }
 
-    public static VolleySingleton getInstance(Context context){
+    public static synchronized VolleySingleton getInstance(Context context){
         if (sInstance == null){
             sInstance = new VolleySingleton(context);
         }
@@ -75,8 +60,19 @@ public class VolleySingleton {
         if (mRequestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
-            //mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
+            // init request queue with default cache and default network
             mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
+
+            // init request queue with custom cache and custom network
+            //SOURCES:
+            //  https://stackoverflow.com/questions/25664627/android-volley-does-not-work-offline-with-cache
+            //  https://developer.android.com/reference/android/content/Context.html#getCacheDir()
+            /*
+            Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024 * 10); // 10MB cap
+            Network network = new BasicNetwork(new HurlStack());
+            mRequestQueue = new RequestQueue(cache, network);
+            mRequestQueue.start();
+            */
         }
         return mRequestQueue;
     }
@@ -88,118 +84,5 @@ public class VolleySingleton {
     public ImageLoader getImageLoader(){
         return mImageLoader;
     }
-
-
-
-// ======================================== VLASTNÉ METÓDY =====================================================================================
-
-    public void createGetArticlesArrayRequestGET(String section, int limit, int page,
-                                                 Response.Listener<JSONArray> responseList, Response.ErrorListener errList){
-
-        JsonArrayCustomUtf8Request request = new JsonArrayCustomUtf8Request(
-                Method.GET,
-                Endpoints.getListOfArticlesRequestUrl(section, limit, page),
-                null,
-                responseList,
-                errList);
-
-        mRequestQueue.add(request);
-    } //end createGetArticlesObjectRequestGET
-
-
-    public void createGetArticlesObjectRequestGET(String section, int limit, int page,
-                                                  Response.Listener<JSONObject> responseList, Response.ErrorListener errList){
-
-        JsonObjectRequest request = new JsonObjectRequest(
-                Method.GET,
-                Endpoints.getListOfArticlesRequestUrl(section, limit, page),
-                (JSONObject) null,
-                responseList,
-                errList);
-
-        mRequestQueue.add(request);
-    } //end createGetArticlesObjectRequestGET
-
-// nacitavanie konkretneho clanku
-    public void createGetArticleRequest(String id, boolean locked,
-                                        Response.Listener<JSONObject> responseLis, Response.ErrorListener errLis, boolean withPictures){
-
-        if (!locked){ //nezamknuty = verejny clanok
-            JsonObjectRequest request = new JsonObjectRequest(
-                    Method.GET,
-                    Endpoints.getConcreteArticleRequestUrl(id, withPictures, null),
-                    (JSONObject) null,
-                    responseLis,
-                    errLis);
-
-            mRequestQueue.add(request);
-
-        } else { //zamknuty  clanok
-            if (session.isLoggedIn()){ //sme prihlásení
-                //vytvorenie parametrov
-                Map<String, String> params = new HashMap<>();
-                params.put("apikey", session.getAPI_key());
-
-                //vytvorenie requestu
-                JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
-                        Method.POST,
-                        Endpoints.getConcreteArticleRequestUrl(id, withPictures, session.getAPI_key()),
-                        params,
-                        responseLis,
-                        errLis);
-
-                mRequestQueue.add(request);
-
-            } else { // NIE sme prihlásení
-                JsonObjectRequest request = new JsonObjectRequest(
-                        Method.GET,
-                        Endpoints.getConcreteArticleRequestUrl(id, withPictures, null),
-                        (JSONObject) null,
-                        responseLis,
-                        errLis);
-
-                mRequestQueue.add(request);
-            } // if isLoggedIn
-        }// if !locked
-
-    }//end createGetArticleRequest
-
-    public void createLoginRequestPOST(final Map<String, String> parametre,
-                                       Response.Listener<JSONObject> responseList,
-                                       Response.ErrorListener errList){
-
-        JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
-                Method.POST,
-                Endpoints.getLoginUrl(),
-                parametre,
-                responseList,
-                errList
-        );
-
-        request.setShouldCache(false); //disable caching!!!
-        mRequestQueue.add(request);
-
-    } //end createLoginRequestPOST
-
-    public void createReLoginRequest(Response.Listener<JSONObject> responseList,
-                                     Response.ErrorListener errList){
-
-        //load the credentials from session
-        Map<String, String> params = new HashMap<>();
-        params.put("email", session.getEmail());
-        params.put("password", session.getPassword());
-
-        JsonObjectCustomUtf8Request request = new JsonObjectCustomUtf8Request(
-                Method.POST,
-                Endpoints.getLoginUrl(),
-                params,
-                responseList,
-                errList
-        );
-
-        request.setShouldCache(false); //disable caching!!!
-        mRequestQueue.add(request);
-
-    } //end createLoginRequestPOST
 
 } // end of class VolleySingleton

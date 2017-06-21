@@ -97,7 +97,7 @@
             </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/mainActivityToolbar"
+                android:id="@+id/baterkaActivityToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
@@ -257,7 +257,7 @@
 
                 <!-- SOURCE of app:solidColor="@color/circularTv01" :
                      http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes
-                     2. Use the attributes in your layout
+                     Point 2. Use the attributes in your layout
                      !!! DO NOT use android:background attribute - it over-paints the circle
                 -->
                 <sk.cestaplus.cestaplusapp.views.CircularTextView
@@ -271,7 +271,7 @@
                     app:solidColor="@color/circularTv01"
 
                     android:gravity="center"
-                    android:text="01"/>
+                    android:text="@string/ctv_1"/>
 
                 <TextView
                     android:id="@+id/tvDepth1"
@@ -299,7 +299,7 @@
                     app:solidColor="@color/circularTv02"
 
                     android:gravity="center"
-                    android:text="02"/>
+                    android:text="@string/ctv_2"/>
 
                 <TextView
                     android:id="@+id/tvDepth2"
@@ -327,7 +327,7 @@
                     app:solidColor="@color/circularTv03"
 
                     android:gravity="center"
-                    android:text="03"/>
+                    android:text="@string/ctv_3"/>
 
                 <TextView
                     android:id="@+id/tvDepth3"

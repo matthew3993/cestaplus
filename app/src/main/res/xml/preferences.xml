@@ -2,24 +2,59 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <CheckBoxPreference
-        android:key="pref_post_notifications"
-        android:title="@string/pref_title_post_notifications"
-        android:defaultValue="true" />
+    <PreferenceCategory
+        android:title="@string/pref_category_general_title">
 
-    <ListPreference
-        android:key="pref_list_style"
-        android:title="@string/pref_list_style"
-        android:defaultValue="0"
-        android:entries="@array/pref_list_style_titles"
-        android:entryValues="@array/pref_list_style_values"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null" />
+        <SwitchPreference
+            android:key="@string/pref_post_notifications_key"
+            android:title="@string/pref_title_post_notifications_title"
+            android:summary="@string/pref_title_post_notifications_summary"
+            android:defaultValue="true" />
 
-    <ListPreference
-        android:key="pref_text_size"
-        android:title="@string/pref_text_size"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null" />
+        <ListPreference
+            android:key="@string/pref_list_style_key"
+            android:title="@string/pref_list_style_title"
+            android:defaultValue="0"
+            android:entries="@array/pref_list_style_entries"
+            android:entryValues="@array/pref_list_style_values"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />
+
+        <!-- entries are set in code in SettingActivity.setupSimplePreferencesScreen() -->
+        <ListPreference
+            android:key="@string/pref_text_size_key"
+            android:title="@string/pref_text_size_title"
+            android:defaultValue="1"
+            android:entryValues="@array/pref_text_size_values"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_category_about_app_title">
+
+        <!-- SOURCES:
+                https://stackoverflow.com/questions/31874929/how-to-show-app-version-on-preferences-activity
+                https://stackoverflow.com/a/14597495
+                https://stackoverflow.com/questions/11884440/preference-screen-display-text-block
+                -->
+        <!--suppress AndroidDomInspection -->
+        <Preference
+            android:key="@string/pref_version_name_key"
+            android:title="@string/pref_version_name_title"
+            android:summary="@string/versionName" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_category_testing_title">
+
+        <!-- SOURCE: https://stackoverflow.com/questions/10537320/how-to-open-a-dialog-from-a-text-entry-on-a-preferencescreen -->
+        <Preference
+            android:title="@string/pref_show_display_parameters_title"
+            android:key="@string/pref_show_display_parameters_key" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

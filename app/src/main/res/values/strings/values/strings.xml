@@ -20,42 +20,48 @@
 
     <!-- ACTIVITY TITLES -->
     <string name="title_activity_article">ArticleActivity</string>
+    <string name="title_activity_baterka">Baterka</string>
     <string name="title_activity_section">SectionActivity</string>
     <string name="title_activity_oportali">O portáli</string>
     <string name="title_activity_not_logged">NotLoggedActivity</string>
-    <string name="title_activity_logged">LoggedActivity</string>
+    <string name="title_activity_logged">Moje konto - predplatné</string>
     <string name="title_facebook_comments">Komentáre</string>
-
 
     <!-- VOLLEY & NETWORK ERROR MESSAGES -->
     <string name="no_connection_err_msg">Nie ste pripojený k sieti!</string>
     <string name="connection_error_msg">Chyba pripojenia na server!</string>
-    <string name="authentification_error">Chyba autentifikácie!</string>
-    <string name="server_error">Chyba servera</string>
-    <string name="network_error">Chyba siete</string>
-    <string name="parse_error">Chyba parsovania</string>
+    <string name="email_or_password_missing_error">Chýba email alebo heslo!</string>
+    <string name="wrong_email_or_password_error">Nesprávny email alebo heslo!</string>
+    <string name="server_internal_error">"Chyba na strane servera! Skúste sa, prosím, prihlásiť neskôr."</string>
+    <string name="json_parsing_error">Chyba JSON parsovania!</string>
+    <string name="parsing_error">Neznáma chyba parsovania!</string>
+    <string name="load_more_error">Chyba pri načítavaní ďalších článkov!</string>
 
     <!-- LOGIN -->
     <string name="enter_credentials_msg">Zadajte potrebné prihlasovacie údaje!</string>
-    <string name="login_connection_error">CHYBA pripojenia na server!\nSkontrolujte pripojenie na internet!</string>
-    <string name="login_loading_dialog_msg">Logging in …</string>
+    <string name="login_network_error">CHYBA pripojenia na server!\nSkontrolujte pripojenie na internet!</string>
+    <string name="login_loading_dialog_msg">Prebieha prihlasovanie…</string>
     <string name="login_successful_msg">Prihlásenie úspešné!</string>
+    <string name="login_partially_successful_msg">Konto je DEAKTIVOVANÉ - predplatné vypršalo!!!</string>
+
+    <string name="relogin_wrong_password">Chyba pri prihlasovaní: Nesprávne prihlasovacie údaje! Prosím, prihláste sa nanovo.</string>
+    <string name="relogin_network_or_server_error">Chyba pri prihlasovaní: Problém so sieťou, alebo chyba na strane servera! Môžete si prečítať iba verejnú časť.</string>
+    <string name="load_again">Načítať znovu</string>
 
     <string name="hint_email">Email</string>
     <string name="hint_password">Heslo</string>
-    <string name="hint_name">Fullname</string>
     <string name="btn_login">Prihlásiť</string>
     <string name="btn_login_big">PRIHLÁSIŤ</string>
-    <string name="btn_register">REGISTER</string>
     <string name="btn_use_as_not_logged_in">Používať aplikáciu ako neprihlásený používateľ</string>
     <string name="btn_link_to_login">Already registred! Login Me.</string>
-    <string name="prihlaseny_ako">Prihlasený/á ako</string>
-    <string name="btn_logout">ODHLÁSIŤ</string>
+    <string name="logged_in_as">Prihlasený/á ako</string>
     <string name="name">Fullname</string>
     <string name="account">Konto</string>
     <string name="tryAgain">Skúsiť znova</string>
 
     <string name="not_logged_user">Neprihlásený používateľ</string>
+    <string name="subscription_expired">Predplatné vypršalo!!!</string>
+    <string name="some_email">someaddress@gmail.com</string>
 
     <!-- ARTICLE ACTIVITY -->
     <string name="show_comments">Zobraziť komentáre</string>
@@ -64,7 +70,11 @@
     <string name="meditationTitle">zamyslenie</string>
     <string name="depth_title">poď na hlbinu</string>
     <string name="tip_for_you_title">tip pre teba</string>
+    <string name="ctv_1">01</string>
+    <string name="ctv_2">02</string>
+    <string name="ctv_3">03</string>
 
+    <!-- NOTIFICATIONS-->
     <string name="notifications_allowed">Notifikácie povolené</string>
     <string name="notifications_forbidden">Notifikácie zakázané</string>
     <string name="no_new_articles">Žiadne nové články</string>
@@ -95,7 +105,9 @@
 
     <!-- ALERT LOCKED START ************************************* -->
     <string name="alert_locked_title">prepáčte,</string>
-    <string name="alert_locked_text">zvyšok článku je prístupný iba predplatiteľom.\nStaňte sa našim predplatiteľom a získajte aj iné výhody.</string>
+    <!-- do not make new line after '\n' character => making new line makes ' ' in real printed text! -->
+    <string name="alert_locked_text">
+        zvyšok článku je prístupný iba predplatiteľom.\nStaňte sa našim predplatiteľom a získajte aj iné výhody.</string>
     <string name="more_info_about_subscription">viac informácií o predplatnom      </string>
     <!-- ALERT LOCKED END *************************************** -->
 
@@ -114,6 +126,46 @@
     <string name="baterka_on_today">Baterka na dnes</string>
     <string name="o_portali_nav_dr">O portáli cesta+</string>
 
-    <!-- Navigational drawer END ***************************** -->
+    <!-- Navigational drawer END ******************************* -->
+
+    <!-- LOGGED activity START ***************************** -->
+    <string name="logged_act_header_title">Moje konto - predplatné</string>
+    <string name="logged_actual_status_subscription_ok">aktuálne máš aktivované predplatné.</string>
+    <string name="logged_actual_status_subscription_expired">
+        Vaše konto bolo deaktivované, pretože uplynula doba predplatenia.\nAk si aj naďalej prajete využívať rozšírené možnosti portálu cesta+, predĺžte si svoje predplatné.
+    </string>
+    <string name="logged_full_name_title">Meno:</string>
+    <string name="logged_subscription_name_title">Typ predplatného:</string>
+    <string name="logged_subscription_start_title">Dátum aktivácie:</string>
+    <string name="logged_subscription_end_title">Koniec predplatného:</string>
+    <string name="logged_subscription_remaining_title">Zostáva:</string>
+    <string name="logged_subscription_remaining_format">%1$d dní</string>
+    <string name="logged_thanks_for_your_support">Ďakujeme za tvoju podporu.</string>
+    <!-- do not make new line after '\n' character => making new line makes ' ' in real printed text! -->
+    <string name="logged_info_point_1_text">
+        V prípade, že ste si predplatili/predĺžili predplatné nedávno,\nnemusia byť údaje ihneď aktualizované\n(prevod bankou a overenie trvá určitý čas)
+    </string>
+    <string name="logged_info_point_2_text">
+        Prvopredplatiteľom (okrem predplatného cez SMS) sme darovali prvých 5 dní grátis\n(z dôvodu trvania prevodu a overenia, viď bod č.1)
+    </string>
+    <string name="logged_info_points_intro_text">
+        V prípade, že ste si cesta+ predplatili, ale Vaše konto nebolo zatiaľ aktivované:
+    </string>
+    <string name="logged_info_point_1_expired_text">
+        Platba cez SMS:\nV prípade doručenia potvrdzovacej správy by malo byť Vaše predplatné v priebehu niekoľkých minút predĺžené.
+    </string>
+    <string name="logged_info_point_2_expired_text">
+        Platba cez internetbanking:\nPrevod z účtu na účet trvá zvyčajne tri dni. V prípade že Vaše konto nebolo aktivované po piatich dňoch od zaplatenia, kontaktujte nás na office@cestaplus.sk
+    </string>
+    <string name="logged_btn_prolong_subscription">Predĺžiť predplatné</string>
+    <string name="btn_logout">Odhlásiť</string>
+    <string name="logged_connection_err_msg">Chyba pri načítavaní aktuálnych údajov!\nZobrazujem naposledy načítané údaje!</string>
+    <!-- LOGGED activity END ***************************** -->
+
+    <!-- TOAST's messages START ***************************** -->
+    <string name="toast_loaded_page_num">Načítaná stránka číslo </string>
+    <string name="toast_logging_out">Odhlasujem…</string>
+    <!-- TOAST's messages END ******************************* -->
+
 
 </resources>

@@ -2,21 +2,16 @@ package sk.cestaplus.cestaplusapp.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
-import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 
 /**
  * Created by Matej on 9. 4. 2015.
@@ -60,7 +55,7 @@ public class ArticleDatabase{
             statement.bindString(2, actArticle.getTitle());
             statement.bindString(3, actArticle.getShort_text());
             statement.bindString(4, actArticle.getAuthor());
-            statement.bindString(5, actArticle.getImageUrl());
+            statement.bindString(5, actArticle.getImageDefaultUrl());
             statement.bindLong(6, actArticle.getPubDate() == null ? -1 : actArticle.getPubDate().getTime()); //datum ulozeny v milisekondach
             statement.bindString(7, actArticle.getSection());
             statement.bindString(8, actArticle.getID());
@@ -96,7 +91,7 @@ public class ArticleDatabase{
             //for given column index, bind the data to be put inside that index
             statement.bindString(2, actArticle.getTitle());
             statement.bindString(3, actArticle.getShort_text());
-            statement.bindString(4, actArticle.getImageUrl());
+            statement.bindString(4, actArticle.getImageDefaultUrl());
             statement.bindLong(5, actArticle.getPubDate() == null ? -1 : actArticle.getPubDate().getTime()); //datum ulozeny v milisekondach
             statement.bindString(6, actArticle.getSection());
             statement.bindString(7, actArticle.getID());

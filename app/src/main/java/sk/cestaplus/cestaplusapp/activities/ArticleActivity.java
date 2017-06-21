@@ -1,6 +1,7 @@
 package sk.cestaplus.cestaplusapp.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -11,7 +12,9 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -26,8 +29,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.android.volley.Cache;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -40,15 +43,17 @@ import org.json.JSONObject;
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.account_activities.LoggedActivity;
 import sk.cestaplus.cestaplusapp.activities.account_activities.LoginActivity;
-import sk.cestaplus.cestaplusapp.activities.account_activities.NotLoggedActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.OPortaliActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.SettingsActivity;
 import sk.cestaplus.cestaplusapp.extras.IKeys;
+import sk.cestaplus.cestaplusapp.network.Endpoints;
 import sk.cestaplus.cestaplusapp.network.Parser;
+import sk.cestaplus.cestaplusapp.network.Requestor;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.objects.ArticleText;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.objects.UserInfo;
+import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.SectionsUtil;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.Templator;
@@ -62,24 +67,32 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 //static imports
 import static sk.cestaplus.cestaplusapp.extras.Constants.DELAY_TO_START_ACTIVITY_MILLIS;
+import static sk.cestaplus.cestaplusapp.extras.Constants.URL_SUBSCRIPTION_INFO;
+import static sk.cestaplus.cestaplusapp.extras.Constants.VOLLEY_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.AEC_OK;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_ARTICLE_URL;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_BATERKA;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_TEXT_SIZE;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_ARTICLE_ERROR_CODE;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_ERROR_CODE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_SCROLL_PERC;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_OBJ;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_TEXT;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ROLE;
 
 /**
  * Created by Matej on 19. 3. 2015.
+ *
+ * AlertDialogs SOURCES:
+ *      Simple: http://stackoverflow.com/questions/26097513/android-simple-alert-dialog
+ *      Theme.AppCompat Exception: http://stackoverflow.com/a/30181104
+ *      TwoButtons: http://stackoverflow.com/a/8228190
  */
 public class ArticleActivity
     extends AppCompatActivity
-    implements SharedPreferences.OnSharedPreferenceChangeListener {
+    implements
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        LoginManager.LoginManagerInteractionListener {
 
     //data
     private ArticleObj articleObj;
@@ -94,7 +107,8 @@ public class ArticleActivity
 
     // utils
     private VolleySingleton volleySingleton; // networking
-    private SessionManager session;          // Session manager
+    private LoginManager loginManager;
+    private SessionManager session;
     private int role;
 
     // UI components
@@ -135,11 +149,11 @@ public class ArticleActivity
 
         // initialisations
         volleySingleton = VolleySingleton.getInstance(getApplicationContext());
+        loginManager = LoginManager.getInstance(getApplicationContext());
         articleObj = getIntent().getParcelableExtra(IKeys.KEY_INTENT_EXTRA_ARTICLE);
         parentActivity = getIntent().getExtras().getString(KEY_PARENT_ACTIVITY);
 
         session = new SessionManager(getApplicationContext());
-        role = session.getRole();
         sectionName = SectionsUtil.getSectionTitle(articleObj.getSection());
 
         initToolbar();
@@ -273,6 +287,7 @@ public class ArticleActivity
             }
         });
 
+        // adjust image height to screen height - if needed
         ImageUtil.resolveAdjustImageHeightToScreenHeight(this, nivArticleImage);
 
         // body
@@ -284,6 +299,7 @@ public class ArticleActivity
         btnShowComments.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // start FacebookComments Activity
                 final Intent intent = new Intent(getApplicationContext(), FacebookCommentsActivity.class);
                 intent.putExtra(KEY_INTENT_ARTICLE_URL, articleText.getUrl());
 
@@ -341,15 +357,7 @@ public class ArticleActivity
             }
 
             case R.id.account: {
-                // Session manager
-                final SessionManager session = new SessionManager(CustomApplication.getCustomAppContext());
-
-                Class classToStart;
-                if (session.isLoggedIn()) {
-                    classToStart = LoggedActivity.class;
-                } else {
-                    classToStart = NotLoggedActivity.class;
-                }
+                Class classToStart = Util.getAccountActivityToStart();
 
                 Intent intent = new Intent(getApplicationContext(), classToStart);
                 intent.putExtra(KEY_PARENT_ACTIVITY, KEY_ARTICLE_ACTIVITY);
@@ -455,11 +463,18 @@ public class ArticleActivity
         };
 
         //send the request
-        volleySingleton.createGetArticleRequest(articleObj.getID(), articleObj.isLocked(), responseLis, errorLis, true); //boolean = či aj z obrázkami
+        Requestor.createGetArticleRequest(
+                volleySingleton.getRequestQueue(), session,
+                articleObj.getID(), articleObj.isLocked(),
+                responseLis, errorLis,
+                true); //boolean = with pictures?
     }//end loadArticle()
 
     private void onResponse(JSONObject response) {
-                // get articleErrorCode
+        // role is initialized here, and therefore don't have to be re-initialized from session during orientation changes
+        role = session.getRole();
+
+        // get articleErrorCode - AEC
         if (articleObj.isLocked()){
             //in case of locked articleObj, get error code from response
             articleErrorCode = Parser.parseErrorCode(response);
@@ -469,14 +484,18 @@ public class ArticleActivity
             articleErrorCode = AEC_OK;
         }
 
-        if ((articleErrorCode > AEC_OK) && (role > 0)){
-            //user is logged in, but there is a problem with api key
-            tryRelogin(1);
+        articleText = Parser.parseArticleTextResponse(response); //parse response to articleText
 
-        } else {
-            //user is logged and there is no problem, or user is not logged
-            articleText = Parser.parseArticleTextResponse(response); //parse response to articleText
+        if ( Util.isSubscriptionValid(role) && (articleErrorCode != AEC_OK) ){
+            // role is "subscription ok", but there is a problem with api key
+            // this means, that API_key is not valid => refresh API_key
 
+            //CustomNotificationManager.issueNotification("Problem with API key: " + session.getAPI_key(), NOTIFICATION_API_KEY_TEST+1); // debug notification
+            Log.d(VOLLEY_DEBUG, "Problem with API key: " + session.getAPI_key());
+
+            loginManager.tryRelogin(1, this);
+
+        } else { //role is "subscription ok" and there is no problem, or subscription is invalid
             showArticleText();
 
             loadAd();
@@ -488,7 +507,7 @@ public class ArticleActivity
      * Response listener sets the articleErrorCode and articleText.
      */
     private void showArticleText() {
-        nivArticleImage.setImageUrl(articleObj.getImageUrl(), volleySingleton.getImageLoader());
+        nivArticleImage.setImageUrl(articleObj.getImageDefaultUrl(), volleySingleton.getImageLoader());
         nivArticleImage.setErrorImageResId(R.drawable.baterka_vseobecna);
 
         tvAuthor.setText(articleText.getAuthor());
@@ -505,7 +524,7 @@ public class ArticleActivity
     //make UI changes
         hideErrorAndLoadingViews();
         showDataViews();
-        //decideToShowAlertLocked(); // moved to --> MyWebViewClient onPageFinished
+        //decideToShowAlertLocked(); // moved to --> MyWebViewClient onPageFinished()
     }
 
     private void showDataViews() {
@@ -557,16 +576,16 @@ public class ArticleActivity
             public void onClick(View view) {
                 //TODO: don't show url, but something like Subscription Activity
 
-                String url = "http://www.cestaplus.sk/predplatne/info";
                 view.getContext().startActivity(
-                        new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(URL_SUBSCRIPTION_INFO)));
             }
         });
     }
 
     private void loadAd() {
-        //load ads only if app is NOT logged mode
-        if (session.getRole() == 0) { //user use apllication in NOT logged mode
+        //load ads only if subscription is not valid
+        if (!Util.isSubscriptionValid(role)) {
+            // subscription is not valid
 
             AdView adView = (AdView) findViewById(R.id.adView);
 
@@ -581,73 +600,6 @@ public class ArticleActivity
             }
         }
     }//end loadAd()
-
-    private void tryRelogin(final int count) {
-
-        Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response){
-
-                int error_code = Parser.parseErrorCode(response);
-
-                if (error_code == 0){ //relogin succesfull
-                    //inform the user
-                    //Toast.makeText(CustomApplication.getCustomAppContext(), "Prihlásenie úspešné!", Toast.LENGTH_LONG).show();
-
-                    //parse and save new API key
-                    String API_key = Parser.parseAPI_key(response);
-                    session.setAPI_key(API_key);
-
-                    //load articleObj
-                    tryLoadArticle();
-
-                } else { //error_code != 0
-                    //TODO: check errorcodes - ak plati aj chyba pripojenia na databazu, tak upravit tento kod, aby ak nastane chyba pripojenia na databazu urobil opat reloging
-                    //relogin NOT succesfull, propable changed password or account expired
-
-                    // inform the user - show error
-                    Parser.handleLoginError(error_code);
-
-                    //logout
-                    session.logout();
-
-                    // Launch the login activity
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-
-            }//end onResponse
-        };
-
-        Response.ErrorListener errorLis = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                if (count < 4){
-                    //try to login again
-                    tryRelogin(count + 1);
-
-                } else {
-                    //unable to login for 3 times = logout and show login activity
-
-                    // inform the user - show error
-                    Toast.makeText(getApplicationContext(),
-                        "CHYBA PRIHLASOVANIA " + error.getMessage(), Toast.LENGTH_SHORT).show();
-
-                    //logout
-                    session.logout();
-
-                    // Launch the login activity
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            }
-        };
-
-        volleySingleton.createReLoginRequest(responseLis, errorLis);
-    }//end relogin
 
     // endregion
 
@@ -703,7 +655,8 @@ public class ArticleActivity
         Log.d("SCROLLING", "onSaveInstanceState()");
         outState.putParcelable(KEY_SAVED_STATE_ARTICLE_OBJ, articleObj);
         outState.putParcelable(KEY_SAVED_STATE_ARTICLE_TEXT, articleText);
-        outState.putInt(KEY_SAVED_ARTICLE_ERROR_CODE, articleErrorCode);
+        outState.putInt(KEY_SAVED_STATE_ARTICLE_ERROR_CODE, articleErrorCode);
+        outState.putInt(KEY_SAVED_STATE_ROLE, role);
 
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nestedScrollViewArticle);
 
@@ -727,7 +680,8 @@ public class ArticleActivity
 
         articleObj = savedInstanceState.getParcelable(KEY_SAVED_STATE_ARTICLE_OBJ);
         articleText = savedInstanceState.getParcelable(KEY_SAVED_STATE_ARTICLE_TEXT);
-        articleErrorCode = savedInstanceState.getInt(KEY_SAVED_ARTICLE_ERROR_CODE);
+        articleErrorCode = savedInstanceState.getInt(KEY_SAVED_STATE_ARTICLE_ERROR_CODE);
+        role = savedInstanceState.getInt(KEY_SAVED_STATE_ROLE);
 
         scrollPercentage = savedInstanceState.getDouble(KEY_SAVED_SCROLL_PERC);
     }
@@ -736,10 +690,129 @@ public class ArticleActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equalsIgnoreCase(KEY_PREF_TEXT_SIZE)) {
+
+        if (key.equalsIgnoreCase(getString(R.string.pref_text_size_key))) {
+            // change of TEXT SIZE
             showArticleText(); //reload views
         }
     }//end onSharedPreferenceChanged
+
+    // region LoginManagerInterActionListener methods
+
+    @Override
+    public void onLoginSuccessful(UserInfo userInfo) {
+        // relogin successful - subscription still OK
+
+        // Remove old entry from cache!! - important!!
+        removeEntryFromCache(); // !!
+        tryLoadArticle(); // create new article request with NEW API_key
+    }
+
+    /**
+     * Removes old cache entry of actual article (if any).
+     * SOURCES:
+     *      https://stackoverflow.com/questions/24495055/android-volley-invalidate-cache-and-make-fresh-request-every-x-minutes
+     *      https://stackoverflow.com/questions/17230431/google-volley-when-to-use-cache-remove-and-cache-invalidate
+     *      https://stackoverflow.com/questions/24464610/how-to-clear-the-volley-cache-automatically
+     *
+     */
+    private void removeEntryFromCache() {
+        Cache cache = volleySingleton.getRequestQueue().getCache();
+        String url = Endpoints.getConcreteArticleRequestUrl(articleObj.getID(), true);
+
+        Log.d(VOLLEY_DEBUG, "Get url from cache: " + url);
+        Cache.Entry entry = cache.get(url); //url is cache key
+
+        if (entry != null){
+            cache.remove(url);
+            Log.d(VOLLEY_DEBUG, "REMOVED entry from cache with url: " + url);
+        }
+    }
+
+    @Override
+    public void onLoginPartiallySuccessful(UserInfo userInfo) {
+        // relogin not successful - subscription has EXPIRED
+
+        //inform the user - show AlertDialog, after closing show LoggedActivity
+        // SOURCE: check class comment
+        AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.alertDialog)).create();
+        alertDialog.setTitle("Info");
+        alertDialog.setMessage(this.getString(R.string.login_partially_successful_msg));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+
+                    showArticleText();
+
+                    // start LoggedActivity
+                    Intent intent = new Intent(getApplicationContext(), LoggedActivity.class);
+                    intent.putExtra(KEY_PARENT_ACTIVITY, KEY_ARTICLE_ACTIVITY);
+                    startActivity(intent);
+                }
+            });
+        alertDialog.show();
+    }
+
+    @Override
+    public void onLoginError(int login_error_code) {
+        // case only if EMAIL_OR_PASSWORD_MISSING or WRONG_EMAIL_OR_PASSWORD
+        // probably changed password
+
+        // inform the user - show error toast
+        Parser.handleLoginError(login_error_code);
+
+        session.logout();
+
+        //inform the user - show AlertDialog, after closing show LoginActivity
+        // SOURCE: check class comment
+        AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.alertDialog)).create();
+        alertDialog.setTitle("Info");
+        alertDialog.setMessage(this.getString(R.string.relogin_wrong_password));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+
+                    // start LoginActivity
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        alertDialog.show();
+    }
+
+    @Override
+    public void onLoginNetworkError() {
+        //unable to login for 3 times
+
+        //inform the user - show AlertDialog, after closing show LoginActivity
+        // SOURCE: check class comment
+        AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.alertDialog)).create();
+        alertDialog.setTitle("Info");
+        alertDialog.setMessage(this.getString(R.string.relogin_network_or_server_error));
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        showArticleText();
+                    }
+                });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.load_again),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        tryLoadArticle();
+                    }
+                });
+        alertDialog.show();
+    }
+
+    //endregion
 
     // region private class MyWebViewClient
 
@@ -753,7 +826,7 @@ public class ArticleActivity
         @Override
         public void onPageFinished(WebView view, String url) {
 
-            Log.d("SCROLLING", "onPageLoaded()");
+            Log.d("SCROLLING", "onPageFinished()");
             // SOURCE: http://stackoverflow.com/a/26565217
             //webView.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
 
@@ -812,7 +885,7 @@ public class ArticleActivity
 
     // endregion
 
-    // region JavascriptInterface
+    // region JavascriptInterface - not used now
 
     // SOURCE: http://stackoverflow.com/a/26565217
     @JavascriptInterface

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ===================== MAIN ACTIVITY START ======================================================================================== -->
+<!-- ===================== MAIN ACTIVITY START ======================================================================================== -->
     <!-- HEADER IMAGE -->
     <dimen name="header_image_height">600dp</dimen> <!-- 400dp -->
     <dimen name="header_image_gradient_from_bottom">300dp</dimen>
@@ -60,6 +60,8 @@
     <!-- RECYCLER VIEW LIST ITEMS END ******************************* -->
 
     <!-- NAVIGATIONAL DRAWER START ****************************************************** -->
+    <!-- Some dimensions according to: https://material.io/guidelines/patterns/navigation-drawer.html#navigation-drawer-specs
+         or according to Gmail app by try&error method :) -->
     <!-- NAV. DR. HEADER ***** -->
     <dimen name="nav_dr_header_layout_height">160dp</dimen>
 
@@ -67,8 +69,8 @@
     <dimen name="nav_dr_header_image_height">80dp</dimen>
 
     <!-- NAV. DR. LOGIN STATUS -->
-    <dimen name="nav_dr_header_login_status_text_size">14sp</dimen>
-    <dimen name="nav_dr_header_login_status_margin_bottom">8dp</dimen>
+    <dimen name="nav_dr_header_full_name_text_size">14sp</dimen>
+    <dimen name="nav_dr_header_email_margin_bottom">12dp</dimen>
 
     <!-- DIVIDER between nav. dr. header and AnimatedExpandableListView -->
     <dimen name="nav_dr_divider_margin_top">8dp</dimen>
@@ -81,16 +83,16 @@
     <dimen name="nav_dr_group_item_icon_left_right_margin">16dp</dimen>
 
     <!-- GROUP TITLE -->
-    <dimen name="nav_dr_group_item_title_text_size">13sp</dimen> <!-- 14  20sp -->
+    <dimen name="nav_dr_group_item_title_text_size">13sp</dimen> <!-- should be 14sp  -->
 
     <dimen name="nav_dr_group_item_title_margin_left">16dp</dimen>
     <dimen name="nav_dr_group_item_title_margin_right">10dp</dimen>
     <dimen name="nav_dr_group_item_title_margin_top_bottom">15dp</dimen>
 
     <!-- CHILD ITEM TITLE -->
-    <dimen name="nav_dr_list_item_text_size">14sp</dimen> <!-- 17sp  -->
+    <dimen name="nav_dr_list_item_text_size">14sp</dimen>
 
-    <dimen name="nav_dr_child_item_title_margin_left">100dp</dimen> <!-- 55dp -->
+    <dimen name="nav_dr_child_item_title_margin_left">100dp</dimen>
     <dimen name="nav_dr_child_item_title_margin_right">10dp</dimen>
     <dimen name="nav_dr_child_item_title_margin_top_bottom">10dp</dimen>
     <!-- NAVIGATIONAL DRAWER END ******************************************************* -->
@@ -106,7 +108,7 @@
 
     <dimen name="alert_locked_layout_padding">40dp</dimen>
     <dimen name="alert_locked_text_margin_top">10dp</dimen>
-    <dimen name="alert_locked_button_padding">15dp</dimen>
+    <dimen name="alert_locked_button_padding">15dp</dimen> <!-- 15 -->
     <dimen name="alert_locked_button_margin_top">35dp</dimen>
     <!-- ===================== ARTICLE ACTIVITY END ===================================================================================== -->
 
@@ -160,5 +162,48 @@
     <!-- TIP TITLE -->
     <dimen name="tip_title_text_size">20sp</dimen>
 
-    <!-- ===================== BATERKA ACTIVITY START =================================================================================== -->
+    <!-- ===================== BATERKA ACTIVITY END ===================================================================================== -->
+
+    <!-- ===================== LOGGED ACTIVITY START =================================================================================== -->
+    <dimen name="main_name_text_size">28sp</dimen>
+    <dimen name="actual_status_text_size">20sp</dimen> <!-- 19 -->
+
+    <dimen name="item_title_text_size">18sp</dimen> <!-- 17 -->
+    <dimen name="item_text_text_size">18sp</dimen>  <!-- 17 -->
+
+    <dimen name="thank_for_support_text_text_size">19sp</dimen>
+
+    <dimen name="info_point_number_text_size">18sp</dimen> <!-- 15 -->
+    <dimen name="info_point_text_text_size">18sp</dimen> <!-- 17 -->
+
+    <dimen name="prolong_subscription_text_text_size">16sp</dimen> <!-- 15 -->
+    <dimen name="prolong_subscription_text_padding">18dp</dimen>
+
+    <dimen name="network_error_text_text_size">18sp</dimen>
+    <!-- ===================== LOGGED ACTIVITY END ===================================================================================== -->
+
+    <!-- ===================== LOGIN ACTIVITY START =================================================================================== -->
+    <!-- Main logo is little bit lower than in facebook app. Values in comments like in fb app -->
+    <dimen name="main_logo_width">300dp</dimen>
+    <dimen name="main_logo_height">120dp</dimen>
+    <dimen name="main_logo_margin_top">130dp</dimen>    <!-- 100 -->
+    <dimen name="main_logo_margin_bottom">195dp</dimen> <!-- 225 -->
+
+    <dimen name="main_logo_width_with_keyboard">250dp</dimen>
+    <dimen name="main_logo_height_with_keyboard">100dp</dimen>
+    <dimen name="main_logo_margin_top_with_keyboard">85dp</dimen>
+    <dimen name="main_logo_margin_bottom_with_keyboard">65dp</dimen>
+
+    <dimen name="email_password_text_size">19sp</dimen>
+
+    <dimen name="btn_login_layout_height_with_keyboard">@dimen/wrap_content</dimen> <!-- SOURCE: https://stackoverflow.com/a/34176155 -->
+    <dimen name="btn_login_text_size">15sp</dimen>
+
+    <!-- <dimen name="btn_use_as_not_logged_in_margin_top">160dp</dimen> -->
+    <dimen name="btn_use_as_not_logged_in_text_size">19sp</dimen>
+    <dimen name="btn_use_as_not_logged_in_margin_bottom">30dp</dimen> <!-- 30 -->
+    <dimen name="btn_use_as_not_logged_in_margin_bottom_with_keyboard">20dp</dimen>
+
+    <!-- ===================== LOGIN ACTIVITY END ===================================================================================== -->
+
 </resources>

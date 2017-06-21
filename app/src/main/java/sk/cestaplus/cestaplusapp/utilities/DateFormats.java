@@ -7,8 +7,8 @@ import java.text.SimpleDateFormat;
  * Created by matth on 26.11.2016.
  */
 public class DateFormats {
-    public static DateFormat dateFormatArticleDatePrint = new SimpleDateFormat("dd. MM. yyyy");
-    public static DateFormat dateFormatArticleTimePrint = new SimpleDateFormat("HH:mm");
+    public static DateFormat dateFormatSlovakPrint = new SimpleDateFormat("dd. MM. yyyy");
+    public static DateFormat dateFormatTimePrint = new SimpleDateFormat("HH:mm");
 
     public static DateFormat dateFormatJSON = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

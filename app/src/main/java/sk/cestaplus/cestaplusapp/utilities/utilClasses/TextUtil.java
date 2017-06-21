@@ -1,14 +1,23 @@
 package sk.cestaplus.cestaplusapp.utilities.utilClasses;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
 import android.widget.TextView;
+
+import sk.cestaplus.cestaplusapp.R;
+import sk.cestaplus.cestaplusapp.extras.IErrorCodes;
+import sk.cestaplus.cestaplusapp.utilities.Util;
+
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
 
 /**
  * Created by matth on 21.02.2017.
@@ -100,7 +109,7 @@ public class TextUtil {
     }
 
     public static boolean showLock(int role, boolean isLocked){
-        return role == 0 && isLocked;
+        return !Util.isSubscriptionValid(role) && isLocked;
     }
 
     public static void setTextWithImageAtStart(Context context, String text, TextView textView, int drawableId) {
@@ -121,4 +130,16 @@ public class TextUtil {
 
         textView.setText(builder);
     }
+
+    /**
+     * SOURCES:
+     *      https://stackoverflow.com/questions/4602902/how-to-set-the-text-color-of-textview-in-code
+     *      https://stackoverflow.com/questions/6200533/set-textview-style-bold-or-italic
+     * @param textView TextView with text we want to make red and bold
+     */
+    public static void setTextBoldAndRed(TextView textView, Context context){
+        textView.setTextColor(ContextCompat.getColor(context, R.color.red));
+        textView.setTypeface(null, Typeface.BOLD);
+    }
+
 }

@@ -16,7 +16,7 @@
 
         <!-- NOT Logged in info text -->
         <TextView
-            android:id="@+id/txtvNotLoggedIn"
+            android:id="@+id/etEmail"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:gravity="center"
@@ -32,8 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dip"
             android:background="@color/notlogged_activity_btn_login_bg"
-            android:text="@string/btn_login_big"
-            android:textAllCaps="false"
+            android:text="@string/btn_login"
+            android:textAllCaps="true"
             android:textColor="@color/white"
             android:textSize="15sp" />
     </LinearLayout>

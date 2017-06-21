@@ -6,13 +6,16 @@ import java.util.Date;
 import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.MyApplication;
 
+import static sk.cestaplus.cestaplusapp.extras.Constants.ART_NUM;
+import static sk.cestaplus.cestaplusapp.extras.Constants.URL_CESTA_PLUS;
+
 /**
  * Created by Matej on 27. 5. 2015.
  */
 public class Endpoints {
 
     //constants
-    public static final String URL_CESTA_PLUS_ANDROID = "http://www.cestaplus.sk/_android/";
+    public static final String URL_CESTA_PLUS_ANDROID = URL_CESTA_PLUS + "_android/";
 
     public static final String GET_ARTICLES = "getAndroidData.php";
     public static final String GET_NEW_ARTICLES = "getAndroidNewArticle.php";
@@ -26,24 +29,22 @@ public class Endpoints {
     }
 
     /**
-     * Metóda vyskladá URL adresu update requestu.
-     * @return
+     * Builds up URL address of update request
      */
     public static String getUpdateRequestUrl(){
         Date date = MyApplication.getWritableDatabase().getFirstArticleDate();
         String lastUpdateTime = DateFormats.dateFormatAPI.format(date);
 
-        return URL_CESTA_PLUS_ANDROID + GET_NEW_ARTICLES + "?date=" + lastUpdateTime + "&limit="+20 + "&page="+1;
+        return URL_CESTA_PLUS_ANDROID + GET_NEW_ARTICLES + "?date=" + lastUpdateTime + "&limit="+ART_NUM + "&page="+1;
     }
 
-    public static String getConcreteArticleRequestUrl(String id, boolean withPictures, String API_key) {
+    public static String getConcreteArticleRequestUrl(String id, boolean withPictures) {
         int wp = 1;
         if (!withPictures){
             wp = 0;
         }
 
-        return URL_CESTA_PLUS_ANDROID + GET_CONCRETE_ARTICLE + "?id="+id + "&withPictures="+wp
-                + ( API_key != null ? ("&apikey="+API_key) : "" );
+        return URL_CESTA_PLUS_ANDROID + GET_CONCRETE_ARTICLE + "?id="+id + "&withPictures="+wp;
     } //end getConcreteArticleRequestUrl
 
     public static String getBaterkaUrl(Date pubDate) {

@@ -22,12 +22,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import sk.cestaplus.cestaplusapp.R;
-import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
+import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.SimpleDividerItemDecoration;
 import sk.cestaplus.cestaplusapp.extras.Constants;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
 import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
 import sk.cestaplus.cestaplusapp.network.Parser;
+import sk.cestaplus.cestaplusapp.network.Requestor;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.ResponseCrate;
@@ -44,7 +45,7 @@ public class SectionFragment
     extends Fragment
     implements
         ListStyleChangeListener,
-        CustomRecyclerViewClickHandler.CustomRecyclerViewClickHandlerDataProvider{
+        CustomRecyclerViewClickHandler.ICustomRecyclerViewClickHandlerDataProvider {
 
     // ======================================= ATTRIBUTES ================================================================================
     // data
@@ -66,7 +67,7 @@ public class SectionFragment
     // UI components
     // data views
     private RecyclerView recyclerViewSection;
-    private ArticleRecyclerViewAdapter arvaSection; // arva = Article Recycler View Adapter
+    private ArticlesRecyclerViewAdapter arvaSection; // arva = Article Recycler View Adapter
 
     // loading & error views
     private TextView tvVolleyErrorSection; // network error
@@ -128,7 +129,7 @@ public class SectionFragment
 
         } else {
             //new start of activity
-            tryLoadArticles();
+            tryLoadArticles(true); // true = yes, show loading animation (indeterminate progress bar)
         } //end else savedInstanceState
 
         recyclerViewSection.setAdapter(arvaSection); //set adapter
@@ -169,11 +170,13 @@ public class SectionFragment
         recyclerViewSection.addItemDecoration(new SimpleDividerItemDecoration(getActivity().getApplicationContext()));
 
         recyclerViewClickHandler = new CustomRecyclerViewClickHandler(
-                this, this, KEY_MAIN_ACTIVITY);
+                this, this,
+                sectionID, KEY_MAIN_ACTIVITY);
 
         // we have custom TOUCH listener and also custom CLICK HANDLER
         recyclerViewSection.addOnItemTouchListener(
-                new RecyclerTouchListener(getActivity().getApplicationContext(),
+                new RecyclerTouchListener(
+                        getActivity().getApplicationContext(),
                         recyclerViewSection, recyclerViewClickHandler));
 
         setRecyclerViewAdapterType();
@@ -221,11 +224,13 @@ public class SectionFragment
 
     // region LOAD & SHOW ARTICLES of selected section
 
-    public void tryLoadArticles(){
+    public void tryLoadArticles(boolean showLoadingAnimation){
         tvVolleyErrorSection.setVisibility(View.GONE);
         ivRefresh.setVisibility(View.GONE);
 
-        startLoadingAnimation();
+        if (showLoadingAnimation) {
+            startLoadingAnimation();
+        }
 
         loadArticles(); //creates listeners and sends the request
     }
@@ -263,19 +268,14 @@ public class SectionFragment
         };
 
         //send the request
-        //volleySingleton.createGetArticlesArrayRequestGET(sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
-        volleySingleton.createGetArticlesObjectRequestGET(sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
+        Requestor.createGetArticlesObjectRequestGET(volleySingleton.getRequestQueue(), sectionID, Constants.ART_NUM, 1, responseLis, errorLis);
     }
 
     private void onResponse(JSONObject response) {
-        //make UI changes
-        hideErrorAndLoadingViews();
-        if (listener != null) {
-            listener.stopRefreshingAnimation();
-        }
-        recyclerViewSection.setVisibility(View.VISIBLE);
+        // 1. make UI changes = stop refreshing or loading animation and hide error views
+        makeUIChangesAfterLoadingArticles(); //similar to 'stopLoadingOrRefreshingAnimation()' in AllFragment
 
-        // logic
+        // 2. logic
         ResponseCrate responseCrate = Parser.parseJsonObjectResponse(response);
 
         articlesOfSection = responseCrate.getArticles();
@@ -294,6 +294,20 @@ public class SectionFragment
         progressBar.setVisibility(View.VISIBLE);
         //progressBar.setIndeterminate(true); // we don't need this, because we set indeterminateOnly="true" in layout
     }
+
+    private void makeUIChangesAfterLoadingArticles() {
+        // stop loading animation and hide error views
+        hideErrorAndLoadingViews();
+
+        //stop refreshing animation
+        if (listener != null) {
+            listener.stopRefreshingAnimation();
+        }
+
+        //show recycle view
+        recyclerViewSection.setVisibility(View.VISIBLE);
+    }
+
 
     private void hideErrorAndLoadingViews() {
         progressBar.setVisibility(View.GONE); //this should automatically stop animation (based on visibility state of the progress bar)
@@ -314,7 +328,7 @@ public class SectionFragment
         ivRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tryLoadArticles();
+                tryLoadArticles(true); // true = yes, show loading animation (indeterminate progress bar)
             }
         });
     }
@@ -390,7 +404,7 @@ public class SectionFragment
     }
 
     @Override
-    public ArticleRecyclerViewAdapter getAdapter() {
+    public ArticlesRecyclerViewAdapter getAdapter() {
         return arvaSection;
     }
 

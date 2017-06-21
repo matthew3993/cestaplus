@@ -15,7 +15,8 @@
             android:minWidth="180dp"
             android:minHeight="120dp"
         -->
-        <com.android.volley.toolbox.NetworkImageView
+        <!--  WAS com.android.volley.toolbox.NetworkImageView -->
+        <sk.cestaplus.cestaplusapp.views.CustomVolleyImageView
             android:id="@+id/nivListItem"
 
             android:layout_width="@dimen/li_image_width"

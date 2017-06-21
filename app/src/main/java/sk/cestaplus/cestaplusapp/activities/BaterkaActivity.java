@@ -130,7 +130,7 @@ public class BaterkaActivity
         initActivityDefaultFont(); // set up default font of activity
 
         // initialisations
-        volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //inicializácia volleySingleton - dôležité !!!
+        volleySingleton = VolleySingleton.getInstance(getApplicationContext()); // !!!
 
         // load data from intent
         articleObj = getIntent().getParcelableExtra(IKeys.KEY_INTENT_EXTRA_BATERKA);
@@ -187,7 +187,7 @@ public class BaterkaActivity
     //region INITIALISATION METHODS
 
     private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.mainActivityToolbar);
+        toolbar = (Toolbar) findViewById(R.id.baterkaActivityToolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //to show up arrow
@@ -195,7 +195,7 @@ public class BaterkaActivity
 
     private void initLayoutViews() {
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.baterkaCollapsingToolbarLayout);
-        collapsingToolbarLayout.setTitle(" ");
+        collapsingToolbarLayout.setTitle(" "); // ! empty space !
 
         appBarLayout = (AppBarLayout) findViewById(R.id.baterkaAppBarLayout);
         attrActionBarSize = Util.getActionBarSize(getApplicationContext());
@@ -216,7 +216,7 @@ public class BaterkaActivity
             }
         });
 
-        ImageUtil.resolveBaterkaAdjustImageHeightToScreenHeight(this, nivBaterkaImage); // BATERKA!!!
+        ImageUtil.resolveAdjustBaterkaImageHeightToScreenHeight(this, nivBaterkaImage); // BATERKA!!!
 
         // body
         nestedScrollView = (NestedScrollView) findViewById(R.id.nestedScrollViewBaterka);
@@ -255,6 +255,8 @@ public class BaterkaActivity
     }
 
     //endregion
+
+    // region MENU & NAVIGATION METHODS
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -318,6 +320,10 @@ public class BaterkaActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * This method implements what should happen when Up button is pressed
+     * @return
+     */
     @Override
     public Intent getSupportParentActivityIntent() {
         return getCustomParentActivityIntent();
@@ -337,10 +343,11 @@ public class BaterkaActivity
         return i;
     }
 
+    // endregion
 
 // ======================================== OWN METHODS =====================================================================================
 
-    // region LOAD & SHOW BATERKA
+    // region LOAD & SHOW BATERKA TEXT
 
     /**
      * Starts loading animation and calls method to load baterka
@@ -378,7 +385,7 @@ public class BaterkaActivity
         //send the request
         Date dateToLoad = getDateToLoad();
 
-        Requestor.createBaterkaRequest(volleySingleton.getRequestQueue(), dateToLoad, responseLis, errorLis); //boolean = či aj z obrázkami
+        Requestor.createBaterkaRequest(volleySingleton.getRequestQueue(), dateToLoad, responseLis, errorLis);
 
     }//end loadBaterka
 
@@ -451,7 +458,7 @@ public class BaterkaActivity
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + verticalOffset < attrActionBarSize + 1) {
-                    collapsingToolbarLayout.setTitle("Baterka");
+                    collapsingToolbarLayout.setTitle(getString(R.string.title_activity_baterka));
                     isShow = true;
 
                 } else if(isShow) {
@@ -510,7 +517,7 @@ public class BaterkaActivity
 
     // endregion
 
-    // TODO: similar method is in Util class
+    // TODO: similar method is in Util class - try to make changes to get only one
     public void showTextSizeDialog() {
         // Session manager
         final SessionManager session = new SessionManager(CustomApplication.getCustomAppContext());
@@ -572,7 +579,9 @@ public class BaterkaActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equalsIgnoreCase(IKeys.KEY_PREF_TEXT_SIZE)) {
+        if (key.equalsIgnoreCase(getString(R.string.pref_text_size_key))) {
+            // TODO: implement this feature - issue #8, todo #4
+            // change of TEXT SIZE
             showBaterkaText(); //reload views
         }
     }//end onSharedPreferenceChanged

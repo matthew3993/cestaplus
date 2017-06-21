@@ -46,4 +46,12 @@
         <item name="android:textColorSecondary">@color/white</item>
     </style>
 
+   <!--
+    SOURCES:
+        http://stackoverflow.com/questions/30180052/you-need-to-use-a-theme-appcompat-theme-or-descendant-with-this-activity-chan
+        http://stackoverflow.com/a/30181104
+    -->
+    <style name="alertDialog" parent="Theme.AppCompat.Dialog">
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

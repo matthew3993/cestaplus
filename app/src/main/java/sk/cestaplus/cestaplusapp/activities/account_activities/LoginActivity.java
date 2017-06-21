@@ -1,79 +1,210 @@
 package sk.cestaplus.cestaplusapp.activities.account_activities;
 
-/**
- * Created by Matej on 22. 4. 2015.
- */
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.activities.MainActivity;
 import sk.cestaplus.cestaplusapp.network.Parser;
-import sk.cestaplus.cestaplusapp.network.VolleySingleton;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
+import sk.cestaplus.cestaplusapp.objects.UserInfo;
+import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
+import sk.cestaplus.cestaplusapp.utilities.Util;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.LOGIN_SUCCESSFUL;
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
 
+/**
+ * Created by Matej on 22. 4. 2015.
+ *
+ * NOTE ADJUSTING SCREEN WHEN SOFTWARE KEYBOARD IS SHOWED AND HIDDEN:
+ *
+ * In layout, we have two variants of views, that some attributes must be adjusted -
+ * this views are MainLogo, Login button, button UseAsNotLoggedIn.
+ * This couples (for example ivMainLogo and ivMainLogoWithKeyboard) have different styles.
+ *
+ * Activity listens on layout changes in {@link android.view.ViewTreeObserver}
+ * OnGlobalLayoutListener onGlobalLayout() method.
+ *
+ * At activity startup holders are initialized with IDs of views used withOUT keyboard, because after startup
+ * keyboard is hidden. (Solved by adding android:focusableInTouchMode="true" to root RelativeLayout)
+ * When keyboard is SHOWED:
+ *  - views used withOUT keyboard are set GONE
+ *  - view holders are re-initialized with IDs of views used WITH keyboard
+ *  - views used WITH keyboard are set VISIBLE.
+ *
+ * When keyboard is HIDDEN again - it goes same way but vice versa.
+ *
+ * SOURCES:
+ *      https://stackoverflow.com/questions/16411056/how-to-adjust-layout-when-soft-keyboard-appears
+ *      https://stackoverflow.com/questions/7300497/adjust-layout-when-soft-keyboard-is-on
+ *      https://stackoverflow.com/questions/2150078/how-to-check-visibility-of-software-keyboard-in-android/4737265#4737265
+ *      https://stackoverflow.com/questions/35585538/adjust-the-layout-when-the-android-soft-keyboard-is-shown-or-hidden
+ */
+public class LoginActivity
+    extends Activity
+    implements LoginManager.LoginManagerInteractionListener {
 
-public class LoginActivity extends Activity {
+    //data
+    private LoginManager loginManager;
+    private SessionManager session;
+    private boolean isShowedKeyboard; //helper flag meaning if soft keyboard is showed or not
 
+    // UI components
+    //body
+    private ImageView ivMainLogo;
+    private EditText etEmail;
+    private EditText etPassword;
     private Button btnLogin;
     private Button btnUseAsNotLoggedIn;
-    private EditText inputEmail;
-    private EditText inputPassword;
-    private ProgressDialog pDialog;
-    private SessionManager session;
 
-    private VolleySingleton volleySingleton;
+    // loading & error views
+    private ProgressDialog pDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_login);
+        initActivityDefaultFont(); // set up default font of activity
 
-        volleySingleton = VolleySingleton.getInstance(getApplicationContext()); //volleySingleton initialisation !!!
+        // Check if user is already logged in or not
+        if (Util.isLoggedIn()) {
+            launchMainActivity(); // User is already logged in. Take him to main activity
+        }
 
-        // init views
-        inputEmail = (EditText) findViewById(R.id.txtvNotLoggedIn);
-        inputPassword = (EditText) findViewById(R.id.password);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
-        btnUseAsNotLoggedIn = (Button) findViewById(R.id.btnUseAsNotLoggedIn);
+        // initialisations
+        loginManager = LoginManager.getInstance(getApplicationContext()); //login manager initialisation !!
+        session = new SessionManager(getApplicationContext());
+
+        // keyboard is hidden at the start of activity
+        // (using android:focusableInTouchMode="true" on root layout to prevent EditText from receiving focus)
+        isShowedKeyboard = false;
+
+        // init OnGlobalLayoutListener
+        final View activityRootView = findViewById(R.id.login_RootRelativeLayout);
+        final Context context = this;
+
+        //SOURCE: https://stackoverflow.com/questions/2150078/how-to-check-visibility-of-software-keyboard-in-android/4737265#4737265
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            /**
+             * This method is called EVERY time when something changes on the screen - mainly when entire soft keyboard is shown/hidden,
+             * but also when only part of soft keyboard is shown/hidden (for example top row with numbers),
+             * AND it's called 2 times when something changes on the screen (for some reason, found out by debugging) => therefore
+             * helper flag "isShowedKeyboard" and it check is needed to prevent initialisation of same views multiple times
+             * when it's not needed and requesting focus multiple times even we don't want it.
+             */
+            @Override
+            public void onGlobalLayout() {
+                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+
+                if (heightDiff > Util.pxFromDp(context, 200)) { // if more than 200 dp, it's probably a keyboard...
+                    // soft keyboard is SHOWED
+                    //Toast.makeText(context, "Keyboard SHOWED", Toast.LENGTH_SHORT).show();
+
+                    if (!isShowedKeyboard) { //check comment of method
+                        // keyboard WAS hidden and NOW it is SHOWED
+                        isShowedKeyboard = true;
+
+                        setGoneChangableViews();
+                        initViewsWithKeyboard(); // re-init views
+                        setVisibleChangableViews();
+
+                        // set GONE 'UseAsNotLoggedIn' button on normal sized devices with resolution of HDPI and lower
+                        if ( (Util.getScreenSize(getApplicationContext()) <= Configuration.SCREENLAYOUT_SIZE_NORMAL) &&
+                                (Util.getScreenDensity(getApplicationContext()) <= DisplayMetrics.DENSITY_HIGH ) ) {
+                            btnUseAsNotLoggedIn.setVisibility(View.GONE);
+                        }
+
+                        etEmail.requestFocus(); //!! - SOURCE: https://stackoverflow.com/a/8080621 - check the comments of this answer
+                    }
+                } else {
+                    // soft keyboard is HIDDEN
+                    //Toast.makeText(context, "Keyboard HIDDEN", Toast.LENGTH_SHORT).show();
+
+                    if (isShowedKeyboard) { //check comment of method
+                        // keyboard WAS showed and NOW it is HIDDEN
+                        isShowedKeyboard = false;
+
+                        setGoneChangableViews();
+                        initViewsWithOutKeyboard(); // re-init views
+                        setVisibleChangableViews();
+
+                        // set VISIBLE 'UseAsNotLoggedIn' button on normal sized devices with resolution of HDPI and lower
+                        if ( (Util.getScreenSize(getApplicationContext()) <= Configuration.SCREENLAYOUT_SIZE_NORMAL) &&
+                                (Util.getScreenDensity(getApplicationContext()) <= DisplayMetrics.DENSITY_HIGH ) ) {
+                            btnUseAsNotLoggedIn.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+        });
+
+        initLoginControls();
+        initViewsWithOutKeyboard();
 
         // Progress dialog init
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
 
-        // Session manager
-        session = new SessionManager(getApplicationContext());
+    }// end onCreate
 
-        // Check if user is already logged in or not
-        if (session.isLoggedIn()) {
-            launchMainActivity();            // User is already logged in. Take him to main activity
-        }
+    private void setGoneChangableViews() {
+        ivMainLogo.setVisibility(View.GONE);
+        btnLogin.setVisibility(View.GONE);
+        btnUseAsNotLoggedIn.setVisibility(View.GONE);
+    }
 
-        // Login button Click Event
+    private void setVisibleChangableViews() {
+        ivMainLogo.setVisibility(View.VISIBLE);
+        btnLogin.setVisibility(View.VISIBLE);
+        btnUseAsNotLoggedIn.setVisibility(View.VISIBLE);
+    }
+
+    private void initViewsWithOutKeyboard() {
+        initViews(R.id.ivMainLogo, R.id.btnLogin, R.id.btnUseAsNotLoggedIn);
+    }
+
+    private void initViewsWithKeyboard() {
+        initViews(R.id.ivMainLogoWithKeyboard, R.id.btnLoginWithKeyboard, R.id.btnUseAsNotLoggedIn_WithKeyboard);
+    }
+
+    private void initViews(int mainLogoId, int btnLoginId, int btnUseAsNotLoggedInId) {
+        ivMainLogo = (ImageView) findViewById(mainLogoId);
+        btnLogin = (Button) findViewById(btnLoginId);
+        btnUseAsNotLoggedIn = (Button) findViewById(btnUseAsNotLoggedInId);
+
+        setButtonsListeners();
+    }
+
+    private void initLoginControls() {
+        etEmail = (EditText) findViewById(R.id.etEmail);
+        etPassword = (EditText) findViewById(R.id.etPassword);
+    }
+
+    private void setButtonsListeners() {
+        // Login button OnClickListener
         btnLogin.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
@@ -81,34 +212,66 @@ public class LoginActivity extends Activity {
             }//end onClick
 
         });
-        
-        // Button use as not logged in Click Event
-        btnUseAsNotLoggedIn.setOnClickListener(new View.OnClickListener() {
 
-            public void onClick(View view) {
-                setUseAsNotLoggedIn();
-            }
-        });
+        // Button 'use as not logged in' OnClickListener
+        if (btnUseAsNotLoggedIn != null) {
+            btnUseAsNotLoggedIn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    setUseAsNotLoggedIn();
+                }
+            });
 
-    }// end onCreate
+            // underline text
+            // SOURCES:
+            //  https://stackoverflow.com/a/31718887
+            //  https://stackoverflow.com/a/31719008
+            btnUseAsNotLoggedIn.setPaintFlags(btnUseAsNotLoggedIn.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
-    private void checkForm() {
-        String email = inputEmail.getText().toString();
-        String password = "";
-
-        try {
-            password = computeHash( inputPassword.getText().toString() );
-
-        } catch (NoSuchAlgorithmException e1) {
-            Log.e("hash", "HASH_ERROR - NoSuchAlgorithmException: " + e1);
-        } catch (UnsupportedEncodingException e) {
-            Log.e("hash", "HASH_ERROR - UnsupportedEncodingException: " + e);
+            // underlining this way for some reason makes text look like without antialiasing :(
+            // btnUseAsNotLoggedIn.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
         }
+    }
+
+    //region FONTS INIT - CALLIGRAPHY
+
+    /**
+     * Set up default font of activity Activity (not entire Application!) using Calligraphy lib
+     * SOURCE: https://github.com/chrisjenx/Calligraphy
+     */
+    private void initActivityDefaultFont() {
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/LatoLatin-Regular.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+        );
+    }
+
+    /**
+     * We NEED to override this method, because we MUST wrap the Activity! (not Application!) context
+     * for Calligraphy to get working
+     * SOURCE: https://github.com/chrisjenx/Calligraphy
+     * @param newBase
+     */
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase)); // IMPORTANT for Calligraphy to get working
+    }
+
+    //endregion
+
+    /**
+     * This method is called after login button click.
+     */
+    private void checkForm() {
+        String email = etEmail.getText().toString();
+        String password = computeHash( etPassword.getText().toString() );
 
         // Check for empty data in the form
         if (email.trim().length() > 0 && password.trim().length() > 0) {
-            // try to login
-            tryLogin(email, password, true); // true = remember password
+            showLoggingDialog();
+
+            // try to login - will trigger one of LoginManagerInteractionListener methods
+            loginManager.tryLogin(email, password, true, this); // true = remember password
 
         } else {
             // Prompt user to enter credentials
@@ -117,56 +280,6 @@ public class LoginActivity extends Activity {
                     .show();
         }
     }//end checkForm
-
-    private void tryLogin(final String email, final String password, final boolean remember) {
-        pDialog.setMessage(getString(R.string.login_loading_dialog_msg));
-        showDialog();
-
-        Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response){
-
-                int error_code = Parser.parseErrorCode(response);
-                hideDialog();
-
-                if (error_code == LOGIN_SUCCESSFUL){
-                    String API_key = Parser.parseAPI_key(response);
-
-                    //if (remember) {
-                        session.loginAndRememberPassword(API_key, email, password);
-                        session.setRole(ROLE_LOGGED); //app is used in LOGGED mode
-                    //} else {
-                        //session.login(API_key);
-                    //}
-
-                    //inform the user
-                    Toast.makeText(CustomApplication.getCustomAppContext(), R.string.login_successful_msg, Toast.LENGTH_LONG).show();
-
-                    launchMainActivity();
-
-                } else { //error_code != 0
-                    Parser.handleLoginError(error_code);
-                }
-
-            }//end onResponse
-        };
-
-        Response.ErrorListener errorLis = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // volley error means problem with internet connection
-                Toast.makeText(getApplicationContext(),
-                        R.string.login_connection_error, Toast.LENGTH_LONG).show();
-                hideDialog();
-            }
-        };
-
-        Map<String, String> params = new HashMap<>();
-        params.put("email", email);
-        params.put("password", password);
-
-        volleySingleton.createLoginRequestPOST(params, responseLis, errorLis);
-    }
 
     private void setUseAsNotLoggedIn() {
         session.setRole(ROLE_NOT_LOGGED); //we use app in NOT logged mode
@@ -179,7 +292,7 @@ public class LoginActivity extends Activity {
         finish();
     }
 
-    private void showDialog() {
+    private void showLoggingDialog() {
         if (!pDialog.isShowing())
             pDialog.show();
     }
@@ -189,16 +302,62 @@ public class LoginActivity extends Activity {
             pDialog.dismiss();
     }
 
-    public String computeHash(String input) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        digest.reset();
-
-        byte[] byteData = digest.digest(input.getBytes("UTF-8"));
+    public String computeHash(String input){
         StringBuffer sb = new StringBuffer();
 
-        for (int i = 0; i < byteData.length; i++){
-            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.reset();
+
+            byte[] byteData = digest.digest(input.getBytes("UTF-8"));
+
+            for (int i = 0; i < byteData.length; i++){
+                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+            }
+
+        } catch (NoSuchAlgorithmException e1) {
+            Log.e("hash", "HASH_ERROR - NoSuchAlgorithmException: " + e1);
+        } catch (UnsupportedEncodingException e) {
+            Log.e("hash", "HASH_ERROR - UnsupportedEncodingException: " + e);
         }
+
         return sb.toString();
     }
+
+    //region LoginManagerInteractionListener methods
+
+    @Override
+    public void onLoginSuccessful(UserInfo userInfo) {
+        //inform the user
+        Toast.makeText(CustomApplication.getCustomAppContext(), R.string.login_successful_msg, Toast.LENGTH_LONG).show();
+
+        hideDialog();
+        launchMainActivity();
+    }
+
+    @Override
+    public void onLoginPartiallySuccessful(UserInfo userInfo) {
+        //inform the user
+        Toast.makeText(CustomApplication.getCustomAppContext(), R.string.login_partially_successful_msg, Toast.LENGTH_LONG).show();
+
+        hideDialog();
+        launchMainActivity();
+    }
+
+    @Override
+    public void onLoginError(int error_code) {
+        hideDialog();
+        Parser.handleLoginError(error_code);
+    }
+
+    @Override
+    public void onLoginNetworkError() {
+        hideDialog();
+        // volley error means problem with internet connection
+        Toast.makeText(getApplicationContext(),
+                R.string.login_network_error, Toast.LENGTH_LONG).show();
+    }
+
+    // endregion
+
 }// end Login Activity

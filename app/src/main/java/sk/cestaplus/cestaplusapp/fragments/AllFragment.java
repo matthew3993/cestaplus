@@ -1,5 +1,6 @@
 package sk.cestaplus.cestaplusapp.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -18,13 +19,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import sk.cestaplus.cestaplusapp.R;
-import sk.cestaplus.cestaplusapp.adapters.ArticleRecyclerViewAdapter;
+import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.SimpleDividerItemDecoration;
 import sk.cestaplus.cestaplusapp.listeners.ArticlesLoadedListener;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
 import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.tasks.UpdateTask;
+import sk.cestaplus.cestaplusapp.utilities.CustomJobManager;
 import sk.cestaplus.cestaplusapp.utilities.ResponseCrate;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.DateFormats;
@@ -34,6 +36,7 @@ import sk.cestaplus.cestaplusapp.listeners.CustomRecyclerViewClickHandler;
 import sk.cestaplus.cestaplusapp.utilities.Util;
 
 import static java.lang.System.currentTimeMillis;
+import static sk.cestaplus.cestaplusapp.extras.Constants.NEW_ART_NOTIFICATIONS_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_BATERKA_SECTION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_LAST_TRY_TIME;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
@@ -45,7 +48,7 @@ public class AllFragment
     implements
         ArticlesLoadedListener,
         ListStyleChangeListener,
-        CustomRecyclerViewClickHandler.CustomRecyclerViewClickHandlerDataProvider {
+        CustomRecyclerViewClickHandler.ICustomRecyclerViewClickHandlerDataProvider {
 
     // data
     private ArrayList<ArticleObj> articlesAll;
@@ -59,7 +62,7 @@ public class AllFragment
 
     // recyclerView
     private RecyclerView recyclerViewAll;
-    private ArticleRecyclerViewAdapter arvaAll;
+    private ArticlesRecyclerViewAdapter arvaAll;
 
     // loading & error views
     private ProgressBar progressBar; //loading animation in activity, NOT in load more btn
@@ -248,12 +251,13 @@ public class AllFragment
      * And if network is ok, it shows updated list of articles.
      */
     @Override
-    public void onArticlesLoaded(ResponseCrate responseCrate) {
+    public void onArticlesLoaded(ResponseCrate responseCrate, boolean loadingError) {
         // !!!!!!!!! TODO: solve memory problem with paging !!!
 
-        //stop refreshing or loading animation -- important!
+        // 1. make UI changes = stop refreshing or loading animation -- important!
         stopLoadingOrRefreshingAnimation();
 
+        // 2. logic
         articlesAll = responseCrate.getArticles();
         // if we don't want to change the reference
         //articlesAll.clear();
@@ -267,6 +271,32 @@ public class AllFragment
         arvaAll.setArticlesList(responseCrate.getArticles());
         pagesNum = 1; // !!
         recyclerViewAll.setVisibility(View.VISIBLE);
+
+        if (!loadingError){
+
+            Activity activity = getActivity();
+            if (activity != null) { //null check added to stop crashing during login
+
+                CustomJobManager customJobManager = CustomJobManager.getInstance(activity.getApplicationContext());
+
+                if (session.getPostNotificationStatus()) { //if notifications are on
+                    // create an update job
+                    // now using FirebaseJobDispatcher it is not needed to delay the scheduling of job,
+                    // because in time when job is built, job is not executed - only scheduled to be executed in future
+                    customJobManager.constructAndScheduleUpdateJob();
+
+                /*
+                new Handler().postDelayed(new Runnable() {
+                                              @Override
+                                              public void run() { customJobManager.constructAndScheduleUpdateJob(); }
+                                          },
+                        //DELAY
+                        //(UPDATE_PERIOD_MIN/2)*60*1000); //half from update period
+                        CREATE_JOB_DELAY_SEC*1000); //30 seconds
+                */
+                }
+            }
+        }
     }//end onArticlesLoaded
 
     public ArticleObj getHeaderArticle(String headerArticleId){
@@ -323,11 +353,12 @@ public class AllFragment
     }
 
     private void stopLoadingOrRefreshingAnimation() {
-        //stop refreshing or loading animation -- important!
+        //stop refreshing animation
         if (listener != null) {
             listener.stopRefreshingAnimation();
         }
 
+        //stop loading animation
         progressBar.setVisibility(View.GONE); //this should automatically stop animation (based on visibility state of the progress bar)
     }
 
@@ -388,7 +419,7 @@ public class AllFragment
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    // region LISTENERS METHODS
+    // region ListStyleChangeListener & ICustomRecyclerViewClickHandlerDataProvider METHODS
 
     @Override
     public void handleListStyleSelection(DialogInterface dialog, int listStyle) {
@@ -415,7 +446,7 @@ public class AllFragment
     }
 
     @Override
-    public ArticleRecyclerViewAdapter getAdapter() {
+    public ArticlesRecyclerViewAdapter getAdapter() {
         return arvaAll;
     }
 

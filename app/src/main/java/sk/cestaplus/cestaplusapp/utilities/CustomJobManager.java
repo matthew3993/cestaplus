@@ -1,6 +1,7 @@
-package sk.cestaplus.cestaplusapp.utilities.utilClasses;
+package sk.cestaplus.cestaplusapp.utilities;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -10,10 +11,9 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 
 import sk.cestaplus.cestaplusapp.services.UpdateService;
-import sk.cestaplus.cestaplusapp.utilities.CustomNotificationManager;
-import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 
 import static sk.cestaplus.cestaplusapp.extras.Constants.EXECUTION_WINDOW_WIDTH_SEC;
+import static sk.cestaplus.cestaplusapp.extras.Constants.NEW_ART_NOTIFICATIONS_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.Constants.UPDATE_JOB_TAG;
 import static sk.cestaplus.cestaplusapp.extras.Constants.UPDATE_PERIOD_SEC;
 
@@ -38,6 +38,9 @@ public class CustomJobManager {
         session = new SessionManager(context);
     }
 
+    /**
+     *  About Context - check class comment.
+     */
     public static CustomJobManager getInstance(Context context){
         if (instance == null){
             instance = new CustomJobManager(context);
@@ -45,9 +48,9 @@ public class CustomJobManager {
         return instance;
     }
 
-    public void constructAndSheduleUpdateJob(){
+    public void constructAndScheduleUpdateJob(){
 
-        // check is needed also here, due to delay of Handler in onCreate()
+        // check post notifications - for sure
         if (session.getPostNotificationStatus()) { //if notifications are on
 
             //  1 - Create a new dispatcher using the Google Play driver.
@@ -64,13 +67,18 @@ public class CustomJobManager {
                             Constraint.ON_ANY_NETWORK // run only if there is network connection (of any type)
                     )
                     .setReplaceCurrent(true) // overwrite an existing job with the same tag
-                    .build();
+                .build();
 
             // 3 - schedule Job
             dispatcher.mustSchedule(updateJob);
+            Log.d(NEW_ART_NOTIFICATIONS_DEBUG, "Job constructed");
 
             // 4 - (optional) post info notification
-            CustomNotificationManager.issueNotification("Job scheduled", 3); // scheduling id = 3
+            //CustomNotificationManager.issueNotification("Job scheduled", 3); // scheduling id = 3
+
+        } else {
+            // notifications are off
+            cancelUpdateJob();
         }
     }
 

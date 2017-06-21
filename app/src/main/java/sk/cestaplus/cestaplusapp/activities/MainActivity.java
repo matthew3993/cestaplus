@@ -1,6 +1,5 @@
 package sk.cestaplus.cestaplusapp.activities;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,41 +26,27 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.NetworkImageView;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import sk.cestaplus.cestaplusapp.R;
-import sk.cestaplus.cestaplusapp.activities.account_activities.LoginActivity;
-import sk.cestaplus.cestaplusapp.extras.IErrorCodes;
 import sk.cestaplus.cestaplusapp.fragments.AllFragment;
 import sk.cestaplus.cestaplusapp.fragments.SectionFragment;
-import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
-import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
+import sk.cestaplus.cestaplusapp.utilities.CustomJobManager;
+import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.navDrawer.NavigationalDrawerPopulator;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.ImageUtil;
-import sk.cestaplus.cestaplusapp.utilities.utilClasses.CustomJobManager;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 import sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_DEFAULT_VALUE;
-import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_FROM_NOTIFICATION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_ARTICLE;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_FROM_NOTIFICATION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_LIST_STYLE;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_POST_NOTIFICATIONS;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_HEADER_ARTICLE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.TAG_ALL_FRAGMENT;
 
@@ -79,9 +64,10 @@ public class MainActivity
 
     // utils
     private VolleySingleton volleySingleton; //networking
-    private SessionManager session; // session manager
+    private SessionManager session;
     private int role;
     private CustomJobManager customJobManager;
+    private LoginManager loginManager; // to check role
 
     // UI components
     //header article views
@@ -105,7 +91,6 @@ public class MainActivity
     private SwipeRefreshLayout swipeRefreshLayoutAll; // this one wraps entire activity layout, it wraps root coordinator layout, this one is really USED
     private SwipeRefreshLayout swipeRefreshLayoutRecyclerView; //this one is disabled - it only wraps recycler view
 
-    private ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +104,7 @@ public class MainActivity
         session = new SessionManager(getApplicationContext());
         role = session.getRole();
         customJobManager = CustomJobManager.getInstance(getApplicationContext());
+        loginManager = LoginManager.getInstance(getApplicationContext()); // to check role
 
         // init views
         initToolbar();
@@ -126,7 +112,7 @@ public class MainActivity
         initHeaderViews();
         initNavigationalDrawer();
 
-        checkRole();
+        loginManager.checkRole(this);
 
         initFragments(savedInstanceState);
 
@@ -136,21 +122,6 @@ public class MainActivity
 
         } else {
             //new start of application
-            if (session.getPostNotificationStatus()){ //if notifications are on
-                // create an update job
-                // now using FirebaseJobDispatcher it is not needed to delay the scheduling of job,
-                // because in time when job is built, job is not executed - only scheduled to be executed in future
-                customJobManager.constructAndSheduleUpdateJob();
-                /*
-                new Handler().postDelayed(new Runnable() {
-                                              @Override
-                                              public void run() { customJobManager.constructAndSheduleUpdateJob(); }
-                                          },
-                        //DELAY
-                        //(UPDATE_PERIOD_MIN/2)*60*1000); //half from update period
-                        CREATE_JOB_DELAY_SEC*1000); //30 seconds
-                */
-            }
 
         } //end else savedInstanceState
 
@@ -158,7 +129,7 @@ public class MainActivity
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                 .registerOnSharedPreferenceChangeListener(this);
 
-        //Util.checkScreenSize(this);
+        //Util.checkScreenSizeAndDensityToast(this);
     } // end ActivityMain onCreate method
 
     //region FONTS INIT - CALLIGRAPHY
@@ -248,10 +219,21 @@ public class MainActivity
         tvHeaderTitle = (TextView) findViewById(R.id.tvHeaderTitle);
         tvHeaderDescription = (TextView) findViewById(R.id.tvHeaderDescription);
 
-        nivHeaderImage.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener startActivityListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startArticleActivityWithHeaderArticle();
+            }
+        };
+        tvHeaderAuthor.setOnClickListener(startActivityListener);
+        tvHeaderTitle.setOnClickListener(startActivityListener);
+        tvHeaderDescription.setOnClickListener(startActivityListener);
+
+        // clicking header image will collapse the appbar
+        nivHeaderImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                appBarLayout.setExpanded(false); // SOURCE: http://stackoverflow.com/questions/30655939/programmatically-collapse-or-expand-collapsingtoolbarlayout
             }
         });
 
@@ -270,36 +252,6 @@ public class MainActivity
 
     private void initNavigationalDrawer() {
         new NavigationalDrawerPopulator(this).populateSectionsExpandableList();
-    }
-
-    private void checkRole() {
-        //kontrola módu aplikácie
-        role = session.getRole();
-
-        if (role == ROLE_DEFAULT_VALUE){ //prve spustenie appky
-            // Launching the login activity
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
-            finish();
-
-        } else { //dalsie spustenia
-
-            if (role > ROLE_NOT_LOGGED) { //ak používame aplikáciu v prihlásenom móde
-
-                //TODO: kontrola prihlásenia
-                if (!session.isLoggedIn()) {// ak už nie sme prihlásení
-                    //pokus o opätovné prihlásenie
-                    // Progress dialog
-                    pDialog = new ProgressDialog(this);
-                    pDialog.setCancelable(false);
-
-                    loginTry(session.getEmail(), session.getPassword());
-                }
-
-            } //else { //ak používam aplikáciu v neprihlásenom móde == tak nič :D
-
-            //}
-        }
     }
 
     private void initFragments(Bundle savedInstanceState) {
@@ -422,7 +374,7 @@ public class MainActivity
         }
 
         if (fragment instanceof SectionFragment){
-            ((SectionFragment) fragment).tryLoadArticles();
+            ((SectionFragment) fragment).tryLoadArticles(true); // true = yes, show loading animation (indeterminate progress bar)
         }
     }
 
@@ -434,7 +386,7 @@ public class MainActivity
     }
 
     private void updateHeaderArticleViews(){
-        nivHeaderImage.setImageUrl(headerArticle.getImageUrl(), volleySingleton.getImageLoader());
+        nivHeaderImage.setImageUrl(headerArticle.getImageDefaultUrl(), volleySingleton.getImageLoader());
         tvHeaderAuthor.setText(headerArticle.getAuthor());
         TextUtil.setTitleText(getApplicationContext(), TextUtil.showLock(role, headerArticle.isLocked()), headerArticle.getTitle(), tvHeaderTitle, R.drawable.lock_white);
         tvHeaderDescription.setText(headerArticle.getShort_text());
@@ -460,8 +412,11 @@ public class MainActivity
 
         if(fragment instanceof AllFragment){
             ((AllFragment) fragment).startRefresh();
+
         } else if (fragment instanceof SectionFragment){
-            ((SectionFragment) fragment).tryLoadArticles();
+            // false = do NOT show loading animation (indeterminate progress bar) - because of refresh// animation
+            ((SectionFragment) fragment).tryLoadArticles(false);
+
         } else {
             stopRefreshingAnimation();
         }
@@ -491,74 +446,11 @@ public class MainActivity
 
     // endregion
 
-    //region UTIL METHODS
-
-
-
-    private void loginTry(final String email, final String password) {
-        // Tag used to cancel the request
-        //String tag_string_req = "req_login";
-
-        pDialog.setMessage(getString(R.string.login_loading_dialog_msg));
-        showDialog();
-
-        Response.Listener<JSONObject> responseLis = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response){
-
-                int error_code = Parser.parseErrorCode(response);
-
-                if (error_code == 0){
-                    String API_key = Parser.parseAPI_key(response);
-
-                    session.login(API_key);
-                    session.setRole(IErrorCodes.ROLE_LOGGED); //používame aplikáciu v prihlásenom móde
-
-                    //inform the user
-                    hideDialog();
-                    Toast.makeText(CustomApplication.getCustomAppContext(), "Prihlásenie s uloženými údajmi bolo úspešné!", Toast.LENGTH_LONG).show();
-
-                } else {
-                    hideDialog();
-                    Parser.handleLoginError(error_code);
-                }
-
-            }//end onResponse
-        };
-
-        Response.ErrorListener errorLis = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),
-                        "CHYBA PRIHLASOVANIA " + error.getMessage(), Toast.LENGTH_LONG).show();
-                hideDialog();
-            }
-        };
-
-        Map<String, String> params = new HashMap<>();
-        params.put("email", email);
-        params.put("password", password);
-
-        volleySingleton.createLoginRequestPOST(params, responseLis, errorLis);
-    }
-
-    private void showDialog() {
-        if (!pDialog.isShowing())
-            pDialog.show();
-    }
-
-    private void hideDialog() {
-        if (pDialog.isShowing())
-            pDialog.dismiss();
-    }
-
-    // endregion
-
     // region LISTENERS METHODS
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equalsIgnoreCase(KEY_PREF_POST_NOTIFICATIONS)) {
+        if (key.equalsIgnoreCase(getString(R.string.pref_post_notifications_key))) {
 
             if (customJobManager == null){
                 customJobManager = CustomJobManager.getInstance(getApplicationContext());
@@ -566,7 +458,7 @@ public class MainActivity
 
             if (session.getPostNotificationStatus()){
                 // notifications are now allowed - construct JOB
-                customJobManager.constructAndSheduleUpdateJob();
+                customJobManager.constructAndScheduleUpdateJob();
                 Toast.makeText(this, R.string.notifications_allowed, Toast.LENGTH_SHORT).show();
 
             } else {
@@ -576,7 +468,7 @@ public class MainActivity
             }
         }//end if
 
-        if (key.equalsIgnoreCase(KEY_PREF_LIST_STYLE)) {
+        if (key.equalsIgnoreCase(getString(R.string.pref_list_style_key))) {
             // find fragment by it's container ID
             Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainActivityMainFragmentContainer);
 

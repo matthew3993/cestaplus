@@ -1,21 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_activity_settings">Nastavenia</string>
 
-    <!-- Strings related to Settings -->
-    <string name="action_list_style">Možnosti zobrazenia zoznamu</string>
-    <string name="pref_title_post_notifications">Povoliť notifikácie</string>
-    <string name="pref_list_style">Štýl zoznamu</string>
-    <string name="pref_text_size">Veľkosť písma</string>
+    <!-- PREFERENCES KEYS START **************************************************************** -->
+    <string name="pref_post_notifications_key">pref_post_notifications</string>
+    <string name="pref_text_size_key">pref_text_size</string>
+    <string name="pref_list_style_key">pref_list_style</string>
+    <string name="pref_version_name_key">pref_version_name</string>
+    <string name="pref_show_display_parameters_key">pref_show_display_parameters</string>
 
-    <string-array name="pref_list_style_titles">
-        <item>Zobraziť okrem nadpisov aj popisy k článkom</item>
+    <!-- PREFERENCES KEYS END ****************************************************************** -->
+
+    <!-- Strings related to Settings -->
+    <string name="pref_category_general_title">Všeobecné nastavenia</string>
+    <string name="pref_title_post_notifications_title">Povoliť notifikácie</string>
+    <string name="pref_title_post_notifications_summary">Notifikácie o nových článkoch</string>
+
+    <string name="pref_list_style_title">Štýl zoznamu článkov</string>
+    <string name="pref_text_size_title">Veľkosť písma</string>
+
+    <string name="pref_category_about_app_title">O aplikácií</string>
+    <string name="pref_version_name_title">Verzia</string>
+
+    <string name="pref_category_testing_title">Testovanie</string>
+    <string name="pref_show_display_parameters_title">Zobraziť parametre displeja</string>
+
+    <string name="alert_dialog_display_parameters_title">Parametre displeja</string>
+
+    <!-- ListPreference 'List Style' entries -->
+    <string-array name="pref_list_style_entries">
+        <item>Zobraziť okrem nadpisov aj popisy k článkom </item>
         <item>Zobraziť len nadpisy</item>
     </string-array>
 
+    <!-- ListPreference 'List Style' entry values -->
     <string-array name="pref_list_style_values">
         <item>0</item>
         <item>1</item>
     </string-array>
 
+    <!-- ListPreference 'Text Size' entries - set in code in SettingActivity.setupSimplePreferencesScreen() -->
+    <!-- ListPreference 'Text Size' entry values -->
+    <string-array name="pref_text_size_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 
 </resources>

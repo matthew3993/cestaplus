@@ -9,7 +9,8 @@
     android:orientation="horizontal"
     >
 
-    <com.android.volley.toolbox.NetworkImageView
+    <!--  com.android.volley.toolbox.NetworkImageView -->
+    <sk.cestaplus.cestaplusapp.views.CustomVolleyImageView
         android:id="@+id/nivListItem"
 
         android:layout_width="@dimen/li_image_width"

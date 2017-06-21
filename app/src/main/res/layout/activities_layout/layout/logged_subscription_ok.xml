@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/llSubscriptionOk"
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+    android:visibility="gone"
+    >
+
+    <!-- here are MAIN NAME and ACTUAL STATUS views (in activity_logged main layout file) -->
+
+    <!-- ACCOUNT DATA ********************************************************* -->
+    <include layout="@layout/logged_account_data"/>
+
+    <!-- THANK FOR YOUR SUPPORT START **************************************************** -->
+
+    <View style="@style/logged_DividerFullWidth"/>
+
+    <TextView
+        android:id="@+id/tvThanksForYourSupport"
+        style="@style/logged_ThankForYourSupport"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="@string/logged_thanks_for_your_support"
+        />
+    <!-- THANK FOR YOUR SUPPORT END **************************************************** -->
+
+    <!-- INFO POINTS START **************************************************** -->
+
+    <View style="@style/logged_DividerBeforeInfoPoints"/>
+
+    <!-- POINT 1 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:padding="0dp"
+        android:layout_margin="0dp"
+        >
+
+        <!-- SOURCE of app:solidColor="@color/..." :
+             http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes
+             Point 2. Use the attributes in your layout
+
+             !!! DO NOT use android:background attribute - it over-paints the circle
+             !!! android:gravity have to be "center"
+        -->
+        <sk.cestaplus.cestaplusapp.views.CircularTextView
+
+            android:id="@+id/ctvInfoPoint1"
+            style="@style/logged_CtvInfoPoint"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:solidColor="@color/white"
+            app:strokeColor="@color/accountDataInfoPoint"
+            app:strokeWidth="1"
+
+            android:gravity="center"
+
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+
+            android:text="@string/ctv_1"/>
+
+        <TextView
+            android:id="@+id/tvInfoPoint1Text"
+            style="@style/logged_InfoPointText"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_alignParentTop="true"
+
+            android:layout_toRightOf="@+id/ctvInfoPoint1"
+            android:layout_toEndOf="@+id/ctvInfoPoint1"
+
+            android:text="@string/logged_info_point_1_text"/>
+
+        <View
+            style="@style/logged_InfoPointsDivider"
+
+            android:layout_below="@id/tvInfoPoint1Text"
+            android:layout_alignLeft="@id/tvInfoPoint1Text"
+
+            />
+
+    </RelativeLayout>
+
+    <!-- POINT 2 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:padding="0dp"
+        android:layout_margin="0dp"
+        >
+
+        <!-- SOURCE of app:solidColor="@color/..." :
+             http://stackoverflow.com/questions/7608464/android-custom-ui-with-custom-attributes
+             Point 2. Use the attributes in your layout
+
+             !!! DO NOT use android:background attribute - it over-paints the circle
+             !!! android:gravity have to be "center"
+
+                                 android:layout_toRightOf="@+id/tvInfoPoint2Text"
+            android:layout_toEndOf="@+id/tvInfoPoint2Text"
+        -->
+        <sk.cestaplus.cestaplusapp.views.CircularTextView
+
+            android:id="@+id/ctvInfoPoint2"
+            style="@style/logged_CtvInfoPoint"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:solidColor="@color/white"
+            app:strokeColor="@color/accountDataInfoPoint"
+            app:strokeWidth="1"
+
+            android:gravity="center"
+
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+
+            android:text="@string/ctv_2"/>
+
+        <TextView
+            android:id="@+id/tvInfoPoint2Text"
+            style="@style/logged_InfoPointText"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_alignParentTop="true"
+
+            android:layout_toRightOf="@+id/ctvInfoPoint2"
+            android:layout_toEndOf="@+id/ctvInfoPoint2"
+
+            android:text="@string/logged_info_point_2_text"/>
+    </RelativeLayout>
+
+    <!-- INFO POINTS START **************************************************** -->
+
+    <!-- "BUTTON" PROLONG SUBSCRIPTION START ****************************************************
+          SOURCE of idea: https://stackoverflow.com/questions/23010356/button-with-text-aligned-left-and-right
+    -->
+    <RelativeLayout
+        android:id="@+id/rlProlongSubscription"
+        style="@style/logged_ProlongSubscriptionRelativeLayout"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvProlongSubscription"
+            style="@style/logged_ProlongSubscriptionText"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+
+            android:text="@string/logged_btn_prolong_subscription"/>
+
+        <ImageView
+            style="@style/logged_ProlongSubscriptionImageView"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+
+
+            android:src="@drawable/btn_more_info_about_subscription_icon"
+            />
+
+    </RelativeLayout>
+    <!-- "BUTTON" PROLONG SUBSCRIPTION END ****************************************************** -->
+
+    <!-- Logout Button -->
+    <Button
+        android:id="@+id/btnLogout"
+        style="@style/logged_BtnLogout"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="@string/btn_logout"
+        />
+
+</LinearLayout>

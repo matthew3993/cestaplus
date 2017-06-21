@@ -19,6 +19,7 @@ import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
+import sk.cestaplus.cestaplusapp.views.CustomVolleyImageView;
 
 /**
  * Created by Matej on 4.3.2015.
@@ -27,7 +28,7 @@ import sk.cestaplus.cestaplusapp.utilities.SessionManager;
  *      http://stackoverflow.com/questions/26530685/is-there-an-addheaderview-equivalent-for-recyclerview/26573338#26573338
  *      http://takeoffandroid.com/android-customview/header-and-footer-layout-for-recylerview/
  */
-public abstract class ArticleRecyclerViewAdapter
+public abstract class ArticlesRecyclerViewAdapter
     extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     protected static final int TYPE_HEADER = 50;        // arbitrary value
@@ -37,6 +38,7 @@ public abstract class ArticleRecyclerViewAdapter
     protected static final int TYPE_LOAD_MORE = 100;    // arbitrary value
     protected static final int TYPE_PROGRESS_BAR = 150; // arbitrary value
 
+    protected Context context;
     protected LayoutInflater inflater;
     protected ArticleObj headerArticle;
     protected ArrayList<ArticleObj> articlesList = new ArrayList<>();
@@ -50,7 +52,8 @@ public abstract class ArticleRecyclerViewAdapter
     private boolean loading; //if we are loading more data at the specified moment
     private boolean noMoreArticles; //if there are NOT more article to load
 
-    public ArticleRecyclerViewAdapter(Context context, boolean hasHeader){
+    public ArticlesRecyclerViewAdapter(Context context, boolean hasHeader){
+        this.context = context;
         inflater = LayoutInflater.from(context);
         volleySingleton = VolleySingleton.getInstance(CustomApplication.getCustomAppContext());
         imageLoader = volleySingleton.getImageLoader();
@@ -141,7 +144,7 @@ public abstract class ArticleRecyclerViewAdapter
             holder.description.setText(headerArticle.getShort_text());
 
             //Image - start to load image and check if user is logged in or not
-            String imageUrl = headerArticle.getImageUrl();
+            String imageUrl = headerArticle.getImageDefaultUrl();
             holder.image.setImageUrl(imageUrl, imageLoader);
             holder.image.setErrorImageResId(R.drawable.err_pic); //better way of showing error picture
 
@@ -161,35 +164,33 @@ public abstract class ArticleRecyclerViewAdapter
 
     /**
      * Load the image from url, using ImageLoader
-     * @param imageUrl
      * @param viewHolder
      */
-    protected void loadImage(String imageUrl, final ArticleViewHolder viewHolder){
+    protected void loadImage(ArticleObj articleObj, final ArticleViewHolder viewHolder){
 
-        if (!imageUrl.equals("NA")){
-            //imageLoader.get(imageUrl, ImageLoader.getImageListener(viewHolder.image, 0, R.drawable.err_pic)); //not good way
-                // - this way is slower and causes image changes during scrolling = showing image that doesn't belong to selected
-                // article for short while = very annoing
+        //imageLoader.get(imgDimenUrl, ImageLoader.getImageListener(viewHolder.image, 0, R.drawable.err_pic)); //not good way of showing error picture
+            // - this way is slower and causes image changes during scrolling = showing image that doesn't belong to that
+            // article for short while = very annoying
 
-            viewHolder.image.setImageUrl(imageUrl, imageLoader);
-            viewHolder.image.setErrorImageResId(R.drawable.err_pic); //better way of showing error picture
+        viewHolder.image.setErrorImageResId(R.drawable.err_pic); //better way of showing error picture
+        viewHolder.image.setImageUrl(articleObj, imageLoader, context);
 
-            //region OLD IMPLEMENTATION using classic ImageView instead Volley's NetworkImageView
-            /*
-            imageLoader.get(imageUrl, new ImageLoader.ImageListener() {
-                @Override
-                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                    viewHolder.image.setImageBitmap(response.getBitmap()); //nastavenie obrazka, ak je dostupny na nete
-                }
+        //region OLD IMPLEMENTATION using classic ImageView instead Volley's NetworkImageView
+        /*
+        imageLoader.get(imgDimenUrl, new ImageLoader.ImageListener() {
+            @Override
+            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                viewHolder.image.setImageBitmap(response.getBitmap()); //nastavenie obrazka, ak je dostupny na nete
+            }
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    //do nothing
-                }
-            });
-            */
-            //endregion
-        }
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //do nothing
+            }
+        });
+        */
+        //endregion
+
     }// end loadImage
 
     public void setHeaderArticle(ArticleObj headerArticle) {
@@ -227,17 +228,17 @@ public abstract class ArticleRecyclerViewAdapter
 
     /**
      * ViewHolder sa vytvori raz a drží jednotlive Views z item_view, takze ich potom netreba hladat
-     * This class is extended in ArticleRecyclerViewAdapter_All & ArticleRecyclerViewAdapter_PicturesAndTitles classes
+     * This class is extended in ArticlesRecyclerViewAdapter_All & ArticlesRecyclerViewAdapter_PicturesAndTitles classes
      */
     protected abstract class ArticleViewHolder
         extends RecyclerView.ViewHolder
         {
 
-        protected NetworkImageView image;
+        protected CustomVolleyImageView image;
 
         public ArticleViewHolder(View view) {
             super(view);
-            image = (NetworkImageView) view.findViewById(R.id.nivListItem);
+            image = (CustomVolleyImageView) view.findViewById(R.id.nivListItem);
         } //end constructor ArticleViewHolder(View view)
     } // end ArticleViewHolder
 
@@ -299,4 +300,4 @@ public abstract class ArticleRecyclerViewAdapter
         }
     }//end of ProgressViewHolder class
 
-}//end ArticleRecyclerViewAdapter
+}//end ArticlesRecyclerViewAdapter

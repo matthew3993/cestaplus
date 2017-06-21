@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.utilities.DateFormats;
@@ -79,6 +80,10 @@ public class DateUtil {
         return dayOfTheWeekString;
     }
 
+    /**
+     * @param date Date object to be formated
+     * @return String of date in format: 5. februára 2017
+     */
     public static String getDateString(Context context, Date date) {
         StringBuilder sb = new StringBuilder();
         sb.append(DateFormats.dateFormatDay.format(date)).append(" ");
@@ -140,5 +145,18 @@ public class DateUtil {
                 return String.format("%02d", monthNum); //SOURCE: http://stackoverflow.com/a/10651147
             }
         }
+    }
+
+    /**
+     * https://stackoverflow.com/a/37659716
+     */
+    public static long daysBetween(Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        long msDiff = calendar.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+        long daysDiff = TimeUnit.MILLISECONDS.toDays(msDiff);
+
+        return daysDiff;
     }
 }

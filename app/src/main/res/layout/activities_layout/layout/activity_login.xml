@@ -1,70 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+
+<!--
+    SOURCES:
+        https://stackoverflow.com/questions/16411056/how-to-adjust-layout-when-soft-keyboard-appears
+        https://stackoverflow.com/questions/7300497/adjust-layout-when-soft-keyboard-is-on
+        https://stackoverflow.com/questions/2150078/how-to-check-visibility-of-software-keyboard-in-android/4737265#4737265
+        https://stackoverflow.com/questions/35585538/adjust-the-layout-when-the-android-soft-keyboard-is-shown-or-hidden
+
+    android:focusableInTouchMode="true" to stop EditText from gaining focus at Activity startup
+    SOURCE: comments (@Herman) of question: https://stackoverflow.com/questions/1555109/stop-edittext-from-gaining-focus-at-activity-startup?page=1&tab=votes#tab-top
+   -->
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@color/login_activity_bg"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="10dp" >
 
+    android:id="@+id/login_RootRelativeLayout"
+    style="@style/login_RootRelativeLayout"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:focusableInTouchMode="true"
+    >
+
+    <!-- MAIN LOGOs-->
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:id="@+id/llMainLogo"
+
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+
         android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp" >
 
-        <EditText
-            android:id="@+id/txtvNotLoggedIn"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:background="@color/white"
-            android:hint="@string/hint_email"
-            android:inputType="textEmailAddress"
-            android:padding="10dp"
-            android:singleLine="true"
-            android:textColor="@color/input_login"
-            android:textColorHint="@color/input_login_hint" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
 
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:background="@color/white"
-            android:hint="@string/hint_password"
-            android:inputType="textPassword"
-            android:padding="10dp"
-            android:singleLine="true"
-            android:textColor="@color/input_login"
-            android:textColorHint="@color/input_login_hint" />
+        <ImageView
+            android:id="@+id/ivMainLogo"
+            style="@style/login_MainLogo"
 
-        <!-- Login Button -->
+            android:layout_width="@dimen/main_logo_width"
+            android:layout_height="@dimen/main_logo_height"
 
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
-            android:background="@color/btn_login_bg"
-            android:text="@string/btn_login"
-            android:textColor="@color/btn_login_text" />
+            />
 
-        <!-- Use as not logged in button -->
+        <!-- Main logo *** WITH KEYBOARD *** -->
+        <ImageView
+            android:id="@+id/ivMainLogoWithKeyboard"
+            style="@style/login_MainLogoWithKeyboard"
 
-        <Button
-            android:id="@+id/btnUseAsNotLoggedIn"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dip"
-            android:background="@null"
-            android:text="@string/btn_use_as_not_logged_in"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15dp" />
+            android:layout_width="@dimen/main_logo_width_with_keyboard"
+            android:layout_height="@dimen/main_logo_height_with_keyboard"
+
+            android:visibility="gone"
+            />
+
     </LinearLayout>
 
-</LinearLayout>
+    <!-- Login controls -->
+    <LinearLayout
+        android:id="@+id/llLoginControls"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@id/llMainLogo"
+        >
+
+        <include
+            layout="@layout/login_controls"
+            />
+    </LinearLayout>
+
+    <!-- Login Button -->
+    <!-- layout_height set in style -->
+    <Button
+        android:id="@+id/btnLogin"
+        style="@style/login_ButtonLogin"
+
+        android:layout_width="match_parent"
+        android:layout_below="@id/llLoginControls"
+        />
+
+    <!-- Login Button  *** WITH KEYBOARD *** -->
+    <!-- layout_height set in style, because on NORMAL screens WITH keyboard it must be less than "wrap_content"-->
+    <Button
+        android:id="@+id/btnLoginWithKeyboard"
+        style="@style/login_ButtonLoginWithKeyboard"
+
+        android:layout_width="match_parent"
+        android:layout_below="@id/llLoginControls"
+
+        android:visibility="gone"
+        />
+
+    <!-- Button "Use as not logged in"  -->
+    <Button
+        android:id="@+id/btnUseAsNotLoggedIn"
+        style="@style/login_ButtonUseAsNotLoggedIn"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentBottom="true"
+
+        />
+
+    <!-- Button "Use as not logged in"  *** WITH KEYBOARD *** -->
+    <Button
+        android:id="@+id/btnUseAsNotLoggedIn_WithKeyboard"
+        style="@style/login_ButtonUseAsNotLoggedIn_WithKeyboard"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentBottom="true"
+
+        android:visibility="gone"
+        />
+</RelativeLayout>

@@ -1,49 +1,230 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- NOTE: !! STYLES AND DIMENSIONS refer to Baterka styles and dimensions !! -->
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/loggedRootCoordinatorLayout"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="${relativePackage}.${activityClass}" >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- APPBAR START ************************************************************* -->
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/loggedAppBarLayout"
+
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:gravity="center"
-        android:orientation="vertical" >
 
-        <TextView
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <!--
+        scroll flags combination: scroll|enterAlways|enterAlwaysCollapsed
+        SOURCE: http://stackoverflow.com/questions/35186639/collapsingtoolbarlayout-and-hide-toolbar-while-scrolling
+
+        For some reason, we must add app:statusBarScrim="@null" to CollapsingToolbarLayout, when used v4 fragments.
+        This solves crashing because of exception: "java.lang.NoSuchMethodError: No static method setLayoutDirection(Landroid/graphics/drawable/Drawable;I)V in class Landroid/support/v4/graphics/drawable/DrawableCompat; or its super classes (declaration of 'android.support.v4.graphics.drawable.DrawableCompat' appears in /data/data/sk.cestaplus.cestaplusapp/files/instant-run/dex/slice-com.android.support-support-v4-24.0.0_de8233fca3486557f0b1fc54e6082f58ad72ba11-classes.dex)"
+        SOURCE: http://stackoverflow.com/a/40453348
+        -->
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/loggedCollapsingToolbarLayout"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+
+            app:statusBarScrim="@null">
+
+            <!-- android:visibility="gone" here
+                 if it is set, show collapsing toolbar layout title ONLY when collapsed
+                 is not working
+            -->
+            <RelativeLayout
+                android:id="@+id/collapsingToolbarRelativeLayoutLogged"
+
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1"
+                android:background="@drawable/custom_bg"
+                android:clickable="true"
+
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="@dimen/baterka_title_image_collapseParallaxMultiplier"
+                >
+
+                <ImageView
+                    android:id="@+id/ivLoggedHeaderImg"
+
+                    android:src="@drawable/account_img_rsz_75"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/baterka_title_image_height"
+
+                    android:scaleType="centerCrop"
+
+                    android:layout_alignParentTop="true"
+                    />
+
+                <TextView
+                    android:id="@+id/tvLoggedTitle"
+                    style="@style/baterka_Title"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignLeft="@+id/ivLoggedHeaderImg"
+                    android:layout_alignBottom="@+id/ivLoggedHeaderImg"
+
+                    android:text="@string/logged_act_header_title"
+
+                    android:minLines="1"
+                    />
+
+                <!-- HERE can be TextView with source of photo -->
+            </RelativeLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/loggedToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+    <!-- APPBAR END *************************************************************** -->
+
+    <!-- ACTIVITY BODY START ******************************************************* -->
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nestedScrollViewLogged"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
+        android:background="@color/white"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- NETWORK ERROR START **************************************************** -->
+            <RelativeLayout
+                android:id="@+id/loggedNetworkErrorRelativeLayout"
+                style="@style/logged_NetworkErrorRelativeLayout"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerHorizontal="true"
+
+                    android:background="@drawable/error_msg_bg"
+                    >
+
+                    <TextView
+                        android:id="@+id/tvLoggedNetworkError"
+                        style="@style/logged_NetworkErrorText"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+
+                        android:text="@string/connection_error_msg"
+                        />
+
+                    <!-- icon source: https://material.io/icons/
+                            android:layout_alignParentRight="true"
+                    -->
+                    <ImageView
+                        android:id="@+id/ivLoggedRefresh"
+                        style="@style/logged_NetworkErrorImageView"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_below="@id/tvLoggedNetworkError"
+                        android:layout_centerHorizontal="true"
+
+                        android:src="@drawable/ic_refresh_black_48dp"
+                        />
+                </RelativeLayout>
+            </RelativeLayout>
+            <!-- NETWORK ERROR END ****************************************************** -->
+
+            <!-- OVERALL INFO START ==================================================================== -->
+            <!-- MAIN NAME START **************************************************** -->
+            <TextView
+                android:id="@+id/tvLoggedMainName"
+                style="@style/logged_MainName"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <!-- MAIN NAME END ****************************************************** -->
+
+            <!-- ACTUAL STATUS START **************************************************** -->
+            <TextView
+                android:id="@+id/tvActualStatus"
+                style="@style/logged_ActualStatus"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="@string/logged_actual_status_subscription_ok"/>
+            <!-- ACTUAL STATUS END ****************************************************** -->
+            <!-- OVERALL INFO END ==================================================================== -->
+
+            <!-- SUBSCRIPTION OK AREA
+                 android:id SOURCE: https://stackoverflow.com/questions/4355122/how-to-include-a-layout-twice-in-android -->
+            <include
+                android:id="@+id/layout_subscription_ok"
+                layout="@layout/logged_subscription_ok"/>
+
+            <!-- SUBSCRIPTION EXPIRED AREA
+                 android:id SOURCE: https://stackoverflow.com/questions/4355122/how-to-include-a-layout-twice-in-android -->
+            <include
+                android:id="@+id/layout_subscription_expired"
+                layout="@layout/logged_subscription_expired"/>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+    <!-- ACTIVITY BODY END ********************************************************* -->
+
+    <!-- OTHER VIEWS START ********************************************************* -->
+    <!-- loading animation -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ProgressBar
+            android:id="@+id/loggedProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/prihlaseny_ako"
-            android:textSize="20dp" />
 
-        <!-- Email TextViev-->
-        <TextView
-            android:id="@+id/txtvEmail"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
 
-            android:padding="10dp"
-            android:textColor="@color/lbl_name"
-            android:textSize="24dp"
-            android:text="test@gmail.com" />
+            android:indeterminateOnly="true"
+            />
+    </RelativeLayout>
+    <!-- OTHER VIEWS END *********************************************************** -->
 
-        <!-- Logout Button -->
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dip"
-            android:background="@color/btn_logut_bg"
-            android:text="@string/btn_logout"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15dp" />
-            android:
-    </LinearLayout>
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

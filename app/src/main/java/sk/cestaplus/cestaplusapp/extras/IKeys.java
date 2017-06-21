@@ -11,7 +11,7 @@ public interface IKeys {
     String KEY_ARTICLE_ACTIVITY = "ArticleActivity";
     String KEY_BATERKA_ACTIVITY = "BaterkaActivity";
     String KEY_O_PORTALI_ACTIVITY = "OPortaliActivity";
-    String KEY_SETTINGS_ACTIVITY = "SettingsActivity";
+    String KEY_SETTINGS_ACTIVITY = "SettingsActivity_old";
     String KEY_LOGGED_ACTIVITY = "LoggedActivity";
     String KEY_NOT_LOGGED_ACTIVITY = "NotLoggedActivity";
 
@@ -22,7 +22,10 @@ public interface IKeys {
     String KEY_SAVED_STATE_BATERKA_TEXT = "baterkaText_savedState";
     String KEY_SAVED_STATE_ARTICLE_OBJ = "articleObj_savedState";
     String KEY_SAVED_STATE_ARTICLE_TEXT = "articleText_savedState";
-    String KEY_SAVED_ARTICLE_ERROR_CODE = "articleErrorCode_savedState";
+    String KEY_SAVED_STATE_USER_INFO = "userInfo_savedState";
+    String KEY_SAVED_STATE_WAS_NETWORK_ERROR = "wasError_savedState";
+    String KEY_SAVED_STATE_ARTICLE_ERROR_CODE = "articleErrorCode_savedState";
+    String KEY_SAVED_STATE_ROLE = "role_savedState";
     String KEY_SAVED_SCROLL_PERC = "scrollPercentage_savedState";
     String KEY_SAVED_SECTION = "ulozene_rubrika";
 
@@ -40,7 +43,7 @@ public interface IKeys {
 
     //login
     String KEY_ERROR_CODE = "error_code";
-    String KEY_APY_KEY = "API_key";
+    String KEY_API_KEY = "API_key";
 
     //articleObj
     String KEY_HEADER_ARTICLE_ID = "idTitleArticle";
@@ -70,10 +73,12 @@ public interface IKeys {
     String KEY_DEPTH_3 = "depth3";
     String KEY_HINT = "hint";
 
-    //preferences keys
-    String KEY_PREF_POST_NOTIFICATIONS = "pref_post_notifications";
-    String KEY_PREF_LIST_STYLE = "pref_list_style";
-    String KEY_PREF_TEXT_SIZE = "pref_text_size";
+    //user info - for API & session manager
+    String KEY_NAME = "name";
+    String KEY_SURNAME = "surname";
+    String KEY_SUBSCRIPTION_START = "subscription_start";
+    String KEY_SUBSCRIPTION_END = "subscription_end";
+    String KEY_SUBSCRIPTION_NAME = "subscription_name";
 
     //
     String KEY_LAST_UPDATE = "lastUpdate";
@@ -85,5 +90,11 @@ public interface IKeys {
     String TAG_O_PORTALI_FRAGMENT = "AllFragment";
 
     //sections keys
+    String KEY_ALL_SECTION = "all";
     String KEY_BATERKA_SECTION = "baterka";
+
+    //HTTP request params - outgoing
+    String KEY_PARAMS_API_KEY = "apikey";
+    String KEY_PARAMS_EMAIL = "email";
+    String KEY_PARAMS_PASSWORD = "password";
 }

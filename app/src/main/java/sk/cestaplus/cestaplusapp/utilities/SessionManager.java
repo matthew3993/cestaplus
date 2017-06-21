@@ -9,10 +9,18 @@ import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.text.ParseException;
+import java.util.Date;
+
+import sk.cestaplus.cestaplusapp.R;
+import sk.cestaplus.cestaplusapp.objects.UserInfo;
+
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_DEFAULT_VALUE;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_LIST_STYLE;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_POST_NOTIFICATIONS;
-import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PREF_TEXT_SIZE;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_NAME;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SUBSCRIPTION_END;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SUBSCRIPTION_NAME;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SUBSCRIPTION_START;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SURNAME;
 
 public class SessionManager {
 
@@ -27,7 +35,7 @@ public class SessionManager {
     //int PRIVATE_MODE = 0; // Shared sharedPreferences mode
 
     // shared preferences keys
-    private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
+    //private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_API_KEY = "API_key";
 
     private static final String KEY_ROLE = "role";
@@ -44,6 +52,7 @@ public class SessionManager {
         editor = sharedPreferences.edit();
     }
 
+    /*
     public void setLogin(boolean isLoggedIn) {
         editor.putBoolean(KEY_IS_LOGGED_IN, isLoggedIn);
 
@@ -51,7 +60,7 @@ public class SessionManager {
         editor.commit();
 
         Log.d(SESSION_TAG, "User login session modified!");
-    }
+    }*/
 
     public void setAPI_key(String API_key){
         editor.putString(KEY_API_KEY, API_key);
@@ -80,15 +89,11 @@ public class SessionManager {
         Log.d(SESSION_TAG, "ROLE modified!");
     }
 
-    public boolean isLoggedIn(){
-        return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
-    }
-
-    public void loginAndRememberPassword(String API_key, String email, String password) {
+    public void saveCredentialsAndApiKey(String API_key, String email, String password) {
 
         saveCredencials(email, password);
 
-        setLogin(true);
+        //setLogin(true);
         setAPI_key(API_key);
     }
 
@@ -97,17 +102,47 @@ public class SessionManager {
         editor.putString(KEY_EMAIL, email);
         editor.putString(KEY_PASS, pass);
 
-        // commit changes
-        editor.commit();
+        editor.commit(); // commit changes
     }
 
-    public void login(String API_key) {
-        setAPI_key(API_key);
-        setLogin(true);
+    public void saveUserInfo(UserInfo userInfo){
+        editor.putString(KEY_NAME, userInfo.getName());
+        editor.putString(KEY_SURNAME, userInfo.getSurname());
+        editor.putString(KEY_SUBSCRIPTION_START, DateFormats.dateFormatJSON.format(userInfo.getSubscription_start()));
+        editor.putString(KEY_SUBSCRIPTION_END, DateFormats.dateFormatJSON.format(userInfo.getSubscription_end()));
+        editor.putString(KEY_SUBSCRIPTION_NAME, userInfo.getSubscription_name());
+
+        editor.commit(); // commit changes
+    }
+
+    public UserInfo getUserInfo(){
+        String name = sharedPreferences.getString(KEY_NAME, "name");
+        String surname = sharedPreferences.getString(KEY_SURNAME, "surname");
+        String subscription_start_string = sharedPreferences.getString(KEY_SUBSCRIPTION_START, "subscription_start");
+        String subscription_end_string = sharedPreferences.getString(KEY_SUBSCRIPTION_END, "subscription_end");
+        String subscription_name = sharedPreferences.getString(KEY_SUBSCRIPTION_NAME, "subscription_name");
+
+        Date subscription_start = new Date();
+        Date subscription_end = new Date();
+
+        try {
+            subscription_start = DateFormats.dateFormatJSON.parse(subscription_start_string);
+            subscription_end = DateFormats.dateFormatJSON.parse(subscription_end_string);
+
+        } catch (ParseException pEx){
+            Log.e("error", "CHYBA PARSOVANIA DATUMU" + pEx.getMessage());
+        }
+        return new UserInfo(name, surname, subscription_start, subscription_end, subscription_name);
+    }
+
+    public String getFullName(){
+        String name = sharedPreferences.getString(KEY_NAME, "name");
+        String surname = sharedPreferences.getString(KEY_SURNAME, "surname");
+
+        return name + " " + surname;
     }
 
     public void logout() {
-        setLogin(false);
         clearAPI_key();
         setRole(ROLE_DEFAULT_VALUE); //default value
     }
@@ -140,11 +175,11 @@ public class SessionManager {
     }
 
     public int getTextSize(){
-        return Integer.parseInt(sharedPreferences.getString(KEY_PREF_TEXT_SIZE, "1"));
+        return Integer.parseInt(sharedPreferences.getString(context.getString(R.string.pref_text_size_key), "1"));
     }
 
     public void setTextSize(int textSize){
-        editor.putString(KEY_PREF_TEXT_SIZE, String.valueOf(textSize));
+        editor.putString(context.getString(R.string.pref_text_size_key), String.valueOf(textSize));
 
         // commit changes
         editor.commit();
@@ -162,18 +197,18 @@ public class SessionManager {
     }
 
     public int getListStyle(){
-        return Integer.parseInt(sharedPreferences.getString(KEY_PREF_LIST_STYLE, "0"));
+        return Integer.parseInt(sharedPreferences.getString(context.getString(R.string.pref_list_style_key), "0"));
     }
 
     public void setListStyle(int listStyle){
-        editor.putString(KEY_PREF_LIST_STYLE, String.valueOf(listStyle));
+        editor.putString(context.getString(R.string.pref_list_style_key), String.valueOf(listStyle));
 
         // commit changes
         editor.commit();
     }
 
     public boolean getPostNotificationStatus(){
-        return sharedPreferences.getBoolean(KEY_PREF_POST_NOTIFICATIONS, true); // true = notifications are on by default
+        return sharedPreferences.getBoolean(context.getString(R.string.pref_post_notifications_key), true); // true = notifications are on by default
     }
 
 }//end class SessionManager

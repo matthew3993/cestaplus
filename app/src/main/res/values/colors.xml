@@ -27,11 +27,18 @@
     <color name="quotationText">#272b32</color>
     <color name="quotationAuthor">#792051</color>
 
-    <color name="divider">#e7ecef</color> <!-- #eeeeee -->
+    <color name="baterkaDivider">#e7ecef</color> <!-- #eeeeee -->
     <color name="circularTv01">#792051</color>
     <color name="circularTv02">#a54475</color>
     <color name="circularTv03">#ac781e</color>
     <!-- BATERKA COLORS END *************************************************** -->
+
+    <!-- LOGGED COLORS START ************************************************* -->
+    <color name="accountDataItemDivider">#dde3e8</color>
+    <color name="accountDataItemTitle">#9dadb6</color>
+    <color name="accountDataInfoPoint">#d0d9df</color>
+    <color name="btnProlongSubscriptionBg">#284099</color>
+    <!-- LOGGED COLORS END *************************************************** -->
 
     <!-- ALERT LOCKED COLORS START ************************************* -->
     <color name="alertLockedBackground">#e7ebed</color>
