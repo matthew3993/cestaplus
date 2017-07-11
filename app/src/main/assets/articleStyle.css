@@ -9,17 +9,25 @@
     src: url("file:///android_asset/fonts/LatoLatin-Black.ttf")
 }
 
-/*font-size specified programatically acording to actual settings (small, normal, big text size)*/
-p {
-	font-family: "LatoLatinWeb"; 
-	color: #3b454a;
-	line-height: 1.42857143;
+/*
+body {
+    max-width: 100%;
 }
+*/
 
 div.articleText { /* naming according to Templator getFullTeplate() */
     font-family: "LatoLatinWeb";
 	color: #3b454a;
 	line-height: 1.42857143;
+	/*max-width: 100%; */
+}
+
+/*font-size specified programatically acording to actual settings (small, normal, big text size)*/
+p {
+	font-family: "LatoLatinWeb"; 
+	color: #3b454a;
+	line-height: 1.42857143;
+	/*max-width: 100%; */
 }
 
 img {

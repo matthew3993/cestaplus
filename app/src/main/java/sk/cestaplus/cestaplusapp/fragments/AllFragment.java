@@ -283,17 +283,17 @@ public class AllFragment
                     // create an update job
                     // now using FirebaseJobDispatcher it is not needed to delay the scheduling of job,
                     // because in time when job is built, job is not executed - only scheduled to be executed in future
-                    customJobManager.constructAndScheduleUpdateJob();
+                    customJobManager.constructAndScheduleUpdateJob(true); // true = overwrite an existing job with the 'UPDATE_JOB_TAG' tag
 
-                /*
-                new Handler().postDelayed(new Runnable() {
-                                              @Override
-                                              public void run() { customJobManager.constructAndScheduleUpdateJob(); }
-                                          },
-                        //DELAY
-                        //(UPDATE_PERIOD_MIN/2)*60*1000); //half from update period
-                        CREATE_JOB_DELAY_SEC*1000); //30 seconds
-                */
+                    /*
+                    new Handler().postDelayed(new Runnable() {
+                                                  @Override
+                                                  public void run() { customJobManager.constructAndScheduleUpdateJob(); }
+                                              },
+                            //DELAY
+                            //(UPDATE_PERIOD_MIN/2)*60*1000); //half from update period
+                            CREATE_JOB_DELAY_SEC*1000); //30 seconds
+                    */
                 }
             }
         }

@@ -443,30 +443,9 @@ public class BaterkaActivity
     private void showDataViews() {
         rlHeader.setVisibility(View.VISIBLE);
 
-        // OnOffsetChangedListener MUST be set after rlHeader is set Visible - to "show collapsing toolbar
+        // OnOffsetChangedListener MUST be set AFTER rlHeader is set Visible - to "show collapsing toolbar
         // layout title ONLY when collapsed" work properly
-
-        //show collapsing toolbar layout title ONLY when collapsed
-        //SOURCE: http://stackoverflow.com/questions/9398610/how-to-get-the-attr-reference-in-code
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            boolean isShow = false;
-            int scrollRange = -1;
-
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (scrollRange == -1) {
-                    scrollRange = appBarLayout.getTotalScrollRange();
-                }
-                if (scrollRange + verticalOffset < attrActionBarSize + 1) {
-                    collapsingToolbarLayout.setTitle(getString(R.string.title_activity_baterka));
-                    isShow = true;
-
-                } else if(isShow) {
-                    collapsingToolbarLayout.setTitle(" ");//carefull there should a space between double quote otherwise it wont work
-                    isShow = false;
-                }
-            }
-        });
+        Util.setOnOffsetChangedListener(appBarLayout, attrActionBarSize, collapsingToolbarLayout, baterkaText.getTitle());
 
         nestedScrollView.setVisibility(View.VISIBLE);
     }

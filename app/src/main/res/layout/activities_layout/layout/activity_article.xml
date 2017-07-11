@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!-- android:descendantFocusability="blocksDescendants" - blocks adView to get focus once it is loaded -->
 <android.support.design.widget.CoordinatorLayout xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/articleRootCoordinatorLayout"
@@ -7,6 +8,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+
     android:descendantFocusability="blocksDescendants">
 
     <!-- APPBAR START ************************************************************* -->
@@ -147,11 +149,13 @@
     </android.support.design.widget.AppBarLayout>
     <!-- APPBAR END *************************************************************** -->
 
-    <!-- ACTIVITY BODY START ******************************************************* -->
+    <!-- ACTIVITY BODY START ******************************************************* android:scrollbars="vertical" -->
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nestedScrollViewArticle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+        android:scrollbars="vertical"
 
         android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -184,7 +188,6 @@
                 />
 
             <include layout="@layout/alert_locked" />
-
 
             <Button
                 android:id="@+id/btnShowCommentsArticle"

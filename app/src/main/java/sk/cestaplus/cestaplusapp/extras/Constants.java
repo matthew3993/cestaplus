@@ -29,12 +29,15 @@ public interface Constants {
     String DIMEN_A = "img_75x50/";  // not used
     String DIMEN_B = "img_128x85/";
     String DIMEN_C = "img_300x191/";
-    String DIMEN_D = "img_700x467/"; //not used for now
+    String DIMEN_D = "img_700x467/"; //not used for now - loading default pictures instead
 
     String URL_SUBSCRIPTION_INFO = "http://www.cestaplus.sk/predplatne/info";
     String URL_SUBSCRIPTION_PROLONG = "http://www.cestaplus.sk/predplatne?temp=new";
 
-    //Log tags
+    //other
+    int RED_REMAINING_DAYS_LIMIT = 5; // <=
+
+    //Log tags - max 20 characters
     String VOLLEY_DEBUG = "VolleyDebug";
     String NEW_ART_NOTIFICATIONS_DEBUG = "newArticlesNotifDebug";
     String IMAGE_DEBUG = "imageDebug";

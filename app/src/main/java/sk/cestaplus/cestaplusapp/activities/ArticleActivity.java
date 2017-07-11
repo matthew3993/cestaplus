@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -101,6 +102,7 @@ public class ArticleActivity
     private String parentActivity;
     private double scrollPercentage;
     private int loadPagesCount = 0;
+    private boolean orientationChange = false;
 
     private int attrActionBarSize;
     private String sectionName;
@@ -164,15 +166,18 @@ public class ArticleActivity
         //try to load saved state from bundle
         if (savedInstanceState != null) { //if is not null = change of state - for example rotation of device
             restoreState(savedInstanceState);
+            orientationChange = true;
 
             // loading empty page solves the problem with blank space at the bottom of WebView
             // SOURCE: http://vision-apps.blogspot.sk/2012/08/android-webview-tips-tricks.html Point 4
             // load empty data to shrink the WebView instance
             Log.d("SCROLLING", "loading empty page");
-            webView.loadUrl("file:///android_asset/Empty.html");
+            webView.loadUrl("file:///android_asset/Empty.html"); // will trigger onPageFinished() in MyWebViewClient
 
+            //hideErrorAndLoadingViews();
+            showArticleText(); //starts loading real page --> will trigger onPageFinished() in MyWebViewClient
             hideErrorAndLoadingViews();
-            showArticleText();
+            showDataViews();
             loadAd();
         } else {
             //new start of activity
@@ -245,30 +250,6 @@ public class ArticleActivity
 
         appBarLayout = (AppBarLayout) findViewById(R.id.articleAppBarLayout);
         attrActionBarSize = Util.getActionBarSize(getApplicationContext());
-
-        /*
-        //show collapsing toolbar layout title ONLY when collapsed
-        //SOURCE: http://stackoverflow.com/questions/9398610/how-to-get-the-attr-reference-in-code
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            boolean isShow = false;
-            int scrollRange = -1;
-
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (scrollRange == -1) {
-                    scrollRange = appBarLayout.getTotalScrollRange();
-                }
-                if (scrollRange + verticalOffset < attrActionBarSize + 1) {
-                    collapsingToolbarLayout.setTitle(sectionName);
-                    isShow = true;
-
-                } else if(isShow) {
-                    collapsingToolbarLayout.setTitle(" ");//careful there should a space between double quote otherwise it won't work
-                    isShow = false;
-                }
-            }
-        });
-        */
     }
 
     private void initDataViews(){
@@ -292,8 +273,19 @@ public class ArticleActivity
 
         // body
         nestedScrollView = (NestedScrollView) findViewById(R.id.nestedScrollViewArticle);
+        //nestedScrollView.setVerticalScrollBarEnabled(false);
+
         tvDate = (TextView) findViewById(R.id.tvDateArticle);
         webView = (WebView) findViewById(R.id.webViewArticle);
+        // disable scroll on touch in webView (scrolling is made by nestedScrollView - vertical ONLY! )
+        // TODO: try to fix without disabling scrolling of webView - issue #26
+        webView.setOnTouchListener(new View.OnTouchListener() {
+
+            public boolean onTouch(View v, MotionEvent event) {
+                return (event.getAction() == MotionEvent.ACTION_MOVE);
+            }
+        });
+
         btnShowComments = (Button) findViewById(R.id.btnShowCommentsArticle);
 
         btnShowComments.setOnClickListener(new View.OnClickListener() {
@@ -522,40 +514,24 @@ public class ArticleActivity
                 "text/html", "utf-8", null); //will trigger onPageFinished() in MyWebViewClient
 
     //make UI changes
-        hideErrorAndLoadingViews();
-        showDataViews();
-        //decideToShowAlertLocked(); // moved to --> MyWebViewClient onPageFinished()
+        // now, loading animation is hidden and all data views are showed AFTER page is finished loading
+        //hideErrorAndLoadingViews(); // moved to --> MyWebViewClient onPageFinished() and onCreate() savedInstanceState != null
+        //showDataViews();            // moved to --> MyWebViewClient onPageFinished() and onCreate() savedInstanceState != null
+        //decideToShowAlertLocked();  // moved to --> MyWebViewClient onPageFinished()
     }
 
     private void showDataViews() {
-        rlHeader.setVisibility(View.VISIBLE);
+        if (rlHeader.getVisibility() == View.GONE) {
+            rlHeader.setVisibility(View.VISIBLE);
 
-        // OnOffsetChangedListener MUST be set after rlHeader is set Visible - to "show collapsing toolbar
-        // layout title ONLY when collapsed" work properly
+            // OnOffsetChangedListener MUST be set after rlHeader is set Visible - to "show collapsing toolbar
+            // layout title ONLY when collapsed" work properly
+            Util.setOnOffsetChangedListener(appBarLayout, attrActionBarSize, collapsingToolbarLayout, articleObj.getTitle());
+        }
 
-        //show collapsing toolbar layout title ONLY when collapsed
-        //SOURCE: http://stackoverflow.com/questions/9398610/how-to-get-the-attr-reference-in-code
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            boolean isShow = false;
-            int scrollRange = -1;
-
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (scrollRange == -1) {
-                    scrollRange = appBarLayout.getTotalScrollRange();
-                }
-                if (scrollRange + verticalOffset < attrActionBarSize + 1) {
-                    collapsingToolbarLayout.setTitle(sectionName);
-                    isShow = true;
-
-                } else if(isShow) {
-                    collapsingToolbarLayout.setTitle(" ");//careful there should a space between double quote otherwise it won't work
-                    isShow = false;
-                }
-            }
-        });
-
-        nestedScrollView.setVisibility(View.VISIBLE);
+        if (nestedScrollView.getVisibility() == View.GONE) {
+            nestedScrollView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void decideToShowAlertLocked() {
@@ -835,7 +811,13 @@ public class ArticleActivity
             if (loadPagesCount == 0) {
                 Log.d("SCROLLING", "loadPagesCount == 0");
                 loadPagesCount++;
-                decideToShowAlertLocked();
+
+                //make UI changes
+                if (!orientationChange){
+                    hideErrorAndLoadingViews();
+                    showDataViews();
+                    decideToShowAlertLocked();
+                }
 
             } else {
                 Log.d("SCROLLING", "loadPagesCount == " + loadPagesCount);
@@ -847,16 +829,29 @@ public class ArticleActivity
                         @Override
                         public void run() {
                             Log.d("SCROLLING", "delay!!");
-                            scrollNestedScrollView();
+
+
+                            //make UI changes
+                            //hideErrorAndLoadingViews();
+                            //showDataViews();
                             decideToShowAlertLocked();
+
+                            scrollNestedScrollView();
                         }
                     }, 100);
                 } else {
                     Log.d("SCROLLING", "non delay");
-                    scrollNestedScrollView();
+
+
+                    //make UI changes
+                    //hideErrorAndLoadingViews();
+                    //showDataViews();
                     decideToShowAlertLocked();
+
+                    scrollNestedScrollView();
                 }
             }
+
             super.onPageFinished(view, url);
         }
         /*

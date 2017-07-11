@@ -142,4 +142,17 @@ public class TextUtil {
         textView.setTypeface(null, Typeface.BOLD);
     }
 
+    public static String getDaysString(long daysNum) {
+        if (daysNum == 1){
+            return "deň";
+
+        }
+
+        if (daysNum == 2 || daysNum == 3 || daysNum == 4){
+            return "dni";
+
+        }
+
+        return "dní";
+    }
 }
