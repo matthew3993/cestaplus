@@ -36,7 +36,7 @@ import sk.cestaplus.cestaplusapp.listeners.CustomRecyclerViewClickHandler;
 import sk.cestaplus.cestaplusapp.utilities.Util;
 
 import static java.lang.System.currentTimeMillis;
-import static sk.cestaplus.cestaplusapp.extras.Constants.NEW_ART_NOTIFICATIONS_DEBUG;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_UNDEFINED;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_BATERKA_SECTION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_LAST_TRY_TIME;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
@@ -52,20 +52,21 @@ public class AllFragment
 
     // data
     private ArrayList<ArticleObj> articlesAll;
-    private int pagesNum;                        // number of loaded pages
+    private int pagesNum;           // number of loaded pages
 
     // utils
     private SessionManager session; // session manager
+    private int lastRole = ROLE_UNDEFINED;
 
     private CustomRecyclerViewClickHandler recyclerViewClickHandler;
     private AllFragmentInteractionListener listener;
 
     // recyclerView
     private RecyclerView recyclerViewAll;
-    private ArticlesRecyclerViewAdapter arvaAll;
+    private ArticlesRecyclerViewAdapter arvaAll; //arva = Articles Recycler View Adapter
 
     // loading & error views
-    private ProgressBar progressBar; //loading animation in activity, NOT in load more btn
+    private ProgressBar progressBar; //loading animation in activity / fragment, NOT in load more btn
     private ImageView ivNoConnection;
 
     /**
@@ -117,6 +118,7 @@ public class AllFragment
     }
 
     //region LIFECYCLE METHODS
+    // https://developer.android.com/guide/components/fragments.html#Lifecycle
 
     @Override
     public void onAttach(Context context) {
@@ -134,6 +136,15 @@ public class AllFragment
     public void onResume() {
         super.onResume();
 
+        //role change check
+        int sessionRole = session.getRole(); //role loaded from session
+        if (lastRole != ROLE_UNDEFINED && lastRole != sessionRole){
+            //recyclerViewAdapterTypeChanged();
+            arvaAll.setRole(sessionRole); //!!!
+
+            tryConnectAgain(); // same code as for trying to connect again
+        }
+
         //TODO: check last try time and if needed start UpdateTask - probably isn't working
         long defaultVal = 0;
         try {
@@ -149,7 +160,17 @@ public class AllFragment
             startLoadingAnimation();
             //start the update task - will trigger onArticlesLoaded
             new UpdateTask(this, false).execute(); //false = we DON'T want to issue notifications this time
+
+            return; //!!!
         }
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        lastRole = session.getRole();
     }
 
     @Override
@@ -190,7 +211,8 @@ public class AllFragment
                 new RecyclerTouchListener(getActivity().getApplicationContext(),
                         recyclerViewAll, recyclerViewClickHandler));
 
-        setRecyclerViewAdapterType();
+        initRecyclerViewAdapter();
+        recyclerViewAll.setAdapter(arvaAll); // set adapter to recycler view
     }
 
     private void initLoadingAndErrorViews(View view) {
@@ -209,11 +231,11 @@ public class AllFragment
         if (savedInstanceState != null){ //if is not null = change of state - for example rotation of device
             restoreState(savedInstanceState); //restore saved state
 
-            //ošetrenie prípadu, keď po rýchlom otočení po spustení ostal zoznam prázdny
-            if (articlesAll.isEmpty()){ //ak je zoznam clankov prazdny,
+            //because of case, that articles list was empty after fast device rotation after app start
+            if (articlesAll.isEmpty()){ //article list IS empty
                 loadArticles();
 
-            } else { //v pripade, ze nie je prazdny
+            } else { //article list is NOT empty
                 arvaAll.setArticlesList(articlesAll);
                 progressBar.setVisibility(View.GONE); //this should automatically stop animation (based on visibility state of the progress bar)
                 recyclerViewAll.setVisibility(View.VISIBLE);
@@ -223,9 +245,6 @@ public class AllFragment
             loadArticles();
 
         } //end else savedInstanceState
-
-        //set adapter
-        recyclerViewAll.setAdapter(arvaAll);
     }
 
     private void loadArticles() {
@@ -258,7 +277,7 @@ public class AllFragment
         stopLoadingOrRefreshingAnimation();
 
         // 2. logic
-        articlesAll = responseCrate.getArticles();
+        articlesAll = responseCrate.getArticles(); //reference change!!
         // if we don't want to change the reference
         //articlesAll.clear();
         //articlesAll.addAll(listArticles);
@@ -272,6 +291,7 @@ public class AllFragment
         pagesNum = 1; // !!
         recyclerViewAll.setVisibility(View.VISIBLE);
 
+        // UpdateJob construction
         if (!loadingError){
 
             Activity activity = getActivity();
@@ -364,10 +384,12 @@ public class AllFragment
 
     // endregion
 
-    private void setRecyclerViewAdapterType() {
+    private void initRecyclerViewAdapter() {
+        // init Article Recycler View Adapter according currently chosen type
+
         // in FRAGMENT (here): first parameter - context MUST be only getACTIVITY, and not getActivity().getAPPLICATIONContext()
         // - because Calligraphy wraps around ACTIVITY and not APPLICATION
-        arvaAll = Util.getCrvaType(getActivity(), false); // false = doesn't have header
+        arvaAll = Util.getArvaType(getActivity(), false); // false = doesn't have header
 
         // if used in ACTIVITY:
         //      first parameter - context MUST be 'this' (as activity), and not getApplicationContext()
@@ -376,9 +398,9 @@ public class AllFragment
 
     public void recyclerViewAdapterTypeChanged(){
         if (getActivity() != null){
-            setRecyclerViewAdapterType();
+            initRecyclerViewAdapter();
         } else {
-            arvaAll = Util.getCrvaType(CustomApplication.getCustomAppContext(), false); // doesn't have header
+            arvaAll = Util.getArvaType(CustomApplication.getCustomAppContext(), false); // doesn't have header
         }
         arvaAll.setArticlesList(articlesAll);
         recyclerViewAll.setAdapter(arvaAll);
@@ -412,11 +434,14 @@ public class AllFragment
     // endregion
 
     public void tryConnectAgain() {
-        new UpdateTask(this, false).execute(); //false = we DON'T want to issue notifications this time
-
+        // UI changes
         ivNoConnection.setVisibility(View.GONE);
         recyclerViewAll.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
+        startLoadingAnimation();
+
+        // logic
+        //start the update task - will trigger onArticlesLoaded
+        new UpdateTask(this, false).execute(); //false = we DON'T want to issue notifications this time
     }
 
     // region ListStyleChangeListener & ICustomRecyclerViewClickHandlerDataProvider METHODS
@@ -425,7 +450,7 @@ public class AllFragment
     public void handleListStyleSelection(DialogInterface dialog, int listStyle) {
         session.setListStyle(listStyle); //save list style
 
-        setRecyclerViewAdapterType();
+        initRecyclerViewAdapter();
         arvaAll.setArticlesList(articlesAll);
         recyclerViewAll.setAdapter(arvaAll);
 

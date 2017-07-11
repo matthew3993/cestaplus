@@ -101,7 +101,7 @@ public class Util {
         return new String[] {"Zobraziť okrem nadpisov aj popisy k článkom", "Zobraziť len nadpisy"};
     }
 
-    public static ArticlesRecyclerViewAdapter getCrvaType(Context context, boolean hasHeader){
+    public static ArticlesRecyclerViewAdapter getArvaType(Context context, boolean hasHeader){
         SessionManager session = new SessionManager(context);
 
         switch (session.getListStyle()){

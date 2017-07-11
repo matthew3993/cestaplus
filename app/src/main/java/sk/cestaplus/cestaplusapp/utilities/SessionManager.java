@@ -160,7 +160,8 @@ public class SessionManager {
     }
 
     public int getRole(){
-        return sharedPreferences.getInt(KEY_ROLE, ROLE_DEFAULT_VALUE);
+        int role = sharedPreferences.getInt(KEY_ROLE, ROLE_DEFAULT_VALUE);
+        return role;
     }
 
     public long getLastBaterkaDate(){

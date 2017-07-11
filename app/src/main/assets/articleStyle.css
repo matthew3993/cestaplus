@@ -9,6 +9,7 @@
     src: url("file:///android_asset/fonts/LatoLatin-Black.ttf")
 }
 
+/* tried to add max-width to solve webView horizontal scrolling - but didn't worked*/
 /*
 body {
     max-width: 100%;

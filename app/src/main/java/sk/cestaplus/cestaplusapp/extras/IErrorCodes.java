@@ -6,6 +6,7 @@ package sk.cestaplus.cestaplusapp.extras;
  */
 public interface IErrorCodes {
     //ROLE CODES
+    int ROLE_UNDEFINED = -1;
     int ROLE_DEFAULT_VALUE = 50;
     int ROLE_NOT_LOGGED = 0;
     int ROLE_LOGGED_SUBSCRIPTION_OK = 1;       // ONLY role with permission to read locked articles // we CAN use role > 0 check to see if user is logged in
