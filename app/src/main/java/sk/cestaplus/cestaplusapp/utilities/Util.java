@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.net.ConnectivityManager;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -18,6 +20,7 @@ import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter_All;
 import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter_PicturesAndTitles;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
+import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 
 import static sk.cestaplus.cestaplusapp.extras.Constants.LIST_STYLE_ALL;
 import static sk.cestaplus.cestaplusapp.extras.Constants.LIST_STYLE_PICTURES_AND_TITLES;
@@ -243,5 +246,31 @@ public class Util {
         } else {
             return false;
         }
+    }
+
+
+    public static void setOnOffsetChangedListener(AppBarLayout appBarLayout, final int attrActionBarSize,
+                                                  final CollapsingToolbarLayout collapsingToolbarLayout, final String title) {
+        //show collapsing toolbar layout title ONLY when collapsed
+        //SOURCE: http://stackoverflow.com/questions/9398610/how-to-get-the-attr-reference-in-code
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = false;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset < attrActionBarSize + 1) {
+                    collapsingToolbarLayout.setTitle(title);
+                    isShow = true;
+
+                } else if(isShow) {
+                    collapsingToolbarLayout.setTitle(" ");//carefull there should a space between double quote otherwise it wont work
+                    isShow = false;
+                }
+            }
+        });
     }
 }//end Util class

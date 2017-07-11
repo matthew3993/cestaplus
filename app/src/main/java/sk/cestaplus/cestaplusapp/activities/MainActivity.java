@@ -122,7 +122,15 @@ public class MainActivity
 
         } else {
             //new start of application
-
+            if (session.getPostNotificationStatus()) { //if notifications are on
+                // create an update job - creating job here is for FIRST start of application - to be sure, that UpdateJob is scheduled
+                // false = do NOT overwrite an existing job with the 'UPDATE_JOB_TAG' tag
+                // we can NOT overwrite UpdateJob here, for case that user starts app, for example in the morning,
+                // without internet connection => if we have overwritten job here, in above he would NOT get notifications,
+                // even after he connected to the internet after starting app, because UpdateJob
+                // was re-scheduled to future by time of job period
+                customJobManager.constructAndScheduleUpdateJob(false);
+            }
         } //end else savedInstanceState
 
         //register shared preferences change listener
@@ -458,7 +466,7 @@ public class MainActivity
 
             if (session.getPostNotificationStatus()){
                 // notifications are now allowed - construct JOB
-                customJobManager.constructAndScheduleUpdateJob();
+                customJobManager.constructAndScheduleUpdateJob(true); // true = overwrite an existing job with the 'UPDATE_JOB_TAG' tag
                 Toast.makeText(this, R.string.notifications_allowed, Toast.LENGTH_SHORT).show();
 
             } else {

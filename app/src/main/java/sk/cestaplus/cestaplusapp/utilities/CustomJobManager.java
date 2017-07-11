@@ -48,7 +48,7 @@ public class CustomJobManager {
         return instance;
     }
 
-    public void constructAndScheduleUpdateJob(){
+    public void constructAndScheduleUpdateJob(boolean replaceCurrent){
 
         // check post notifications - for sure
         if (session.getPostNotificationStatus()) { //if notifications are on
@@ -66,7 +66,7 @@ public class CustomJobManager {
                     .setConstraints(
                             Constraint.ON_ANY_NETWORK // run only if there is network connection (of any type)
                     )
-                    .setReplaceCurrent(true) // overwrite an existing job with the same tag
+                    .setReplaceCurrent(replaceCurrent) // if true => overwrite an existing job with the same tag
                 .build();
 
             // 3 - schedule Job

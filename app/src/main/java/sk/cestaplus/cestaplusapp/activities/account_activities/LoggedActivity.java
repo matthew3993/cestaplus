@@ -39,6 +39,7 @@ import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static sk.cestaplus.cestaplusapp.extras.Constants.RED_REMAINING_DAYS_LIMIT;
 import static sk.cestaplus.cestaplusapp.extras.Constants.URL_SUBSCRIPTION_PROLONG;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_BATERKA_ACTIVITY;
@@ -376,13 +377,15 @@ public class LoggedActivity
             remainingDays++;
         }
 
-        if (remainingDays <= 3){
+        if (remainingDays <= RED_REMAINING_DAYS_LIMIT){
             TextUtil.setTextBoldAndRed(tvSubscriptionRemainingText, this);
+            TextUtil.setTextBoldAndRed(tvSubscriptionEndText, this);
         }
 
         //tvSubscriptionRemainingText.setText(String.format("%d dní", remainingDays));
         // SOURCE: https://stackoverflow.com/questions/2397613/are-parameters-in-strings-xml-possible
-        tvSubscriptionRemainingText.setText(getString(R.string.logged_subscription_remaining_format, remainingDays));
+        tvSubscriptionRemainingText.setText(getString(R.string.logged_subscription_remaining_format,
+                remainingDays, TextUtil.getDaysString(remainingDays)));
     }
 
     private void showDataViews() {
