@@ -7,6 +7,7 @@
     <item name="wrap_content" format="integer" type="dimen">-2</item>
 
 <!-- ===================== MAIN ACTIVITY START ======================================================================================== -->
+    <!-- HEADER START ************************************* -->
     <!-- HEADER IMAGE -->
     <dimen name="header_image_gradient_from_top">60dp</dimen>
     <dimen name="header_image_height">600dp</dimen>
@@ -40,6 +41,7 @@
 
     <!-- RECYCLER VIEW LIST ITEMS START ******************* -->
     <dimen name="li_all_margin_left_right">5dp</dimen>
+    <!-- li_line_spacing_mult do needs to be here anyway -->
 
     <!-- article IMAGE -->
     <dimen name="li_image_width">180dp</dimen> <!-- !@ -->
