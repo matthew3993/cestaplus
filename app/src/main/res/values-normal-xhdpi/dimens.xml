@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <?xml version="1.0" encoding="utf-8"?>
-    <resources>
-        <!-- HEADER START ************************************* -->
-        <!-- HEADER TITLE -->
-        <item name="header_title_line_spacing_mult" format="float" type="dimen">1.1</item>
+    <!-- set values are ideal for Samsun J3 2016, API 22 - lower than XXhdpi -->
+    <!-- values in comments are ideal for Samsung A5, API 23 - same as XXhdpi -->
+    <!-- HEADER START ************************************* -->
+    <!-- HEADER TITLE -->
+    <item name="header_title_line_spacing_mult" format="float" type="dimen">1.05</item> <!-- 1.2 -->
 
-        <!-- HEADER SHORT TEXT -->
-        <item name="header_short_text_line_spacing_mult" format="float" type="dimen">1.1</item>
+    <!-- HEADER SHORT TEXT -->
+    <item name="header_short_text_line_spacing_mult" format="float" type="dimen">1.15</item> <!-- 1.3 -->
 
-        <!-- HEADER END *************************************** -->
+    <!-- HEADER END *************************************** -->
 
-        <!-- RECYCLER VIEW LIST ITEMS START ******************* -->
-        <item name="li_line_spacing_mult" format="float" type="dimen">1.1</item>
+    <!-- RECYCLER VIEW LIST ITEMS START ******************* -->
+    <item name="li_line_spacing_mult" format="float" type="dimen">1.05</item> <!-- 1.2 -->
 
-    </resources>
 </resources>
