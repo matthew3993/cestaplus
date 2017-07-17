@@ -9,6 +9,8 @@ import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.util.DisplayMetrics;
 import android.widget.TextView;
 
@@ -137,7 +139,7 @@ public class TextUtil {
      *      https://stackoverflow.com/questions/6200533/set-textview-style-bold-or-italic
      * @param textView TextView with text we want to make red and bold
      */
-    public static void setTextBoldAndRed(TextView textView, Context context){
+    public static void setTextViewBoldAndRed(TextView textView, Context context){
         textView.setTextColor(ContextCompat.getColor(context, R.color.red));
         textView.setTypeface(null, Typeface.BOLD);
     }
@@ -154,5 +156,19 @@ public class TextUtil {
         }
 
         return "dní";
+    }
+
+    /**
+     * SOURCES:
+     *  https://stackoverflow.com/a/8558261 - underline
+     *  https://stackoverflow.com/a/14371141 - bold
+     *  https://stackoverflow.com/a/24754132 - bold
+     */
+    public static SpannableStringBuilder setTextBoldAndUnderlined(String text){
+        SpannableStringBuilder ssb = new SpannableStringBuilder(text);
+        ssb.setSpan(new UnderlineSpan(), 0, ssb.length(), 0);
+        ssb.setSpan(new StyleSpan(Typeface.BOLD), 0, ssb.length(), 0);
+
+        return ssb;
     }
 }

@@ -68,6 +68,7 @@ public class MainActivity
     private int role;
     private CustomJobManager customJobManager;
     private LoginManager loginManager; // to check role
+    private boolean noConnection = false;
 
     // UI components
     //header article views
@@ -223,6 +224,7 @@ public class MainActivity
     private void initHeaderViews() {
         rlHeader = (RelativeLayout) findViewById(R.id.collapsingToolbarRelativeLayoutMainActivity);
         nivHeaderImage = (NetworkImageView) findViewById(R.id.nivMainActivityHeaderImage);
+
         tvHeaderAuthor = (TextView) findViewById(R.id.tvHeaderAuthor);
         tvHeaderTitle = (TextView) findViewById(R.id.tvHeaderTitle);
         tvHeaderDescription = (TextView) findViewById(R.id.tvHeaderDescription);
@@ -348,13 +350,28 @@ public class MainActivity
     // region COMMUNICATION WITH ALL FRAGMENT
 
     public void showNoConnection(String msg) {
+        noConnection = true;
+
         // create snackbar
         // SOURCE: https://inthecheesefactory.com/blog/android-design-support-library-codelab/en
         final Snackbar snackbar = Snackbar.make(coordinatorLayout, getResources().getString(R.string.connection_error_msg), Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.tryAgain, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        tryConnectAgain();
+
+                        //!!! HACK !!!
+                        // Setting some "wrong url" to force reloading of header image view.
+                        // If we use setImageUrl() method, Volley's Network Image View won't reload image, if it is from
+                        // the same URL, even if it's not successfully downloaded (it's default Network Image View behaviour).
+                        // To "force" reloading, we set some different url ("wrongUrl") and than,
+                        // after successful reconnection, header article url is re-set to right value.
+                        // And, because it's is different from "wrongUrl", image is reloaded from server. :)
+                        // TODO: try to find / make better solution
+                        nivHeaderImage.setImageUrl("wrongUrl", volleySingleton.getImageLoader());
+
+                        tryConnectAgain(); //will trigger onArticlesLoaded() in AllFragment
+
+                        swipeRefreshLayoutAll.setEnabled(true); // enable pull down refresh
                     }
                 });
         snackbar.show(); //don't forget to show created snackbar
@@ -369,6 +386,8 @@ public class MainActivity
                 return true;
             }
         });
+
+        swipeRefreshLayoutAll.setEnabled(false); // disable pull down refresh
     }
 
     private void tryConnectAgain() {
@@ -388,6 +407,8 @@ public class MainActivity
 
     @Override
     public void showHeaderArticle(ArticleObj headerArticle) {
+        noConnection = false;
+
         this.headerArticle = headerArticle;
 
         updateHeaderArticleViews();
@@ -418,11 +439,16 @@ public class MainActivity
         // find fragment by it's container ID
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainActivityMainFragmentContainer);
 
-        if(fragment instanceof AllFragment){
+        if(fragment instanceof AllFragment) {
             ((AllFragment) fragment).startRefresh();
+            /*
+            if (headerArticle != null) {
 
+                volleySingleton.getImageCache().remove(headerArticle.getImageDefaultUrl());
+            }
+            */
         } else if (fragment instanceof SectionFragment){
-            // false = do NOT show loading animation (indeterminate progress bar) - because of refresh// animation
+            // false = do NOT show loading animation (indeterminate progress bar) - because of refresh animation
             ((SectionFragment) fragment).tryLoadArticles(false);
 
         } else {
@@ -492,6 +518,7 @@ public class MainActivity
     }//end onSharedPreferenceChanged
 
     /**
+     * To enable swipe / pull down to refresh only at the top - only when header image is fully expanded.
      * SOURCES: https://gist.github.com/blackcj/001a90c7775765ad5212
      *          http://stackoverflow.com/questions/30833589/scrolling-down-triggers-refresh-instead-of-revealing-the-toolbar
      */
@@ -504,7 +531,9 @@ public class MainActivity
             // rlHeader GONE means that SectionFragment is active - and also that SectionFragment handles swipeRefreshLayout enabling/disabling
 
             if (verticalOffset == 0) { // if app bar fully expanded
-                swipeRefreshLayoutAll.setEnabled(true);
+                if (!noConnection){ // if connection is OK{
+                    swipeRefreshLayoutAll.setEnabled(true);
+                }
             } else {
                 swipeRefreshLayoutAll.setEnabled(false);
             }
@@ -520,4 +549,5 @@ public class MainActivity
     }
 
     //endregion
+
 } // end MainActivity

@@ -52,7 +52,7 @@
 
         <!-- SOURCE: https://stackoverflow.com/questions/10537320/how-to-open-a-dialog-from-a-text-entry-on-a-preferencescreen -->
         <Preference
-            android:title="@string/pref_show_display_parameters_title"
+            android:title="@string/pref_show_device_parameters_title"
             android:key="@string/pref_show_display_parameters_key" />
 
     </PreferenceCategory>

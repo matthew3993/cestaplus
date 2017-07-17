@@ -203,31 +203,14 @@ public class LoginManager {
         //application mode check
         int role = session.getRole();
 
-        if (role == ROLE_DEFAULT_VALUE){ //for example: first app start
+        if (role == ROLE_DEFAULT_VALUE) { //for example: first app start
             // Launching the login activity
             Intent intent = new Intent(activity.getApplicationContext(), LoginActivity.class);
             activity.startActivity(intent);
 
             activity.finish(); // finish actual activity
 
-        } /*else { //dalsie spustenia
-
-            if (role > ROLE_NOT_LOGGED) { //ak používame aplikáciu v prihlásenom móde
-
-                //TODO: kontrola prihlásenia
-                if (!session.isLoggedIn()) {// ak už nie sme prihlásení
-                    //pokus o opätovné prihlásenie
-                    // Progress dialog
-                    pDialog = new ProgressDialog(activity);
-                    pDialog.setCancelable(false);
-
-                    loginTry(activity, pDialog);
-                }
-
-            } //else { //ak používam aplikáciu v neprihlásenom móde == tak nič :D
-
-            //}
-        }*/
+        }
     }
 
     private void loginTry(final Activity activity, final ProgressDialog pDialog) {

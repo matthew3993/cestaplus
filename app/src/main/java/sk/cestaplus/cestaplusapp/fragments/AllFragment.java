@@ -142,7 +142,8 @@ public class AllFragment
             //recyclerViewAdapterTypeChanged();
             arvaAll.setRole(sessionRole); //!!!
 
-            tryConnectAgain(); // same code as for trying to connect again
+            tryConnectAgain(); // same code as for trying to connect again - hide data views, show loading views, start update job
+            return; //!!!
         }
 
         //TODO: check last try time and if needed start UpdateTask - probably isn't working
@@ -160,8 +161,6 @@ public class AllFragment
             startLoadingAnimation();
             //start the update task - will trigger onArticlesLoaded
             new UpdateTask(this, false).execute(); //false = we DON'T want to issue notifications this time
-
-            return; //!!!
         }
 
     }

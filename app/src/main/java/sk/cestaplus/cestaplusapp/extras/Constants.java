@@ -37,7 +37,7 @@ public interface Constants {
     //other
     int RED_REMAINING_DAYS_LIMIT = 5; // <=
 
-    //Log tags - max 20 characters
+    //Log tags - max 20 characters long
     String VOLLEY_DEBUG = "VolleyDebug";
     String NEW_ART_NOTIFICATIONS_DEBUG = "newArticlesNotifDebug";
     String IMAGE_DEBUG = "imageDebug";

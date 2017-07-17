@@ -152,11 +152,35 @@ public class DateUtil {
      */
     public static long daysBetween(Date date){
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
+        Date withoutTime = removeTime(date);
+        calendar.setTime(withoutTime);
 
         long msDiff = calendar.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
         long daysDiff = TimeUnit.MILLISECONDS.toDays(msDiff);
 
         return daysDiff;
+    }
+
+    /**
+     * SOURCES:
+     *      https://stackoverflow.com/questions/9816459/removing-time-from-a-date-object
+     *      https://stackoverflow.com/a/10331747
+     * Check: https://stackoverflow.com/a/16225287
+     *
+     * Removing time part from Date object is impossible.
+     * It only possible to set all time attributes to 0.
+     * @param date date you want to "remove" time.
+     * @return date with all time attributes set to 0
+     */
+    public static Date removeTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        return cal.getTime();
     }
 }
