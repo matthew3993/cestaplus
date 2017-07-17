@@ -71,6 +71,7 @@ import static sk.cestaplus.cestaplusapp.extras.Constants.DELAY_TO_START_ACTIVITY
 import static sk.cestaplus.cestaplusapp.extras.Constants.URL_SUBSCRIPTION_INFO;
 import static sk.cestaplus.cestaplusapp.extras.Constants.VOLLEY_DEBUG;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.AEC_OK;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_ARTICLE_URL;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
@@ -680,6 +681,7 @@ public class ArticleActivity
         // relogin successful - subscription still OK
 
         // Remove old entry from cache!! - important!!
+        // because old entry contains only public part of locked article - and not locked part
         removeEntryFromCache(); // !!
         tryLoadArticle(); // create new article request with NEW API_key
     }
@@ -708,6 +710,8 @@ public class ArticleActivity
     @Override
     public void onLoginPartiallySuccessful(UserInfo userInfo) {
         // relogin not successful - subscription has EXPIRED
+
+        role = ROLE_LOGGED_SUBSCRIPTION_EXPIRED;  //change role in activity!!
 
         //inform the user - show AlertDialog, after closing show LoggedActivity
         // SOURCE: check class comment

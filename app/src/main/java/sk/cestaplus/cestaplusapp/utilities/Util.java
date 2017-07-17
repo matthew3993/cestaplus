@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.text.Html;
@@ -20,7 +21,6 @@ import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter;
 import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter_All;
 import sk.cestaplus.cestaplusapp.adapters.ArticlesRecyclerViewAdapter_PicturesAndTitles;
 import sk.cestaplus.cestaplusapp.listeners.ListStyleChangeListener;
-import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 
 import static sk.cestaplus.cestaplusapp.extras.Constants.LIST_STYLE_ALL;
 import static sk.cestaplus.cestaplusapp.extras.Constants.LIST_STYLE_PICTURES_AND_TITLES;
@@ -41,23 +41,23 @@ public class Util {
         return context.getResources().getDisplayMetrics().densityDpi;
     }
 
-    public static String checkScreenSizeAndDensity(Context context) {
+    public static String getScreenSizeAndDensity(Context context) {
         int screenSize = context.getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK;
 
         String msg = "Veľkosť displeja: ";
         switch(screenSize) { // screenSize
             case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                msg += "Extra Large screen";
+                msg += "Extra Large";
                 break;
             case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                msg += "Large screen";
+                msg += "Large";
                 break;
             case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                msg += "Normal screen";
+                msg += "Normal";
                 break;
             case Configuration.SCREENLAYOUT_SIZE_SMALL:
-                msg += "Small screen";
+                msg += "Small";
                 break;
             default:
                 msg += "Nedá sa určiť veľkosť displeja!";
@@ -89,10 +89,43 @@ public class Util {
         }
 
         return msg;
-    }//end check checkScreenSizeAndDensity()
+    }//end check getScreenSizeAndDensity()
+
+    public static int getApiVersion() {
+        return android.os.Build.VERSION.SDK_INT;
+    }
+
+    public static String getAndroidVersion() {
+        return Build.VERSION.RELEASE;
+    }
+
+    /**
+     * SOURCE: https://stackoverflow.com/questions/38157217/how-to-get-the-device-model-name
+     * NOT SURE if working good
+     * check: https://stackoverflow.com/questions/10547818/androidhow-to-find-the-android-version-name-programmatically
+     */
+    public static String getAndroidName() {
+        //return Build.VERSION.CODENAME; //not working
+        return Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
+    }
+
+    /**
+     * SOURCE: https://stackoverflow.com/questions/38157217/how-to-get-the-device-model-name
+     */
+    public static String getDeviceManufacturer(){
+        return Build.MANUFACTURER;
+    }
+
+    /**
+     * SOURCE: https://stackoverflow.com/questions/38157217/how-to-get-the-device-model-name
+     * Check: https://stackoverflow.com/questions/1995439/get-android-phone-model-programmatically
+     */
+    public static String getDeviceModel(){
+        return Build.MODEL;
+    }
 
     public static void checkScreenSizeAndDensityToast(Context context) {
-        String toastMsg = checkScreenSizeAndDensity(context);
+        String toastMsg = getScreenSizeAndDensity(context);
 
         Toast.makeText(context.getApplicationContext(), toastMsg, Toast.LENGTH_LONG).show();
     }//end check checkScreenSizeAndDensityToast()
@@ -101,7 +134,7 @@ public class Util {
         return new String[] {"Zobraziť okrem nadpisov aj popisy k článkom", "Zobraziť len nadpisy"};
     }
 
-    public static ArticlesRecyclerViewAdapter getCrvaType(Context context, boolean hasHeader){
+    public static ArticlesRecyclerViewAdapter getArvaType(Context context, boolean hasHeader){
         SessionManager session = new SessionManager(context);
 
         switch (session.getListStyle()){
@@ -172,23 +205,82 @@ public class Util {
         return actionBarSize;
     }
 
+    //region USABLE screen dimensions
+
     /**
      * SOURCE: http://stackoverflow.com/a/23900692
      * Take look: http://ingenious-camel.blogspot.sk/2012/04/how-to-get-width-and-height-in-android.html
+     * Note: One important difference between using Configuration's screenWidthDp/screenHeightDp vs
+     *       DisplayMetrics widthPixels/heightPixels is Configuration returns the usable display
+     *       dimensions (minus the status bar etc), while DisplayMetrics returns the full screen dimensions.
+     * @return the usable display width in dp (dip) (minus the status bar etc)
+     */
+    public static int getUsableScreenWidthDp(Context context){
+        Configuration configuration = context.getResources().getConfiguration();
+        return configuration.screenWidthDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
+
+    }
+
+    public static int getUsableScreenWidthPixels(Context context){
+        Configuration configuration = context.getResources().getConfiguration();
+        int screenHeightDp = configuration.screenWidthDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
+
+        return Math.round(pxFromDp(context, (float) screenHeightDp));
+    }
+
+    /**
+     * SOURCE: http://stackoverflow.com/a/23900692
+     * Take look: http://ingenious-camel.blogspot.sk/2012/04/how-to-get-width-and-height-in-android.html
+     * Note: One important difference between using Configuration's screenWidthDp/screenHeightDp vs
+     *       DisplayMetrics widthPixels/heightPixels is Configuration returns the usable display
+     *       dimensions (minus the status bar etc), while DisplayMetrics returns the full screen dimensions.
      * @return the usable display height in dp (dip) (minus the status bar etc)
      */
-    public static int getUsableScreenHeightDp(Activity activity){
-        Configuration configuration = activity.getResources().getConfiguration();
-        return configuration.screenHeightDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
+    public static int getUsableScreenHeightDp(Context context){
+        Configuration configuration = context.getResources().getConfiguration();
+        return configuration.screenHeightDp; //The current height of the available screen space, in dp units, corresponding to screen width resource qualifier.
 
     }
 
     public static int getUsableScreenHeightPixels(Context context){
         Configuration configuration = context.getResources().getConfiguration();
-        int screenHeightDp = configuration.screenHeightDp; //The current width of the available screen space, in dp units, corresponding to screen width resource qualifier.
+        int screenHeightDp = configuration.screenHeightDp; //The current height of the available screen space, in dp units, corresponding to screen width resource qualifier.
 
         return Math.round(pxFromDp(context, (float) screenHeightDp));
     }
+
+    //endregion
+
+    //region REAL screen dimensions
+
+    /**
+     * SOURCE: https://stackoverflow.com/a/11755265
+     */
+    public static float getRealScreenWidthDp(Context context){
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+
+        return displayMetrics.widthPixels / displayMetrics.density;
+    }
+
+    public static int getRealScreenWidthPixels(Context context){
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+
+        return displayMetrics.widthPixels;
+    }
+
+    public static float getRealScreenHeightDp(Context context){
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+
+        return displayMetrics.heightPixels / displayMetrics.density;
+    }
+
+    public static int getRealScreenHeightPixels(Context context){
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+
+        return displayMetrics.heightPixels;
+    }
+
+    //endregion
 
     /**
      * SOURCE: http://stackoverflow.com/a/12147550
@@ -248,7 +340,6 @@ public class Util {
         }
     }
 
-
     public static void setOnOffsetChangedListener(AppBarLayout appBarLayout, final int attrActionBarSize,
                                                   final CollapsingToolbarLayout collapsingToolbarLayout, final String title) {
         //show collapsing toolbar layout title ONLY when collapsed
@@ -273,4 +364,6 @@ public class Util {
             }
         });
     }
+
+
 }//end Util class

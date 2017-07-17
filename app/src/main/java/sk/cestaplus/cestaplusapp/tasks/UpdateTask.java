@@ -155,6 +155,7 @@ public class UpdateTask
             } else {
                 // no refreshing - for example new start of activity
                 if (!newArticles.isEmpty()){
+                    // if it's not refreshing, call numNewArticles only if there ARE some new articles
                     articlesLoadedListener.numNewArticles(newArticles.size());
                 }
             }

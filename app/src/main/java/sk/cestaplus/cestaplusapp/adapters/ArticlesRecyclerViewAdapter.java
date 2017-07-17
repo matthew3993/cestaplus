@@ -205,7 +205,15 @@ public abstract class ArticlesRecyclerViewAdapter
     public void setArticlesList(ArrayList<ArticleObj> articlesList){
         this.articlesList = articlesList;
         loading = false; //in case we're setting articles, we are not loading nothing anymore
-        notifyItemRangeChanged(0, articlesList.size()); //upornenie adaptera na zmenu rozsahu (poctu) clankov
+        notifyItemRangeChanged(0, articlesList.size());
+    }
+
+    /**
+     * This method only sets the role. It's do NOT notify observers about role change!
+     * @param role role to be set
+     */
+    public void setRole(int role) {
+        this.role = role;
     }
 
     public void startAnim() {

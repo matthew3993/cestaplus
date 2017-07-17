@@ -378,8 +378,8 @@ public class LoggedActivity
         }
 
         if (remainingDays <= RED_REMAINING_DAYS_LIMIT){
-            TextUtil.setTextBoldAndRed(tvSubscriptionRemainingText, this);
-            TextUtil.setTextBoldAndRed(tvSubscriptionEndText, this);
+            TextUtil.setTextViewBoldAndRed(tvSubscriptionRemainingText, this);
+            TextUtil.setTextViewBoldAndRed(tvSubscriptionEndText, this);
         }
 
         //tvSubscriptionRemainingText.setText(String.format("%d dní", remainingDays));
@@ -478,7 +478,7 @@ public class LoggedActivity
         activeArea = findViewById(R.id.layout_subscription_expired);
         showUserInfo(getString(R.string.logged_actual_status_subscription_expired));
 
-        TextUtil.setTextBoldAndRed(tvSubscriptionEndText, this);
+        TextUtil.setTextViewBoldAndRed(tvSubscriptionEndText, this);
     }
 
     @Override
@@ -513,7 +513,7 @@ public class LoggedActivity
         } else {
             activeArea = findViewById(R.id.layout_subscription_expired);
             showUserInfo(getString(R.string.logged_actual_status_subscription_expired));
-            TextUtil.setTextBoldAndRed(tvSubscriptionEndText, this);
+            TextUtil.setTextViewBoldAndRed(tvSubscriptionEndText, this);
         }
     }
 

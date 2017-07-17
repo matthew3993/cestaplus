@@ -338,7 +338,7 @@ public class SectionFragment
     private void setRecyclerViewAdapterType() {
         // in FRAGMENT (here): first parameter - context MUST be only getACTIVITY, and not getActivity().getAPPLICATIONContext()
         // - because Calligraphy wraps around ACTIVITY and not APPLICATION
-        arvaSection = Util.getCrvaType(getActivity(), false); // false = doesn't have header
+        arvaSection = Util.getArvaType(getActivity(), false); // false = doesn't have header
 
         // if used in ACTIVITY:
         //      first parameter - context MUST be 'this' (as activity), and not getApplicationContext()

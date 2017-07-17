@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -19,12 +20,17 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.view.MenuItem;
 
 import sk.cestaplus.cestaplusapp.R;
 import sk.cestaplus.cestaplusapp.utilities.Util;
 import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextSizeUtil;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.TextUtil;
 
 import java.util.List;
 
@@ -207,9 +213,33 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 // SOURCE: check class comment
                 AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(activityContext, R.style.alertDialog)).create();
-                alertDialog.setTitle(activityContext.getString(R.string.alert_dialog_display_parameters_title));
+                alertDialog.setTitle(activityContext.getString(R.string.alert_dialog_device_parameters_title));
 
-                String msg = Util.checkScreenSizeAndDensity(activityContext);
+                // display
+                SpannableStringBuilder msg = TextUtil.setTextBoldAndUnderlined("Display");
+
+                msg.append("\n")
+                .append(Util.getScreenSizeAndDensity(activityContext))
+                .append("\nPoužiteľné rozmery:")
+                .append("\n\tdp: " + (Util.getUsableScreenWidthDp(activityContext)+ " x ") + Util.getUsableScreenHeightDp(activityContext))
+                .append("\n\tpx: " + Util.getUsableScreenWidthPixels(activityContext) + " x " + Util.getUsableScreenHeightPixels(activityContext))
+                .append("\nSkutočné rozmery:")
+                .append("\n\tdp: " + Util.getRealScreenWidthDp(activityContext) + " x " + Util.getRealScreenHeightDp(activityContext))
+                .append("\n\tpx: " + Util.getRealScreenWidthPixels(activityContext) + " x " + Util.getRealScreenHeightPixels(activityContext));
+
+                // system
+                SpannableStringBuilder systemTitle = TextUtil.setTextBoldAndUnderlined("Systém");
+
+                msg.append("\n\n").append(systemTitle)
+                .append("\nAPI: " + Util.getApiVersion())
+                .append("\nVerzia systému Android: " + Util.getAndroidVersion());// + " " +  Util.getAndroidName());
+
+                //device
+                SpannableStringBuilder device = TextUtil.setTextBoldAndUnderlined("Zariadenie");
+
+                msg.append("\n\n").append(device)
+                .append("\nVýrobca: " + Util.getDeviceManufacturer())
+                .append("\nModel: " + Util.getDeviceModel());
 
                 alertDialog.setMessage(msg);
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",

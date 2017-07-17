@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- HEADER START ************************************* -->
+    <!-- HEADER TITLE -->
+    <item name="header_title_line_spacing_mult" format="float" type="dimen">1.05</item> <!-- 1.1 -->
+
+    <!-- HEADER SHORT TEXT -->
+    <item name="header_short_text_line_spacing_mult" format="float" type="dimen">1.2</item> <!-- 1.1 -->
+
+    <!-- HEADER END *************************************** -->
+
+    <!-- RECYCLER VIEW LIST ITEMS START ******************* -->
+    <item name="li_line_spacing_mult" format="float" type="dimen">1.1</item> <!-- 1.05 -->
+</resources>

@@ -23,9 +23,9 @@
     <string name="pref_version_name_title">Verzia</string>
 
     <string name="pref_category_testing_title">Testovanie</string>
-    <string name="pref_show_display_parameters_title">Zobraziť parametre displeja</string>
+    <string name="pref_show_device_parameters_title">Zobraziť parametre zariadenia</string>
 
-    <string name="alert_dialog_display_parameters_title">Parametre displeja</string>
+    <string name="alert_dialog_device_parameters_title">Parametre zariadenia</string>
 
     <!-- ListPreference 'List Style' entries -->
     <string-array name="pref_list_style_entries">

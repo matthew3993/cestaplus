@@ -9,9 +9,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
-// importy IKeys
-
-
 /**
  * Created by Matej on 3.3.2015.
  * SOURCE: https://developer.android.com/training/volley/requestqueue.html#singleton
@@ -30,7 +27,7 @@ public class VolleySingleton {
         VolleySingleton.context = context;
         mRequestQueue = getRequestQueue();
 
-        mImageLoader = new ImageLoader(mRequestQueue, new ImageLoader.ImageCache() { //anonymna trieda ImageLoader
+        mImageLoader = new ImageLoader(mRequestQueue, new ImageLoader.ImageCache() {
 
             private final LruCache<String, Bitmap> cache = new LruCache<>((int)Runtime.getRuntime().maxMemory()/1024/8);
             // runtime.maxMemory - komplet vsetko, co kedy mozeme mat v bajtoch
