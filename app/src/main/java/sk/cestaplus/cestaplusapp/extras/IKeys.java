@@ -32,12 +32,13 @@ public interface IKeys {
     // INTENTS
     String KEY_INTENT_EXTRA_ARTICLE = "article_intent";
     String KEY_INTENT_EXTRA_BATERKA = "baterka_intent";
-    String KEY_INTENT_LOAD_BATERKA_ON_TODAY = "baterka_intent";
-    String KEY_INTENT_FROM_NOTIFICATION = "fromNotification";
+    String KEY_INTENT_LOAD_BATERKA_ON_TODAY = "load_on_today";
+    String KEY_INTENT_FROM_NOTIFICATION = "from_notification";
     String KEY_INTENT_ARTICLE_URL = "article_url";
 
     //fragment parameters
     String KEY_ROLE = "role";
+    String KEY_WAIT_TO_LOAD = "wait_to_load_articles";
     String KEY_SECTION_ID = "section_id";
     String KEY_SECTION_NAME = "section_NAME";
 

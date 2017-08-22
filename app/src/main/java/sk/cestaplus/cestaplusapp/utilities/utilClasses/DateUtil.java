@@ -39,7 +39,7 @@ public class DateUtil {
      *      http://stackoverflow.com/questions/18600257/how-to-get-the-weekday-of-a-date
      *      http://stackoverflow.com/questions/7493287/android-how-do-i-get-string-from-resources-using-its-name
      */
-    public static String resolveDayInWeek(Context context, Date pubDate) {
+    public static String getDayNameFromDate(Context context, Date pubDate) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(pubDate);                      // http://stackoverflow.com/questions/18600257/how-to-get-the-weekday-of-a-date
         int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -78,6 +78,23 @@ public class DateUtil {
         }
 
         return dayOfTheWeekString;
+    }
+
+    /**
+     * !!! WARNING !!! : Week in Calendar class starts with SUNDAY!
+     * So method returns 1 for Sunday, 2 for Monday, etc. !!!
+     *
+     * SOURCES:
+     *      http://stackoverflow.com/questions/5574673/what-is-the-easiest-way-to-get-the-current-day-of-the-week-in-android
+     *      http://stackoverflow.com/questions/18600257/how-to-get-the-weekday-of-a-date
+     *      http://stackoverflow.com/questions/7493287/android-how-do-i-get-string-from-resources-using-its-name
+     */
+    public static int getDayOfWeekInt(Date pubDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(pubDate);                      // http://stackoverflow.com/questions/18600257/how-to-get-the-weekday-of-a-date
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        return dayOfWeek; // Week in Calendar class starts with SUNDAY !
     }
 
     /**
@@ -148,14 +165,25 @@ public class DateUtil {
     }
 
     /**
-     * https://stackoverflow.com/a/37659716
+     * Can return negative number!
+     * SOURCE: https://stackoverflow.com/a/37659716
      */
-    public static long daysBetween(Date date){
-        Calendar calendar = Calendar.getInstance();
-        Date withoutTime = removeTime(date);
-        calendar.setTime(withoutTime);
+    public static long daysBetween(Date inputDate){
+        //Calendar calendar = Calendar.getInstance();
+        Date inputWithoutTime = removeTime(inputDate);
+        //calendar.setTime(inputWithoutTime);
+        //long inputWithoutTimeMs = calendar.getTimeInMillis();
 
-        long msDiff = calendar.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+        long inputWithoutTimeMs = inputWithoutTime.getTime();
+
+        Date today = Calendar.getInstance().getTime();
+        Date todayWithoutTime = removeTime(today);
+        long todayWithoutTimeMs = todayWithoutTime.getTime();
+
+        //long todayWithoutTimeMs = removeTime(Calendar.getInstance().getTime()).getTime();
+
+        //long msDiff = calendar.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+        long msDiff = inputWithoutTimeMs - todayWithoutTimeMs;
         long daysDiff = TimeUnit.MILLISECONDS.toDays(msDiff);
 
         return daysDiff;

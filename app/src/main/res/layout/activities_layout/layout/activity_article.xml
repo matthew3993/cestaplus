@@ -180,11 +180,17 @@
                 android:layout_height="wrap_content"
                 />
 
+            <!-- Hide scrollbars in webView SOURCE:
+                    https://stackoverflow.com/questions/7088826/hiding-the-scroll-bar-in-webview
+                    mainly this answer: https://stackoverflow.com/a/19561783
+            -->
             <WebView
                 android:id="@+id/webViewArticle"
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+
+                android:scrollbars="none"
                 />
 
             <include layout="@layout/alert_locked" />

@@ -2,7 +2,7 @@ package sk.cestaplus.cestaplusapp.extras;
 
 /**
  * Created by matth on 18.02.2017.
- * Link on DOKUMENTATION: https://docs.google.com/document/d/1wy2hv0NAJNKzEhLux-p2Smb9JF3dsEZuCzZun6xQa4U/edit
+ * Link on DOCUMENTATION: https://docs.google.com/document/d/1wy2hv0NAJNKzEhLux-p2Smb9JF3dsEZuCzZun6xQa4U/edit
  */
 public interface IErrorCodes {
     //ROLE CODES

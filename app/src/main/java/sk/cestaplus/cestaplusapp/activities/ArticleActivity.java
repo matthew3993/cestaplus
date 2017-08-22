@@ -74,6 +74,7 @@ import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.AEC_OK;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_ARTICLE_URL;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_ARTICLE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLE_ERROR_CODE;
@@ -103,7 +104,7 @@ public class ArticleActivity
     private String parentActivity;
     private double scrollPercentage;
     private int loadPagesCount = 0;
-    private boolean orientationChange = false;
+    //private boolean orientationChange = false;
 
     private int attrActionBarSize;
     private String sectionName;
@@ -153,7 +154,9 @@ public class ArticleActivity
         // initialisations
         volleySingleton = VolleySingleton.getInstance(getApplicationContext());
         loginManager = LoginManager.getInstance(getApplicationContext());
-        articleObj = getIntent().getParcelableExtra(IKeys.KEY_INTENT_EXTRA_ARTICLE);
+
+        //load data from extra
+        articleObj = getIntent().getParcelableExtra(KEY_INTENT_EXTRA_ARTICLE);
         parentActivity = getIntent().getExtras().getString(KEY_PARENT_ACTIVITY);
 
         session = new SessionManager(getApplicationContext());
@@ -167,7 +170,7 @@ public class ArticleActivity
         //try to load saved state from bundle
         if (savedInstanceState != null) { //if is not null = change of state - for example rotation of device
             restoreState(savedInstanceState);
-            orientationChange = true;
+            //orientationChange = true;
 
             // loading empty page solves the problem with blank space at the bottom of WebView
             // SOURCE: http://vision-apps.blogspot.sk/2012/08/android-webview-tips-tricks.html Point 4
@@ -175,10 +178,10 @@ public class ArticleActivity
             Log.d("SCROLLING", "loading empty page");
             webView.loadUrl("file:///android_asset/Empty.html"); // will trigger onPageFinished() in MyWebViewClient
 
-            //hideErrorAndLoadingViews();
-            showArticleText(); //starts loading real page --> will trigger onPageFinished() in MyWebViewClient
             hideErrorAndLoadingViews();
-            showDataViews();
+            showArticleText(); //starts loading real page --> will trigger onPageFinished() in MyWebViewClient
+            //hideErrorAndLoadingViews(); // moved back to showArticleText()
+            //showDataViews();            // moved back to showArticleText()
             loadAd();
         } else {
             //new start of activity
@@ -274,9 +277,9 @@ public class ArticleActivity
 
         // body
         nestedScrollView = (NestedScrollView) findViewById(R.id.nestedScrollViewArticle);
-        //nestedScrollView.setVerticalScrollBarEnabled(false);
-
         tvDate = (TextView) findViewById(R.id.tvDateArticle);
+
+        //init webView
         webView = (WebView) findViewById(R.id.webViewArticle);
         // disable scroll on touch in webView (scrolling is made by nestedScrollView - vertical ONLY! )
         // TODO: try to fix without disabling scrolling of webView - issue #26
@@ -286,6 +289,7 @@ public class ArticleActivity
                 return (event.getAction() == MotionEvent.ACTION_MOVE);
             }
         });
+        //webView.setVerticalScrollBarEnabled(false); - scrollbars hidden in layout xml
 
         btnShowComments = (Button) findViewById(R.id.btnShowCommentsArticle);
 
@@ -515,9 +519,10 @@ public class ArticleActivity
                 "text/html", "utf-8", null); //will trigger onPageFinished() in MyWebViewClient
 
     //make UI changes
-        // now, loading animation is hidden and all data views are showed AFTER page is finished loading
-        //hideErrorAndLoadingViews(); // moved to --> MyWebViewClient onPageFinished() and onCreate() savedInstanceState != null
-        //showDataViews();            // moved to --> MyWebViewClient onPageFinished() and onCreate() savedInstanceState != null
+        // loading animation was hidden and all data views were showed AFTER page is finished loading,
+        // BUT now it's all back again
+        hideErrorAndLoadingViews(); // moved back from - MyWebViewClient onPageFinished() and onCreate() savedInstanceState != null
+        showDataViews();            // moved back from - MyWebViewClient onPageFinished() and onCreate() savedInstanceState != null
         //decideToShowAlertLocked();  // moved to --> MyWebViewClient onPageFinished()
     }
 
@@ -815,13 +820,16 @@ public class ArticleActivity
             if (loadPagesCount == 0) {
                 Log.d("SCROLLING", "loadPagesCount == 0");
                 loadPagesCount++;
+                decideToShowAlertLocked();
 
-                //make UI changes
+                //make UI changes - moved back to showArticleText()
+                /*
                 if (!orientationChange){
                     hideErrorAndLoadingViews();
                     showDataViews();
                     decideToShowAlertLocked();
                 }
+                */
 
             } else {
                 Log.d("SCROLLING", "loadPagesCount == " + loadPagesCount);
@@ -834,12 +842,10 @@ public class ArticleActivity
                         public void run() {
                             Log.d("SCROLLING", "delay!!");
 
-
                             //make UI changes
-                            //hideErrorAndLoadingViews();
-                            //showDataViews();
+                            //hideErrorAndLoadingViews(); // moved back to showArticleText()
+                            //showDataViews();            // moved back to showArticleText()
                             decideToShowAlertLocked();
-
                             scrollNestedScrollView();
                         }
                     }, 100);
@@ -848,10 +854,9 @@ public class ArticleActivity
 
 
                     //make UI changes
-                    //hideErrorAndLoadingViews();
-                    //showDataViews();
+                    //hideErrorAndLoadingViews(); // moved back to showArticleText()
+                    //showDataViews();            // moved back to showArticleText()
                     decideToShowAlertLocked();
-
                     scrollNestedScrollView();
                 }
             }

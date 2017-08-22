@@ -32,7 +32,7 @@ public class AllFragmentSwapper
             return;// do not swap
         }
 
-        Fragment newFragment = AllFragment.newInstance();
+        Fragment newFragment = AllFragment.newInstance(false); //false - do not wait for order to load articles
 
         // Insert the fragment by replacing any existing fragment
         fragmentManager.beginTransaction()

@@ -30,7 +30,7 @@
 
     <!-- SOURCE of icon: https://material.io/icons/ -->
     <ImageView
-        android:id="@+id/ivNoConnectionMain"
+        android:id="@+id/ivNoConnectionFragmentAll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 

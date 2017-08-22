@@ -12,6 +12,7 @@ public interface Constants {
     //other constants
     int ART_NUM = 20; //number of articles per page
     int DELAY_TO_START_ACTIVITY_MILLIS = 200;
+    int ALL_ARTICLES_ON_RESUME_REFRESH_LIMIT_MS = 60 * 60 * 1000; // 60 min in miliseconds
 
     //Volley cache expiration constants
     int CACHE_ENTRY_SOFT_TTL_MIN = 24 * 60; // 24 hours in minutes
@@ -35,7 +36,7 @@ public interface Constants {
     String URL_SUBSCRIPTION_PROLONG = "http://www.cestaplus.sk/predplatne?temp=new";
 
     //other
-    int RED_REMAINING_DAYS_LIMIT = 5; // <=
+    int RED_REMAINING_DAYS_LIMIT = 7; // <= one week
 
     //Log tags - max 20 characters long
     String VOLLEY_DEBUG = "VolleyDebug";
