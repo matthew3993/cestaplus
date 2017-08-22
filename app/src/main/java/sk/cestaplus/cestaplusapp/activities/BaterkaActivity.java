@@ -53,6 +53,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static java.lang.System.currentTimeMillis;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_BATERKA_ACTIVITY;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_BATERKA;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_LOAD_BATERKA_ON_TODAY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_PARENT_ACTIVITY;
@@ -86,7 +87,8 @@ public class BaterkaActivity
     // data views
     // header
     private RelativeLayout rlHeader;
-    private NetworkImageView nivBaterkaImage;
+    //private NetworkImageView nivBaterkaImage;
+    private ImageView nivBaterkaImage;
     private TextView tvAuthor;
     private TextView tvTitle;
 
@@ -133,9 +135,11 @@ public class BaterkaActivity
         volleySingleton = VolleySingleton.getInstance(getApplicationContext()); // !!!
 
         // load data from intent
-        articleObj = getIntent().getParcelableExtra(IKeys.KEY_INTENT_EXTRA_BATERKA);
-        parentActivity = getIntent().getExtras().getString(KEY_PARENT_ACTIVITY);
-        loadBaterkaOnToday = getIntent().getExtras().getBoolean(KEY_INTENT_LOAD_BATERKA_ON_TODAY, false); // false == default value
+        articleObj = getIntent().getParcelableExtra(KEY_INTENT_EXTRA_BATERKA);
+        parentActivity = getIntent().getExtras().getString(KEY_PARENT_ACTIVITY); // or we can use getStringExtra()
+
+        //loadBaterkaOnToday = getIntent().getExtras().getBoolean(KEY_INTENT_LOAD_BATERKA_ON_TODAY, false); // false == default value
+        loadBaterkaOnToday = getIntent().getBooleanExtra(KEY_INTENT_LOAD_BATERKA_ON_TODAY, false); // false == default value
 
         initToolbar();
         initLayoutViews();
@@ -204,7 +208,8 @@ public class BaterkaActivity
     private void initDataViews(){
         // header
         rlHeader = (RelativeLayout) findViewById(R.id.collapsingToolbarRelativeLayoutBaterka);
-        nivBaterkaImage = (NetworkImageView) findViewById(R.id.nivBaterka);
+        //nivBaterkaImage = (NetworkImageView) findViewById(R.id.nivBaterka);
+        nivBaterkaImage = (ImageView) findViewById(R.id.nivBaterka);
         tvAuthor = (TextView) findViewById(R.id.tvBaterkaAuthor);
         tvTitle = (TextView) findViewById(R.id.tvBaterkaTitle);
 
@@ -392,7 +397,7 @@ public class BaterkaActivity
     private Date getDateToLoad() {
         Date dateToLoad;
         if (loadBaterkaOnToday){
-            dateToLoad = new Date(currentTimeMillis());
+            dateToLoad = new Date(currentTimeMillis()); // get current date
         } else {
             dateToLoad = articleObj.getPubDate();
         }
@@ -405,8 +410,9 @@ public class BaterkaActivity
      */
     private void showBaterkaText(){
     //set the data
-        nivBaterkaImage.setImageUrl(baterkaText.getImageUrl(), volleySingleton.getImageLoader());
-        nivBaterkaImage.setErrorImageResId(R.drawable.baterka_vseobecna);
+        //baterka header image
+        //nivBaterkaImage.setImageUrl(baterkaText.getImageUrl(), volleySingleton.getImageLoader());
+        //nivBaterkaImage.setErrorImageResId(R.drawable.baterka_vseobecna);
 
         tvAuthor.setText(baterkaText.getAuthor());
         tvTitle.setText(baterkaText.getTitle());
@@ -417,7 +423,7 @@ public class BaterkaActivity
         //private NetworkImageView ivAuthor;
         Date date = getDateToLoad();
 
-        tvDayInWeek.setText(DateUtil.resolveDayInWeek(getApplicationContext(), date));
+        tvDayInWeek.setText(DateUtil.getDayNameFromDate(getApplicationContext(), date));
         String dateString = DateUtil.getDateString(getApplicationContext(), date);
         tvDate.setText(dateString);
 

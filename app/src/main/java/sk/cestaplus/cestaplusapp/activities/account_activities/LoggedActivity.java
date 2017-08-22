@@ -374,7 +374,7 @@ public class LoggedActivity
         if (remainingDays < 0){
             remainingDays = 0;
         } else {
-            remainingDays++;
+            //remainingDays++;
         }
 
         if (remainingDays <= RED_REMAINING_DAYS_LIMIT){

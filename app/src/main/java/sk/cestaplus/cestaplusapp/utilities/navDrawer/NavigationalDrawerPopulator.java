@@ -1,6 +1,8 @@
 package sk.cestaplus.cestaplusapp.utilities.navDrawer;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
@@ -12,24 +14,31 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import sk.cestaplus.cestaplusapp.R;
+import sk.cestaplus.cestaplusapp.activities.ArticleActivity;
 import sk.cestaplus.cestaplusapp.activities.BaterkaActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.OPortaliActivity;
 import sk.cestaplus.cestaplusapp.activities.other_activities.SettingsActivity;
 import sk.cestaplus.cestaplusapp.extras.Constants;
+import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.Util;
+import sk.cestaplus.cestaplusapp.utilities.utilClasses.DateUtil;
 import sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView;
 
+import static java.lang.System.currentTimeMillis;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_NOT_LOGGED;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_ARTICLE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_LOAD_BATERKA_ON_TODAY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 
@@ -40,15 +49,31 @@ public class NavigationalDrawerPopulator {
 
     public static final int NO_ICON = -1;
 
+    // data
+    private final List<GroupItem> groupItems;
+    private ArrayList<ArticleObj> articles;
+
+    // utils
+    private Context context;
+    private final AppCompatActivity activity;
+    private SessionManager session;
+
+    // UI components
+    // list view & adapter
     private AnimatedExpandableListView listView;
     private NavDrawerSectionsAdapter adapter;
 
-    private Context context;
-    private final AppCompatActivity activity;
+    // user info text views
+    private TextView tvFullName;
+    private TextView tvEmail;
+    private TextView tvSubscriptionExpired;
 
     public NavigationalDrawerPopulator(AppCompatActivity activity) {
         this.activity = activity;
         this.context = activity;
+
+        session = new SessionManager(context); // init session mng
+        groupItems = new ArrayList<>();
     }
 
     public AppCompatActivity getActivity() {
@@ -56,83 +81,13 @@ public class NavigationalDrawerPopulator {
     }
 
     public void populateSectionsExpandableList(){
-        SessionManager session = new SessionManager(context);
 
     // init full name & email text views
-        TextView tvFullName = (TextView) activity.findViewById(R.id.tvNavDrFullName);
-        TextView tvEmail= (TextView) activity.findViewById(R.id.tvNavDrEmail);
-        TextView tvSubscriptionExpired = (TextView) activity.findViewById(R.id.tvNavDrSubscriptionExpired);
+        tvFullName = (TextView) activity.findViewById(R.id.tvNavDrFullName);
+        tvEmail = (TextView) activity.findViewById(R.id.tvNavDrEmail);
+        tvSubscriptionExpired = (TextView) activity.findViewById(R.id.tvNavDrSubscriptionExpired);
 
-        switch (session.getRole()){
-            case ROLE_NOT_LOGGED: {
-                tvFullName.setText(context.getString(R.string.not_logged_user));
-                tvEmail.setVisibility(View.GONE);
-
-            // Adjust bottom margin of tvFullName
-                //SOURCES:
-                //  http://stackoverflow.com/questions/11121028/load-dimension-value-from-res-values-dimension-xml-from-source-code
-                //  http://stackoverflow.com/questions/3277196/can-i-set-androidlayout-below-at-runtime-programmatically
-
-                //Creating a new params
-                /*RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.MATCH_PARENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT
-                );*/
-
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvFullName.getLayoutParams();
-
-                // getDimension methods returns dimensions in PIXELS
-                int leftPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_left);
-                int topPx = 0;
-                int rightPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_right);
-                int bottomPx = (int) context.getResources().getDimension(R.dimen.nav_dr_header_email_margin_bottom); // CHANGE! - same as email
-
-                params.setMargins(leftPx, topPx, rightPx, bottomPx); // set in PIXELS (left, top, right, bottom);
-                //params.addRule(RelativeLayout.BELOW, R.id.navDrHeaderLogoRelativeLayout); //!! don't forget to set all "layout_..." rules from xml, when creating new params ;-)
-
-                tvFullName.setLayoutParams(params);
-                break;
-            }
-            case ROLE_LOGGED_SUBSCRIPTION_OK: {
-                tvFullName.setText(session.getFullName());
-                tvEmail.setText(session.getEmail());
-                break;
-            }
-            case ROLE_LOGGED_SUBSCRIPTION_EXPIRED: {
-                tvFullName.setText(session.getFullName());
-                tvEmail.setText(session.getEmail());
-
-                tvSubscriptionExpired.setVisibility(View.VISIBLE); // show tvSubscriptionExpired
-
-            // Adjust bottom margin of tvEmail
-                //SOURCES:
-                //  http://stackoverflow.com/questions/11121028/load-dimension-value-from-res-values-dimension-xml-from-source-code
-                //  http://stackoverflow.com/questions/3277196/can-i-set-androidlayout-below-at-runtime-programmatically
-
-                //Creating a new params
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.MATCH_PARENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT
-                );
-
-                // getDimension methods returns dimensions in PIXELS
-                int leftPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_left);
-                int topPx = 0;
-                int rightPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_right);
-                int bottomPx = (int) context.getResources().getDimension(R.dimen.nav_dr_header_full_name_margin_bottom); // CHANGE! - same as full name
-
-                params.setMargins(leftPx, topPx, rightPx, bottomPx); // set in PIXELS (left, top, right, bottom);
-                params.addRule(RelativeLayout.BELOW, R.id.tvNavDrFullName); //!! don't forget to set all "layout_..." rules from xml, when creating new params ;-)
-
-                tvEmail.setLayoutParams(params);
-
-                break;
-            }
-            default:{
-                tvFullName.setText(context.getString(R.string.not_logged_user));
-                tvEmail.setVisibility(View.GONE);
-            }
-        }
+        setupUserInfoTextViews();
 
         // create and set onClickListener to account info TextViews
         View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -140,11 +95,10 @@ public class NavigationalDrawerPopulator {
             public void onClick(View view) {
                 // init class that have to be started for account activity
                 Class accountClassToStart = Util.getAccountActivityToStart();
-
+                closeDrawer();
                 // start corresponding AccountActivity
                 new ActivityStarter(context, accountClassToStart, KEY_MAIN_ACTIVITY, 0)
                         .execute();
-
             }
         };
 
@@ -153,7 +107,7 @@ public class NavigationalDrawerPopulator {
         tvSubscriptionExpired.setOnClickListener(onClickListener);
 
     // POPULATE LIST
-        final List<GroupItem> groupItems = new ArrayList<>();
+        groupItems.clear();
 
         // init class that have to be started for account activity
         Class classToStart = Util.getAccountActivityToStart();
@@ -164,17 +118,17 @@ public class NavigationalDrawerPopulator {
         groupItems.add(new GroupItem(R.drawable.ic_account_box_black_48dp ,context.getString(R.string.account_nav_dr),
                 new ActivityStarter(context, classToStart, KEY_MAIN_ACTIVITY, Constants.DELAY_TO_START_ACTIVITY_MILLIS)));
 
-        // init extras for BaterkaActivity
-        List<AbstractMap.SimpleEntry<String, Serializable>> toExtras = new ArrayList<>();
-        toExtras.add(new AbstractMap.SimpleEntry<String, Serializable>(KEY_INTENT_LOAD_BATERKA_ON_TODAY, true));
+        //groupItems.add(getBaterkaGroupItem());
+
+        Bundle toExtras = new Bundle(1);
+        toExtras.putBoolean(KEY_INTENT_LOAD_BATERKA_ON_TODAY, true); // init extras for BaterkaActivity
 
         // SOURCE of icon: https://material.io/icons/#ic_highlight
         // good icons too:
         //  https://material.io/icons/#ic_wb_incandescent
         //  https://material.io/icons/#ic_lightbulb_outline
-        groupItems.add(new GroupItem(R.drawable.ic_highlight_black_48dp ,context.getString(R.string.baterka_on_today),
+        groupItems.add( new GroupItem(R.drawable.ic_highlight_black_48dp, context.getString(R.string.baterka_on_today),
                 new ActivityStarter(context, BaterkaActivity.class, KEY_MAIN_ACTIVITY, Constants.DELAY_TO_START_ACTIVITY_MILLIS, toExtras)));
-
 
         //region Sections FAMILY
 
@@ -322,6 +276,119 @@ public class NavigationalDrawerPopulator {
         listView.setItemChecked(0, true); //set home as checked
     }
 
+    public void setupUserInfoTextViews() {
+        int role = session.getRole();
+
+        switch (role){
+            case ROLE_NOT_LOGGED: {
+                // visibility
+                tvFullName.setVisibility(View.VISIBLE); // will display not logged user message
+                tvEmail.setVisibility(View.GONE);
+                tvSubscriptionExpired.setVisibility(View.GONE);
+
+                //text
+                tvFullName.setText(context.getString(R.string.not_logged_user));
+
+                // Adjust bottom margin of tvFullName
+                //SOURCES:
+                //  http://stackoverflow.com/questions/11121028/load-dimension-value-from-res-values-dimension-xml-from-source-code
+                //  http://stackoverflow.com/questions/3277196/can-i-set-androidlayout-below-at-runtime-programmatically
+
+                //Creating a new params
+                /*RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );*/
+
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvFullName.getLayoutParams();
+
+                // getDimension methods returns dimensions in PIXELS
+                int leftPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_left);
+                int topPx = 0;
+                int rightPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_right);
+                int bottomPx = (int) context.getResources().getDimension(R.dimen.nav_dr_header_email_margin_bottom); // CHANGE! - same as email
+
+                params.setMargins(leftPx, topPx, rightPx, bottomPx); // set in PIXELS (left, top, right, bottom);
+                //params.addRule(RelativeLayout.BELOW, R.id.navDrHeaderLogoRelativeLayout); //!! don't forget to set all "layout_..." rules from xml, when creating new params ;-)
+
+                tvFullName.setLayoutParams(params);
+                break;
+            }
+            case ROLE_LOGGED_SUBSCRIPTION_OK: {
+                // visibility
+                tvFullName.setVisibility(View.VISIBLE);
+                tvEmail.setVisibility(View.VISIBLE);
+                tvSubscriptionExpired.setVisibility(View.GONE);
+
+                //text
+                tvFullName.setText(session.getFullName());
+                tvEmail.setText(session.getEmail());
+
+                // Adjust bottom margin of tvEmail
+                //SOURCES:
+                //  http://stackoverflow.com/questions/11121028/load-dimension-value-from-res-values-dimension-xml-from-source-code
+                //  http://stackoverflow.com/questions/3277196/can-i-set-androidlayout-below-at-runtime-programmatically
+
+                //Creating a new params
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );
+
+                // getDimension methods returns dimensions in PIXELS
+                int leftPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_left);
+                int topPx = 0;
+                int rightPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_right);
+                int bottomPx = (int) context.getResources().getDimension(R.dimen.nav_dr_header_email_margin_bottom); // CHANGE! - back to email
+
+                params.setMargins(leftPx, topPx, rightPx, bottomPx); // set in PIXELS (left, top, right, bottom);
+                params.addRule(RelativeLayout.BELOW, R.id.tvNavDrFullName); //!! don't forget to set all "layout_..." rules from xml, when creating new params ;-)
+
+                tvEmail.setLayoutParams(params);
+                break;
+            }
+            case ROLE_LOGGED_SUBSCRIPTION_EXPIRED: {
+                // visibility
+                tvFullName.setVisibility(View.VISIBLE);
+                tvEmail.setVisibility(View.VISIBLE);
+                tvSubscriptionExpired.setVisibility(View.VISIBLE);
+
+                //text
+                tvFullName.setText(session.getFullName());
+                tvEmail.setText(session.getEmail());
+
+                // Adjust bottom margin of tvEmail
+                //SOURCES:
+                //  http://stackoverflow.com/questions/11121028/load-dimension-value-from-res-values-dimension-xml-from-source-code
+                //  http://stackoverflow.com/questions/3277196/can-i-set-androidlayout-below-at-runtime-programmatically
+
+                //Creating a new params
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
+                );
+
+                // getDimension methods returns dimensions in PIXELS
+                int leftPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_left);
+                int topPx = 0;
+                int rightPx = (int) context.getResources().getDimension(R.dimen.nav_dr_group_item_title_margin_right);
+                int bottomPx = (int) context.getResources().getDimension(R.dimen.nav_dr_header_full_name_margin_bottom); // CHANGE! - same as full name
+
+                params.setMargins(leftPx, topPx, rightPx, bottomPx); // set in PIXELS (left, top, right, bottom);
+                params.addRule(RelativeLayout.BELOW, R.id.tvNavDrFullName); //!! don't forget to set all "layout_..." rules from xml, when creating new params ;-)
+
+                tvEmail.setLayoutParams(params);
+
+                break;
+            }
+
+            default:{
+                tvFullName.setText(context.getString(R.string.not_logged_user));
+                tvEmail.setVisibility(View.GONE);
+            }
+        }
+    }
+
     /**
      * Adjust height of expandable list view
      * SOURCE: http://stackoverflow.com/a/36544003
@@ -360,6 +427,70 @@ public class NavigationalDrawerPopulator {
         params.height = height;
         listView.setLayoutParams(params);
         listView.requestLayout();
+    }
+
+    private GroupItem getBaterkaGroupItem(){
+        Class classToStart;
+        //List<AbstractMap.SimpleEntry<String, Serializable>> toExtras = new ArrayList<>();
+        Bundle toExtras = new Bundle(1);
+
+        if (DateUtil.getDayOfWeekInt(new Date(currentTimeMillis())) == 1){
+            // sunday => try to get article with title starting with "Živé slovo na nedeľu"
+            ArticleObj art = getSundayMeditationArticle();
+
+            if (art != null) {
+                // if there is such an article - init for ArticleActivity
+                classToStart = ArticleActivity.class;
+                toExtras.putParcelable(KEY_INTENT_EXTRA_ARTICLE, art); // init extras for ArticleActivity
+
+            } else {
+                // if there is NOT such an article - init for BaterkaActivity
+                classToStart = BaterkaActivity.class;
+                toExtras.putBoolean(KEY_INTENT_LOAD_BATERKA_ON_TODAY, true); // init extras for BaterkaActivity
+            }
+        } else {
+            // other days from sunday
+            classToStart = BaterkaActivity.class;
+            toExtras.putBoolean(KEY_INTENT_LOAD_BATERKA_ON_TODAY, true); // init extras for BaterkaActivity
+        }
+
+        // SOURCE of icon: https://material.io/icons/#ic_highlight
+        // good icons too:
+        //  https://material.io/icons/#ic_wb_incandescent
+        //  https://material.io/icons/#ic_lightbulb_outline
+        GroupItem toRet = new GroupItem(R.drawable.ic_highlight_black_48dp, context.getString(R.string.baterka_on_today),
+                new ActivityStarter(context, classToStart, KEY_MAIN_ACTIVITY, Constants.DELAY_TO_START_ACTIVITY_MILLIS, toExtras));
+
+        return toRet;
+    }
+
+    private ArticleObj getSundayMeditationArticle(){
+        for (ArticleObj article : articles) {
+
+            //SOURCE: https://stackoverflow.com/questions/19154117/startswith-method-of-string-ignoring-case
+            if ( (article.getTitle().toLowerCase().startsWith(context.getString(R.string.sunday_meditation_title_beginning).toLowerCase()) ) &&
+                 (DateUtil.daysBetween(article.getPubDate()))*(-1) < 7 ){
+                return article;
+            }
+        }
+
+        return null;
+    }
+
+    public void setArticles(ArrayList<ArticleObj> articles){
+        this.articles = articles;
+
+        // replace 'Baterka on today' list item
+        GroupItem baterkaOnToday = getBaterkaGroupItem();
+        groupItems.set(2, baterkaOnToday); // 'set' used as 'replace' SOURCE: https://stackoverflow.com/a/23981027
+
+        //another way
+        //groupItems.remove(2);
+        //groupItems.add(2, baterkaOnToday);
+
+        // NOT working, bad at all - only playing with references
+        //GroupItem baterkaOnToday = groupItems.get(2);
+        //baterkaOnToday = getBaterkaGroupItem();
     }
 
     private void closeDrawer() {

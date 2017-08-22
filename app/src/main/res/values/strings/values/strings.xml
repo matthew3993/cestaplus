@@ -118,13 +118,15 @@
     <string name="hello_world">Tu sa zobrazí vybraný článok</string>
     <string name="test_author">Tu bude autor</string>
     <string name="title_here">Martin Kramara o exhortácií Radosť lásky: Tí čo sa modlia, zostanú spolu</string>
-    <string name="description_here">Synodu o rodine sledovalo množstvo pozorných a zvedacých očí od bežného sveta až po množstvo manželov aj tých, ktorá zažili bolesť z nevydareného vzťahu.</string>
+    <string name="description_here">Synodu o rodine sledovalo množstvo pozorných a zvedavých očí od bežného sveta až po množstvo manželov aj tých, ktorá zažili bolesť z nevydareného vzťahu.</string>
 
     <!-- Navigational drawer START ***************************** -->
     <string name="home">Domov</string>
     <string name="account_nav_dr">Konto</string>
     <string name="baterka_on_today">Baterka na dnes</string>
     <string name="o_portali_nav_dr">O portáli cesta+</string>
+
+    <string name="sunday_meditation_title_beginning">živé slovo</string>
 
     <!-- Navigational drawer END ******************************* -->
 
@@ -167,5 +169,7 @@
     <string name="toast_logging_out">Odhlasujem…</string>
     <!-- TOAST's messages END ******************************* -->
 
-
+    <!-- ALERT DIALOGS messages START ***************************** -->
+    <string name="alert_dialog_subscription_prolonged">Predplatné bolo predĺžené! Koniec predplatného:</string>
+    <!-- ALERT DIALOGS messages END ******************************* -->
 </resources>

@@ -52,9 +52,12 @@
 
                 <!--
                 TODO: ako to bude s obrázkom baterky??
-                -->
+
                 <com.android.volley.toolbox.NetworkImageView
+                -->
+                <ImageView
                     android:id="@+id/nivBaterka"
+                    android:src="@drawable/baterka_vseobecna"
 
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/baterka_title_image_height"

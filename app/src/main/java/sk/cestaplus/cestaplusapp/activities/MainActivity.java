@@ -1,6 +1,7 @@
 package sk.cestaplus.cestaplusapp.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -16,7 +17,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -26,14 +29,23 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Cache;
 import com.android.volley.toolbox.NetworkImageView;
 
+import java.util.ArrayList;
+
 import sk.cestaplus.cestaplusapp.R;
+import sk.cestaplus.cestaplusapp.activities.account_activities.LoggedActivity;
+import sk.cestaplus.cestaplusapp.activities.account_activities.LoginActivity;
 import sk.cestaplus.cestaplusapp.fragments.AllFragment;
 import sk.cestaplus.cestaplusapp.fragments.SectionFragment;
+import sk.cestaplus.cestaplusapp.network.Endpoints;
+import sk.cestaplus.cestaplusapp.network.Parser;
 import sk.cestaplus.cestaplusapp.network.VolleySingleton;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
+import sk.cestaplus.cestaplusapp.objects.UserInfo;
 import sk.cestaplus.cestaplusapp.utilities.CustomJobManager;
+import sk.cestaplus.cestaplusapp.utilities.DateFormats;
 import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.SessionManager;
 import sk.cestaplus.cestaplusapp.utilities.navDrawer.NavigationalDrawerPopulator;
@@ -43,6 +55,10 @@ import sk.cestaplus.cestaplusapp.views.AnimatedExpandableListView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static sk.cestaplus.cestaplusapp.extras.Constants.VOLLEY_DEBUG;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_OK;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_ARTICLE_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_EXTRA_ARTICLE;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_INTENT_FROM_NOTIFICATION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
@@ -57,7 +73,8 @@ public class MainActivity
         SharedPreferences.OnSharedPreferenceChangeListener,
         AppBarLayout.OnOffsetChangedListener,
         AllFragment.AllFragmentInteractionListener,
-        SectionFragment.SectionFragmentInteractionListener {
+        SectionFragment.SectionFragmentInteractionListener,
+        LoginManager.LoginManagerInteractionListener {
 
     // data
     private ArticleObj headerArticle;
@@ -69,6 +86,7 @@ public class MainActivity
     private CustomJobManager customJobManager;
     private LoginManager loginManager; // to check role
     private boolean noConnection = false;
+    private NavigationalDrawerPopulator navDrPopulator;
 
     // UI components
     //header article views
@@ -113,9 +131,9 @@ public class MainActivity
         initHeaderViews();
         initNavigationalDrawer();
 
-        loginManager.checkRole(this);
+        loginManager.checkDefaultRole(this); // can finish activity
 
-        initFragments(savedInstanceState);
+        boolean allFragmentWait = false;
 
         //try to load saved state from bundle
         if (savedInstanceState != null){ //if is not null = change of state - for example rotation of device
@@ -123,16 +141,30 @@ public class MainActivity
 
         } else {
             //new start of application
+
+            //construct update job, if notifications are enabled
             if (session.getPostNotificationStatus()) { //if notifications are on
                 // create an update job - creating job here is for FIRST start of application - to be sure, that UpdateJob is scheduled
                 // false = do NOT overwrite an existing job with the 'UPDATE_JOB_TAG' tag
-                // we can NOT overwrite UpdateJob here, for case that user starts app, for example in the morning,
-                // without internet connection => if we have overwritten job here, in above he would NOT get notifications,
+                // we can NOT overwrite UpdateJob here, for case that user starts app, without internet connection,
+                // for example in the morning => if we have overwritten job here, he would NOT get notifications,
                 // even after he connected to the internet after starting app, because UpdateJob
                 // was re-scheduled to future by time of job period
                 customJobManager.constructAndScheduleUpdateJob(false);
             }
+
+            if (role == ROLE_LOGGED_SUBSCRIPTION_EXPIRED){
+                // check if subscription wasn't prolonged
+                loginManager.tryLoginWithSavedCredentials(this);
+                allFragmentWait = true;
+
+            } /*else {
+                // not logged user or subscription ok
+
+            }*/
         } //end else savedInstanceState
+
+        initFragments(savedInstanceState, allFragmentWait);
 
         //register shared preferences change listener
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
@@ -261,10 +293,11 @@ public class MainActivity
     }
 
     private void initNavigationalDrawer() {
-        new NavigationalDrawerPopulator(this).populateSectionsExpandableList();
+        navDrPopulator = new NavigationalDrawerPopulator(this); //
+        navDrPopulator.populateSectionsExpandableList();
     }
 
-    private void initFragments(Bundle savedInstanceState) {
+    private void initFragments(Bundle savedInstanceState, boolean allFragmentWait) {
 
         if (savedInstanceState != null) {//if is not null = change of state - for example rotation of device
             // find previously added fragment by TAG
@@ -276,15 +309,15 @@ public class MainActivity
         } else {// new start of application
             // create and add AllFragment - don't forget TAG
             // SOURCE: https://developer.android.com/guide/components/fragments.html#Adding
-            replaceAllFragment();
+            replaceAllFragment(allFragmentWait);
         }
     }
 
-    private void replaceAllFragment() {
-        FragmentManager fragmentManager = getSupportFragmentManager(); //!! not only getFragmentManager()!!
+    private void replaceAllFragment(boolean allFragmentWait) {
+        FragmentManager fragmentManager = getSupportFragmentManager(); //!! Support !! - not only getFragmentManager()!!
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        AllFragment allFragment = AllFragment.newInstance();
+        AllFragment allFragment = AllFragment.newInstance(allFragmentWait);
         fragmentTransaction.replace(R.id.mainActivityMainFragmentContainer, allFragment, TAG_ALL_FRAGMENT);
         fragmentTransaction.commit();
     }
@@ -406,20 +439,24 @@ public class MainActivity
     }
 
     @Override
-    public void showHeaderArticle(ArticleObj headerArticle) {
+    public void onArticlesLoaded(ArticleObj headerArticle, ArrayList<ArticleObj> articles) {
         noConnection = false;
 
         this.headerArticle = headerArticle;
-
         updateHeaderArticleViews();
+
+        navDrPopulator.setArticles(articles);
     }
 
     private void updateHeaderArticleViews(){
-        nivHeaderImage.setImageUrl(headerArticle.getImageDefaultUrl(), volleySingleton.getImageLoader());
-        tvHeaderAuthor.setText(headerArticle.getAuthor());
-        TextUtil.setTitleText(getApplicationContext(), TextUtil.showLock(role, headerArticle.isLocked()), headerArticle.getTitle(), tvHeaderTitle, R.drawable.lock_white);
-        tvHeaderDescription.setText(headerArticle.getShort_text());
-
+        if (headerArticle != null) {
+            nivHeaderImage.setImageUrl(headerArticle.getImageDefaultUrl(), volleySingleton.getImageLoader());
+            tvHeaderAuthor.setText(headerArticle.getAuthor());
+            TextUtil.setTitleText(getApplicationContext(), TextUtil.showLock(role, headerArticle.isLocked()), headerArticle.getTitle(), tvHeaderTitle, R.drawable.lock_white);
+            tvHeaderDescription.setText(headerArticle.getShort_text());
+        } //else {
+            //Toast.makeText(this, "header article obj NULL", Toast.LENGTH_LONG).show();
+        //}
         //Util.adjustHeaderTitleTextSize(tvHeaderTitle); // not used for now
 
         rlHeader.setVisibility(View.VISIBLE);
@@ -430,6 +467,13 @@ public class MainActivity
             swipeRefreshLayoutAll.setRefreshing(false);
         }
     }
+
+    @Override
+    public void roleChanged() {
+        role = session.getRole();
+        navDrPopulator.setupUserInfoTextViews();
+    }
+
     // endregion
 
     @Override
@@ -457,8 +501,6 @@ public class MainActivity
 
     }//end onRefresh()
 
-    // endregion
-
     // region SAVE & RESTORE STATE
 
     // SOURCE: https://developer.android.com/guide/components/activities/activity-lifecycle.html#saras
@@ -479,6 +521,90 @@ public class MainActivity
     }
 
     // endregion
+
+    // region LoginManagerInterActionListener methods
+
+    @Override
+    public void onLoginSuccessful(UserInfo userInfo) {
+        // subscription was PROLONGED
+
+        role = ROLE_LOGGED_SUBSCRIPTION_OK;  //change role in activity!!
+        navDrPopulator.setupUserInfoTextViews(); //reset nav dr user info text views
+
+        String subscriptionEndStr = DateFormats.dateFormatSlovakPrint.format(session.getUserInfo().getSubscription_end());
+
+        //inform the user - show AlertDialog, after closing show LoggedActivity
+        // SOURCE: check class comment
+        AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.alertDialog)).create();
+        alertDialog.setTitle("Info");
+        alertDialog.setMessage(this.getString(R.string.alert_dialog_subscription_prolonged) + " " + subscriptionEndStr);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        startLoadingAllArticles();
+
+                    }
+                });
+        alertDialog.show();
+    }
+
+    @Override
+    public void onLoginPartiallySuccessful(UserInfo userInfo) {
+        // subscription remains EXPIRED
+        // role did not changed
+        //Toast.makeText(this, "Predlatné vypršalo", Toast.LENGTH_SHORT).show();
+
+        startLoadingAllArticles();
+    }
+
+    @Override
+    public void onLoginError(int login_error_code) {
+        // case only if EMAIL_OR_PASSWORD_MISSING or WRONG_EMAIL_OR_PASSWORD
+        // probably changed password
+
+        // inform the user - show error toast
+        Parser.handleLoginError(login_error_code);
+
+        session.logout();
+
+        //inform the user - show AlertDialog, after closing show LoginActivity
+        // SOURCE: check class comment
+        AlertDialog alertDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.alertDialog)).create();
+        alertDialog.setTitle("Info");
+        alertDialog.setMessage(this.getString(R.string.relogin_wrong_password));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        // start LoginActivity
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        alertDialog.show();
+    }
+
+    @Override
+    public void onLoginNetworkError() {
+        // network error
+        // role did not changed
+
+        startLoadingAllArticles();
+    }
+
+    private void startLoadingAllArticles() {
+        AllFragment allFragment = (AllFragment) getSupportFragmentManager().findFragmentByTag(TAG_ALL_FRAGMENT);
+
+        if (allFragment != null){
+            allFragment.startLoadingAllArticles(role);
+        }
+    }
+
+    //endregion
 
     // region LISTENERS METHODS
 

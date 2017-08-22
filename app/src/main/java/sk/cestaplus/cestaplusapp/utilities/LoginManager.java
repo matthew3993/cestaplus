@@ -71,6 +71,7 @@ public class LoginManager {
     /**
      * Used by:
      *  -   LoginActivity = new login
+     * This method IS saving new UserInfo and also credentials.
      */
     public void tryLogin(final String email, final String password, final boolean remember, final LoginManagerInteractionListener listener) {
 
@@ -130,6 +131,7 @@ public class LoginManager {
      * Used by ArticleActivity.
      * Called ONLY in case that user was logged with subscription OK (ROLE_LOGGED_SUBSCRIPTION_OK),
      * but there was a problem with api key.
+     * This method is NOT saving new UserInfo !!!
      */
     public void tryRelogin(final int count, final LoginManagerInteractionListener listener) {
 
@@ -199,7 +201,7 @@ public class LoginManager {
         Requestor.createReLoginRequest(volleySingleton.getRequestQueue(), session, responseLis, errorLis);
     }//end relogin
 
-    public void checkRole(Activity activity) {
+    public void checkDefaultRole(Activity activity) {
         //application mode check
         int role = session.getRole();
 
@@ -209,8 +211,8 @@ public class LoginManager {
             activity.startActivity(intent);
 
             activity.finish(); // finish actual activity
-
         }
+
     }
 
     private void loginTry(final Activity activity, final ProgressDialog pDialog) {

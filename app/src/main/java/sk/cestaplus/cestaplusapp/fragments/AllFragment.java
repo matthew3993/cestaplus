@@ -27,6 +27,7 @@ import sk.cestaplus.cestaplusapp.listeners.RecyclerTouchListener;
 import sk.cestaplus.cestaplusapp.objects.ArticleObj;
 import sk.cestaplus.cestaplusapp.tasks.UpdateTask;
 import sk.cestaplus.cestaplusapp.utilities.CustomJobManager;
+import sk.cestaplus.cestaplusapp.utilities.LoginManager;
 import sk.cestaplus.cestaplusapp.utilities.ResponseCrate;
 import sk.cestaplus.cestaplusapp.utilities.CustomApplication;
 import sk.cestaplus.cestaplusapp.utilities.DateFormats;
@@ -36,12 +37,15 @@ import sk.cestaplus.cestaplusapp.listeners.CustomRecyclerViewClickHandler;
 import sk.cestaplus.cestaplusapp.utilities.Util;
 
 import static java.lang.System.currentTimeMillis;
+import static sk.cestaplus.cestaplusapp.extras.Constants.ALL_ARTICLES_ON_RESUME_REFRESH_LIMIT_MS;
+import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_LOGGED_SUBSCRIPTION_EXPIRED;
 import static sk.cestaplus.cestaplusapp.extras.IErrorCodes.ROLE_UNDEFINED;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_BATERKA_SECTION;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_LAST_TRY_TIME;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_MAIN_ACTIVITY;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_ARTICLES_ALL;
 import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_SAVED_STATE_PAGES_NUM;
+import static sk.cestaplus.cestaplusapp.extras.IKeys.KEY_WAIT_TO_LOAD;
 
 public class AllFragment
     extends Fragment
@@ -53,9 +57,11 @@ public class AllFragment
     // data
     private ArrayList<ArticleObj> articlesAll;
     private int pagesNum;           // number of loaded pages
+    private boolean waitForLoadingArticles = false;
 
     // utils
     private SessionManager session; // session manager
+    //private LoginManager loginManager; // to check prolongation of expired subscription
     private int lastRole = ROLE_UNDEFINED;
 
     private CustomRecyclerViewClickHandler recyclerViewClickHandler;
@@ -81,8 +87,13 @@ public class AllFragment
      * this fragment using the provided parameters.
      * @return A new instance of fragment AllFragment.
     */
-    public static AllFragment newInstance() {
+    public static AllFragment newInstance(boolean waitForLoadingArticles) {
         AllFragment fragment = new AllFragment();
+
+        Bundle args = new Bundle();
+        args.putBoolean(KEY_WAIT_TO_LOAD, waitForLoadingArticles);
+
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -93,6 +104,7 @@ public class AllFragment
         // get parameters from Arguments
         if (getArguments() != null) {
             //role = getArguments().getInt(KEY_ROLE, ROLE_NOT_LOGGED);
+            waitForLoadingArticles= getArguments().getBoolean(KEY_WAIT_TO_LOAD, false);
         }
 
         // init data & utils
@@ -108,11 +120,13 @@ public class AllFragment
         View view = inflater.inflate(R.layout.fragment_all, container, false);
 
         // init views
-        //initLayoutViews(view);
-        initRecyclerView(view);
+        // initLayoutViews(view);
+        initRecyclerView(view); // includes initRecyclerViewAdapter();
         initLoadingAndErrorViews(view);
 
-        tryLoadAllArticles(savedInstanceState);
+        if (!waitForLoadingArticles) {
+            tryLoadAllArticles(savedInstanceState);
+        }
 
         return view;
     }
@@ -139,14 +153,14 @@ public class AllFragment
         //role change check
         int sessionRole = session.getRole(); //role loaded from session
         if (lastRole != ROLE_UNDEFINED && lastRole != sessionRole){
-            //recyclerViewAdapterTypeChanged();
-            arvaAll.setRole(sessionRole); //!!!
+            arvaAll.setRole(sessionRole); // change role to adapter!!!
+            listener.roleChanged(); // notify activity about role change - to reset nav dr text views
 
-            tryConnectAgain(); // same code as for trying to connect again - hide data views, show loading views, start update job
-            return; //!!!
+            tryConnectAgain(); // same code as for trying to connect again - hide data views, show loading views, execute UpdateTask
+            return; //!!! - we do not need to check last try time, because UpdateTask was already executed
         }
 
-        //TODO: check last try time and if needed start UpdateTask - probably isn't working
+        //TODO: check last try time and if needed execute UpdateTask - probably isn't working
         long defaultVal = 0;
         try {
             defaultVal = DateFormats.dateFormatJSON.parse("2010-01-01 00:00:00").getTime();
@@ -155,14 +169,9 @@ public class AllFragment
         }
         long lastTryTime = MyApplication.readFromPreferences(CustomApplication.getCustomAppContext(), KEY_LAST_TRY_TIME, defaultVal);
 
-        if (currentTimeMillis() - lastTryTime > 60*60*1000){// 60 min in miliseconds
-            //Toast.makeText(getActivity().getApplicationContext(), "Aktualizujem...", Toast.LENGTH_SHORT).show();
-
-            startLoadingAnimation();
-            //start the update task - will trigger onArticlesLoaded
-            new UpdateTask(this, false).execute(); //false = we DON'T want to issue notifications this time
+        if (currentTimeMillis() - lastTryTime > ALL_ARTICLES_ON_RESUME_REFRESH_LIMIT_MS){
+            tryConnectAgain(); // same code as for trying to connect again - hide data views, show loading views, execute UpdateTask
         }
-
     }
 
     @Override
@@ -218,7 +227,7 @@ public class AllFragment
         // loading & error views
         progressBar = (ProgressBar) view.findViewById(R.id.progressBarFragmentAll);
         progressBar.setIndeterminate(true); //set the progress bar to be intermediate
-        ivNoConnection = (ImageView) view.findViewById(R.id.ivNoConnectionMain);
+        ivNoConnection = (ImageView) view.findViewById(R.id.ivNoConnectionFragmentAll);
     }
 
     // endregion
@@ -259,6 +268,12 @@ public class AllFragment
         new UpdateTask(this).execute(); //using SECONDARY constructor - setting refreshing to true
     }
 
+    public void startLoadingAllArticles(int role){
+        arvaAll.setRole(role); // change role to adapter!!!
+
+        tryConnectAgain(); // same code as for trying to connect again - hide data views, show loading views, execute UpdateTask
+    }
+
     //endregion
 
     //region ArticlesLoadedListener METHODS
@@ -283,7 +298,7 @@ public class AllFragment
 
         ArticleObj headerArticle = getHeaderArticle(responseCrate.getHeaderArticleId());
         if (listener != null & headerArticle != null) {
-            listener.showHeaderArticle(headerArticle);
+            listener.onArticlesLoaded(headerArticle, articlesAll);
         }
 
         arvaAll.setArticlesList(responseCrate.getArticles());
@@ -388,7 +403,7 @@ public class AllFragment
 
         // in FRAGMENT (here): first parameter - context MUST be only getACTIVITY, and not getActivity().getAPPLICATIONContext()
         // - because Calligraphy wraps around ACTIVITY and not APPLICATION
-        arvaAll = Util.getArvaType(getActivity(), false); // false = doesn't have header
+        arvaAll = Util.getArvaType(getActivity(), false); // false = doesn't have header, set's the role
 
         // if used in ACTIVITY:
         //      first parameter - context MUST be 'this' (as activity), and not getApplicationContext()
@@ -490,8 +505,10 @@ public class AllFragment
 
         void showNoConnection(String msg);
 
-        void showHeaderArticle(ArticleObj headerArticle);
+        void onArticlesLoaded(ArticleObj headerArticle, ArrayList<ArticleObj> articles);
 
         void stopRefreshingAnimation();
+
+        void roleChanged();
     }
 }
